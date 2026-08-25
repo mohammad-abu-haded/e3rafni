@@ -1,4 +1,4 @@
-import { login } from "@/services/auth.service";
+import { getUserByEmail, login } from "@/services/auth.service";
 import { User } from "@/types";
 import { generateJWT } from "@/utils/auth";
 import { cookies } from "next/headers";
@@ -16,8 +16,19 @@ const POST = async (request: NextRequest) => {
       { status: 400 },
     );
   }
+  let user: User | null = await getUserByEmail(email);
+  if (user && !user.password && user.googleId) {
+    return NextResponse.json(
+      {
+        success: false,
+        message:
+          "Unable to sign in with password. Please use Google sign-in",
+      },
+      { status: 400 },
+    );
+  }
 
-  const user: User | null = await login(email, password);
+  user = await login(email, password);
   if (!user) {
     return NextResponse.json(
       { success: false, message: "Invalid email or password" },
@@ -34,7 +45,10 @@ const POST = async (request: NextRequest) => {
     path: "/",
   });
 
-  return NextResponse.json({ success: true, message: "Login successful" }, { status: 200 });
+  return NextResponse.json(
+    { success: true, message: "Login successful" },
+    { status: 200 },
+  );
 };
 
 export { POST };
