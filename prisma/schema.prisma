@@ -28,9 +28,10 @@ model Users {
   role Role @default(USER)
   name String
   email String @unique
-  password String
+  password String?
+  googleId String? @unique
   createdAt DateTime @default(now())
-
+  
   roomMembers RoomMembers?
 }
 

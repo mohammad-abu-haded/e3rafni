@@ -9,7 +9,7 @@ const login = async (email: string, password: string): Promise<User | null> => {
     },
   });
 
-  if (!user) {
+  if (!user || !user.password) {
     return null;
   }
 
@@ -25,7 +25,7 @@ const signup = async (
   email: string,
   password: string,
   name: string,
-  {passwordIsHashed}: {passwordIsHashed: boolean},
+  { passwordIsHashed }: { passwordIsHashed: boolean },
 ): Promise<User | null> => {
   try {
     const user = await prisma.users.create({
@@ -33,6 +33,28 @@ const signup = async (
         email,
         password: passwordIsHashed ? password : hashValue(password),
         name,
+        googleId: null,
+      },
+    });
+
+    return user;
+  } catch (error) {
+    return null;
+  }
+};
+
+const signupWithGoogle = async (
+  email: string,
+  googleId: string,
+  name: string,
+): Promise<User | null> => {
+  try {
+    const user = await prisma.users.create({
+      data: {
+        email,
+        googleId,
+        name,
+        password: null,
       },
     });
 
@@ -50,4 +72,13 @@ const getUserByEmail = async (email: string): Promise<User | null> => {
   });
 };
 
-export { login, signup, getUserByEmail };
+const getUserByGoogleId = async (googleId: string): Promise<User | null> => {
+  return await prisma.users.findUnique({
+    where: {
+      googleId,
+    },
+  });
+};
+
+
+export { login, signup, getUserByEmail, signupWithGoogle, getUserByGoogleId };
