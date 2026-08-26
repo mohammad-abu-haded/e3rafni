@@ -47,6 +47,7 @@ const signupWithGoogle = async (
   email: string,
   googleId: string,
   name: string,
+  picture: string | undefined,
 ): Promise<User | null> => {
   try {
     const user = await prisma.users.create({
@@ -55,6 +56,7 @@ const signupWithGoogle = async (
         googleId,
         name,
         password: null,
+        picture: picture || null,
       },
     });
 
