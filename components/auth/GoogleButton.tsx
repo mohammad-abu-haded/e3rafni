@@ -1,6 +1,9 @@
 "use client";
 
+import { ApiResponse } from "@/types";
+import { redirect } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 
 declare global {
   interface Window {
@@ -19,21 +22,29 @@ const GoogleButton = () => {
 
       window.google.accounts.id.initialize({
         client_id: process.env.NEXT_PUBLIC_AUTH_GOOGLE_ID,
-        callback: async (response: any) => {
-          const res = await fetch("/api/auth/google", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              credential: response.credential,
-            }),
-          });
+        callback: async (googleResponse: any) => {
+          try {
+            const res = await fetch("/api/auth/google", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                credential: googleResponse.credential,
+              }),
+            });
 
-          const data = await res.json();
+            const result: ApiResponse = await res.json();
 
-          console.log("Status:", res.status);
-          console.log("Response:", data);
+            if (result.success) {
+              toast.success(result.message);
+            } else {
+              toast.error(result.message);
+            }
+          } catch (error) {
+            console.error(error);
+            toast.error("حدث خطأ ما، يرجى المحاولة مرة أخرى");
+          }
         },
       });
 

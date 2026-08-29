@@ -82,7 +82,7 @@ const POST = async (request: NextRequest) => {
           {
             success: false,
             message:
-              "Unable to sign in with Google. Please try another sign-in method",
+              "تعذر تسجيل الدخول باستخدام Google، يرجى تجربة طريقة أخرى لتسجيل الدخول",
           },
           { status: 400 },
         );
@@ -94,7 +94,7 @@ const POST = async (request: NextRequest) => {
         return NextResponse.json(
           {
             success: false,
-            message: "Failed to create user",
+            message: "فشل إنشاء الحساب",
           },
           { status: 400 },
         );
@@ -118,8 +118,8 @@ const POST = async (request: NextRequest) => {
       {
         success: true,
         message: isSignup
-          ? "Account created and logged in successfully"
-          : "Logged in successfully",
+          ? "تم إنشاء الحساب وتسجيل الدخول بنجاح"
+          : "تم تسجيل الدخول بنجاح",
       },
       { status: 200 },
     );
@@ -129,7 +129,7 @@ const POST = async (request: NextRequest) => {
     return NextResponse.json(
       {
         success: false,
-        message: "Unable to complete Google sign-in",
+        message: "تعذر إكمال تسجيل الدخول باستخدام Google",
       },
       { status: 401 },
     );

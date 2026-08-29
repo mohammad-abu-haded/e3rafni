@@ -9,10 +9,10 @@ const POST = async (request: NextRequest) => {
     email: string;
     password: string;
   };
-
+  
   if (!email || !password) {
     return NextResponse.json(
-      { success: false, message: "Email and password are required" },
+      { success: false, message: "البريد الإلكتروني وكلمة المرور مطلوبان" },
       { status: 400 },
     );
   }
@@ -22,7 +22,7 @@ const POST = async (request: NextRequest) => {
       {
         success: false,
         message:
-          "Unable to sign in with password. Please use Google sign-in",
+          "تعذر تسجيل الدخول باستخدام كلمة المرور، يرجى استخدام تسجيل الدخول عبر Google",
       },
       { status: 400 },
     );
@@ -31,7 +31,7 @@ const POST = async (request: NextRequest) => {
   user = await login(email, password);
   if (!user) {
     return NextResponse.json(
-      { success: false, message: "Invalid email or password" },
+      { success: false, message: "خطأ في البريد الإلكتروني أو كلمة المرور" },
       { status: 401 },
     );
   }
@@ -46,7 +46,7 @@ const POST = async (request: NextRequest) => {
   });
 
   return NextResponse.json(
-    { success: true, message: "Login successful" },
+    { success: true, message: "تم تسجيل الدخول بنجاح" },
     { status: 200 },
   );
 };

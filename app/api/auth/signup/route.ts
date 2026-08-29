@@ -18,21 +18,21 @@ const POST = async (request: NextRequest) => {
 
   if (!email) {
     return NextResponse.json(
-      { success: false, message: "Email is required" },
+      { success: false, message: "البريد الإلكتروني مطلوب" },
       { status: 400 },
     );
   }
 
   if (!password) {
     return NextResponse.json(
-      { success: false, message: "Password is required" },
+      { success: false, message: "كلمة المرور مطلوبة" },
       { status: 400 },
     );
   }
 
   if (!name) {
     return NextResponse.json(
-      { success: false, message: "Name is required" },
+      { success: false, message: "الاسم مطلوب" },
       { status: 400 },
     );
   }
@@ -42,7 +42,7 @@ const POST = async (request: NextRequest) => {
     return NextResponse.json(
       {
         success: false,
-        message: "Unable to process signup request",
+        message: "تعذر معالجة طلب إنشاء الحساب",
       },
       { status: 400 },
     );
@@ -53,13 +53,13 @@ const POST = async (request: NextRequest) => {
     await setRedisValue(SIGNUP_OTP_KEY(email), { passwordHash: hashValue(password), name, otpHash: hashValue(otp) }, 60 * 5);
     await sendOtpEmail(email, otp);
     return NextResponse.json(
-      { success: true, message: "OTP sent successfully" },
+      { success: true, message: "تم إرسال رمز التحقق بنجاح" },
       { status: 200 },
     );
   } catch (error) {
     await deleteRedisValue(SIGNUP_OTP_KEY(email));
     return NextResponse.json(
-      { success: false, message: "Failed to send OTP" },
+      { success: false, message: "فشل إرسال رمز التحقق" },
       { status: 500 },
     );
   }

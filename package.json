@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -11,6 +11,7 @@
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.9.1",
     "@prisma/client": "^7.9.1",
+    "antd": "^6.6.1",
     "bcryptjs": "^3.0.3",
     "google-auth-library": "^11.0.2",
     "ioredis": "^6.0.0",
@@ -20,9 +21,11 @@
     "nodemailer": "^9.0.5",
     "prisma": "^7.9.1",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "react-toastify": "^11.1.0"
   },
   "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.19.43",
     "@types/nodemailer": "^8.0.1",

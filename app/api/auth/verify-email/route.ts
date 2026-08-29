@@ -3,7 +3,8 @@ import { deleteRedisValue, getRedisValue } from "@/services/redis.service";
 import { SIGNUP_OTP_KEY } from "@/utils/redis-keys";
 import { signup } from "@/services/auth.service";
 import { User } from "@/types";
-import { compareHash } from "@/utils/auth";
+import { compareHash, generateJWT } from "@/utils/auth";
+import { cookies } from "next/headers";
 
 const POST = async (request: NextRequest) => {
   const { email, otp } = (await request.json()) as {
@@ -11,13 +12,17 @@ const POST = async (request: NextRequest) => {
     otp: string;
   };
 
-  const data = await getRedisValue<{passwordHash: string; name: string; otpHash: string;}>(SIGNUP_OTP_KEY(email));
+  const data = await getRedisValue<{
+    passwordHash: string;
+    name: string;
+    otpHash: string;
+  }>(SIGNUP_OTP_KEY(email));
 
   if (!data) {
     return NextResponse.json(
       {
         success: false,
-        message: "Signup request expired or not found",
+        message: "انتهت صلاحية طلب إنشاء الحساب أو لم يتم العثور عليه",
       },
       { status: 400 },
     );
@@ -28,7 +33,7 @@ const POST = async (request: NextRequest) => {
 
   if (!isValid) {
     return NextResponse.json(
-      { success: false, message: "Invalid OTP" },
+      { success: false, message: "رمز التحقق غير صحيح" },
       { status: 400 },
     );
   }
@@ -39,13 +44,21 @@ const POST = async (request: NextRequest) => {
   });
   if (!user) {
     return NextResponse.json(
-      { success: false, message: "Failed to create user" },
+      { success: false, message: "فشل إنشاء الحساب" },
       { status: 400 },
     );
   }
 
+  const token = await generateJWT(user);
+  (await cookies()).set("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 60 * 60 * 24 * 30,
+    path: "/",
+  });
   return NextResponse.json(
-    { success: true, message: "User created successfully" },
+    { success: true, message: "تم إنشاء الحساب بنجاح" },
     { status: 201 },
   );
 };

@@ -9,3 +9,9 @@ export type User = {
   googleId: string | null;
   createdAt: Date;
 };
+
+export type ApiResponse<T = undefined> = {
+  success: boolean;
+  message: string;
+  data?: T;
+};
