@@ -24,7 +24,6 @@ const Signup = () => {
       searchParams.get("email") ? 2 : searchParams.get("complete") ? 3 : 1,
     );
   }, [searchParams]);
-  const handleComplete = () => {};
   return (
     <div>
       <div>
@@ -43,7 +42,7 @@ const Signup = () => {
               email={email}
             />
           )}
-          {step == 3 && <PhotoStep onComplete={() => handleComplete()} />}
+          {step == 3 && <PhotoStep/>}
         </div>
       </div>
 

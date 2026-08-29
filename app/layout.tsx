@@ -36,6 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${cairo.variable} ${geistSans.variable} ${geistMono.variable}`}
     >
       <body>
+        
         {children}
         <Toast />
         <Script

@@ -1,3 +1,4 @@
+'use server';
 import { otpEmailTemplate } from "@/templates/otp-email-ar";
 import nodemailer from "nodemailer";
 
