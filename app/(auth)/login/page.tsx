@@ -1,7 +1,5 @@
 import Login from "@/components/auth/login/Login";
 import { Metadata } from "next";
-import { cookies } from "next/headers";
-import FlashToast from "../../../components/FlashToast/FlashToast";
 
 export const metadata: Metadata = {
   title: "تسجيل الدخول",

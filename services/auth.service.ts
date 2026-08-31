@@ -1,4 +1,3 @@
-'use server';
 import prisma from "@/lib/prisma";
 import { User } from "@/types";
 import { compareHash, hashValue } from "@/utils/auth";

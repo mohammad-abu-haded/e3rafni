@@ -23,6 +23,12 @@ enum RoomMemberType {
   RULER
 }
 
+enum RoomStatus {
+  WAITING
+  PLAYING
+  FINISHED
+}
+
 model Users {
   id Int @id @default(autoincrement())
   role Role @default(USER)
@@ -33,22 +39,30 @@ model Users {
   picture String?
   createdAt DateTime @default(now())
   
-  roomMembers RoomMembers?
+  ownedRooms Rooms[]
+  roomMembers RoomMembers[]
 }
 
 model Rooms {
   id Int @id @default(autoincrement())
+  name String
   totalRounds Int
   currentRound Int
   createdAt DateTime @default(now())
-
+  ownerId Int
+  code String @unique
+  isPrivate Boolean @default(false)
+  capacity Int @default(10)
+  owner Users @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  isActive Boolean @default(true)
+  status RoomStatus @default(WAITING)
   roomMembers RoomMembers[]
   roomRounds Rounds[]
 }
 
 model RoomMembers {
   roomId Int
-  userId Int @unique
+  userId Int
   room Rooms @relation(fields: [roomId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user Users @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   @@id([roomId, userId])
@@ -61,12 +75,12 @@ model Rounds {
   id Int @id @default(autoincrement())
   roomId Int
   roundNumber Int
-  roundTime DateTime
+  roundDuration Int
   startedAt DateTime @default(now())
   mode RoundMode @default(SINGLE_QUESTION)
   room Rooms @relation(fields: [roomId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@unique([id, roomId])
   @@index([roomId])
-
   roundMembers RoundMembers[]
   roundWords RoundWords[]
 }
@@ -76,7 +90,7 @@ model RoundMembers {
   roomId Int 
   userId Int
   type RoomMemberType
-  round Rounds @relation(fields: [roundId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  round Rounds @relation(fields: [roundId, roomId], references: [id, roomId], onDelete: Cascade, onUpdate: Cascade)
   roomMember RoomMembers @relation(fields: [roomId, userId], references: [roomId, userId], onDelete: Cascade, onUpdate: Cascade)
   @@id([roundId, userId])
   @@index([roundId, type])

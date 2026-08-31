@@ -1,7 +1,6 @@
 "use client";
 
 import { ApiResponse } from "@/types";
-import { redirect } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 

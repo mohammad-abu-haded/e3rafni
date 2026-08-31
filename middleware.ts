@@ -17,10 +17,10 @@ const middleware = async (request: NextRequest) => {
       else {
         return authMiddleware(request, [Role.ADMIN, Role.USER]);
       } 
-
-    default:
-      break;
-  }
+      
+      default:
+        break;
+      }
 };
 
 export const config = {

@@ -17,6 +17,7 @@
     "ioredis": "^6.0.0",
     "jose": "^6.2.10",
     "mariadb": "^3.5.3",
+    "nanoid": "^6.0.1",
     "next": "16.3.2",
     "nodemailer": "^9.0.5",
     "prisma": "^7.9.1",

@@ -32,6 +32,7 @@ const authMiddleware = async (request: NextRequest, role: string[]) => {
       "ليس لديك الصلاحيات اللازمة لزيارة هذه الصفحة",
     );
   }
+  return NextResponse.next();
 };
 
 export { authMiddleware };

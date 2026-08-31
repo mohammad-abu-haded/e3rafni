@@ -1,4 +1,4 @@
-import { Role } from "@/app/generated/prisma/enums";
+import { Role, RoomStatus } from "@/app/generated/prisma/enums";
 
 export type User = {
   id: number;
@@ -14,4 +14,18 @@ export type ApiResponse<T = undefined> = {
   success: boolean;
   message: string;
   data?: T;
+};
+
+export type Room = {
+  id: number;
+  name: string;
+  totalRounds: number;
+  currentRound: number;
+  createdAt: Date;
+  ownerId: number;
+  code: string;
+  isPrivate: boolean;
+  capacity: number;
+  isActive: boolean;
+  status: RoomStatus;
 };
