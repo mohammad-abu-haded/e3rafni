@@ -1,4 +1,4 @@
-import { Role, RoomStatus } from "@/app/generated/prisma/enums";
+import { Role, RoundMemberType, RoomStatus, RoundMode } from "@/app/generated/prisma/enums";
 
 export type User = {
   id: number;
@@ -28,4 +28,18 @@ export type Room = {
   capacity: number;
   isActive: boolean;
   status: RoomStatus;
+};
+
+export type Round = {
+  id: number;
+  roomId: number;
+  roundNumber: number;
+  roundDuration: number;
+  startedAt: Date;
+  mode: RoundMode;
+};
+
+export type RoundMemberInput = {
+  userId: number;
+  type: RoundMemberType;
 };

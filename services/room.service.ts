@@ -20,6 +20,41 @@ const createUniqueRoomCode = async () => {
   }
 };
 
+export const isRoomOwner = async (
+  roomId: number,
+  userId: number,
+): Promise<boolean> => {
+  try {
+    const room = await getRoomById(roomId);
+    if (!room) {
+      return false;
+    }
+    return room.ownerId === userId;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const isRoomMember = async (
+  roomId: number,
+  userId: number,
+): Promise<boolean> => {
+  try {
+    const roomMember = await prisma.roomMembers.findUnique({
+      where: {
+        roomId_userId: {
+          roomId,
+          userId,
+        },
+      },
+    });
+
+    return roomMember ? true : false;
+  } catch (error) {
+    return false;
+  }
+};
+
 export const createRoom = async (
   name: string,
   totalRounds: number,
@@ -133,8 +168,7 @@ export const leaveRoom = async (roomId: number, userId: number) => {
 
 export const deleteRoom = async (roomId: number, userId: number) => {
   try {
-    const room = await getRoomById(roomId);
-    if (!room || room.ownerId !== userId) {
+    if (!(await isRoomOwner(roomId, userId))) {
       return null;
     }
 
@@ -157,8 +191,7 @@ export const updateRoom = async (
   capacity: number,
 ) => {
   try {
-    const room = await getRoomById(roomId);
-    if (!room || room.ownerId !== userId) {
+    if (!(await isRoomOwner(roomId, userId))) {
       return null;
     }
 
@@ -186,8 +219,7 @@ export const setRoomStatus = async (
   status: RoomStatus,
 ) => {
   try {
-    const room = await getRoomById(roomId);
-    if (!room || room.ownerId !== userId) {
+    if (!(await isRoomOwner(roomId, userId))) {
       return null;
     }
 

@@ -17,13 +17,19 @@ enum RoundMode {
   CONTINUOUS_QUESTIONS
 }
 
-enum RoomMemberType {
+enum RoundMemberType {
   PLAYER
   VIEWER
   RULER
 }
 
 enum RoomStatus {
+  WAITING
+  PLAYING
+  FINISHED
+}
+
+enum RoundStatus {
   WAITING
   PLAYING
   FINISHED
@@ -78,8 +84,10 @@ model Rounds {
   roundDuration Int
   startedAt DateTime @default(now())
   mode RoundMode @default(SINGLE_QUESTION)
+  status RoundStatus @default(WAITING)
   room Rooms @relation(fields: [roomId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   @@unique([id, roomId])
+  @@unique([roomId, roundNumber])
   @@index([roomId])
   roundMembers RoundMembers[]
   roundWords RoundWords[]
@@ -89,7 +97,7 @@ model RoundMembers {
   roundId Int
   roomId Int 
   userId Int
-  type RoomMemberType
+  type RoundMemberType
   round Rounds @relation(fields: [roundId, roomId], references: [id, roomId], onDelete: Cascade, onUpdate: Cascade)
   roomMember RoomMembers @relation(fields: [roomId, userId], references: [roomId, userId], onDelete: Cascade, onUpdate: Cascade)
   @@id([roundId, userId])
