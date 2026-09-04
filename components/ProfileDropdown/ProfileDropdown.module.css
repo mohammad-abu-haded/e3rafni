@@ -1,0 +1,49 @@
+.profile-dropdown-list {
+  all: unset;
+  display: flex;
+  flex-direction: column;
+  row-gap: 6px;
+  padding: 16px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  top: calc(100% + 4px);
+  z-index: 9999;
+  position: absolute;
+  background-color: #f6f7f9;
+  width: max-content;
+  left: min(0px, 16px);
+  user-select: none;
+}
+
+.profile-dropdown-item {
+  cursor: pointer;
+  display: flex;
+  column-gap: 8px;
+  align-items: center;
+}
+
+.profile-dropdown-item > p {
+  margin: 0;
+  padding: 0;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+
+.profile-dropdown-item:hover .icon {
+  transform: scale(1.2);
+}
+
+.profile-dropdown-item:not(:last-child) {
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.profile-dropdown-item:last-child {
+  color: #DC2626;
+}

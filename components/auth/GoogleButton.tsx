@@ -1,6 +1,7 @@
 "use client";
 
 import { ApiResponse } from "@/types";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 
@@ -11,6 +12,7 @@ declare global {
 }
 
 const GoogleButton = () => {
+  const router = useRouter();
   const buttonRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,6 +39,7 @@ const GoogleButton = () => {
 
             if (result.success) {
               toast.success(result.message);
+               router.push("/");
             } else {
               toast.error(result.message);
             }

@@ -35,6 +35,7 @@ const LoginForm = () => {
       toast.success(result.message);
       setEmail("");
       setPassword("");
+      redirect("/");
     } else {
       toast.error(result.message);
     }

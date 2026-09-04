@@ -1,0 +1,57 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 48px 0 48px;
+  font-size: 14;
+  border-bottom: 1px solid #d4d6da;
+  padding: 12px;
+}
+
+.user-profile-main {
+  position: relative;
+  overflow: visible;
+}
+.user-profile-container {
+  display: flex;
+  align-items: center;
+  column-gap: 9px;
+  height: 42px;
+  border-radius: 9999px;
+  border: 1px solid var(--border-color);
+  padding-left: 13px;
+  padding-right: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  column-gap: 6px;
+}
+
+.user-image {
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.arrow-icon {
+  width: 16px;
+  height: 16px;
+  color: #696d72;
+  transition: transform 0.2s ease;
+}
+
+.up-arrow {
+  transform: scale(-1);
+}
+
+.bottom-arrow:hover {
+  transform: scale(1.2);
+}
+
+.up-arrow:hover {
+  transform: scale(-1.2);
+}
