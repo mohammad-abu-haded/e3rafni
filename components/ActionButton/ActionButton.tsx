@@ -1,19 +1,26 @@
 import { useFormStatus } from "react-dom";
-import styles from "./ActionButton.module.css";
 import LeftArrowIcon from "@/public/left-arrow.svg";
 import Spinner from "@/components/Spinner/Spinner";
 
-const ActionButton = ({title}: {title: string}) => {
+const ActionButton = ({
+  title,
+  className = "",
+  showIcon = true,
+}: {
+  title: string;
+  className?: string;
+  showIcon?: boolean;
+}) => {
   const { pending } = useFormStatus();
 
   return (
-    <button type="submit" disabled={pending}>
+    <button type="submit" disabled={pending} className={className}>
       {pending ? (
         <Spinner />
       ) : (
         <>
-          <p>{title}</p>
-          <LeftArrowIcon className={styles["left-arrow-icon"]} />
+          {title}
+          {showIcon && <LeftArrowIcon className="icon" />}
         </>
       )}
     </button>

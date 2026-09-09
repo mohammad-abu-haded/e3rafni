@@ -41,6 +41,7 @@ p {
   justify-content: center;
   column-gap: 8px;
   font-size: 14px;
+  font-weight: bold;
   border-radius: 16px;
   cursor: pointer;
   transition: transform 0.2s;

@@ -16,6 +16,7 @@ import { ApiResponse, Card, CreateRoomBody } from "@/types";
 import { toast } from "react-toastify";
 import { nanoid } from "nanoid";
 import { PostData } from "@/services/api.service";
+import ActionButton from "../ActionButton/ActionButton";
 
 const getTextColor = (backgroundColor: string) => {
   if (typeof document === "undefined") {
@@ -186,9 +187,7 @@ const CreateRoomForm = () => {
     setCardMaxPerPlayer("");
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (
       !name ||
       typeof totalRounds !== "number" ||
@@ -327,7 +326,7 @@ const CreateRoomForm = () => {
 
   return (
     <div className={styles["room-container"]}>
-      <form className={styles["room-form-container"]} onSubmit={handleSubmit}>
+      <form className={styles["room-form-container"]} action={handleSubmit}>
         <div className={styles["room-sections-container"]}>
           {lastRoomSettings && (
             <div className={styles["keyboard-shortcut-hint"]}>
@@ -620,9 +619,11 @@ const CreateRoomForm = () => {
         </div>
 
         <div className={styles["room-actions"]}>
-          <button type="submit" className="btn btn-primary">
-            إنشاء الغرفة الآن
-          </button>
+          <ActionButton
+            title="إنشاء الغرفة الآن"
+            className="btn btn-primary"
+            showIcon={false}
+          />
           <button
             type="button"
             className="btn btn-unselected"
