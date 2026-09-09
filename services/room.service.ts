@@ -1,6 +1,6 @@
 import { RoomStatus } from "@/app/generated/prisma/enums";
 import prisma from "@/lib/prisma";
-import { Room } from "@/types";
+import { Card, Room } from "@/types";
 
 import { customAlphabet } from "nanoid";
 
@@ -56,11 +56,12 @@ export const isRoomMember = async (
 };
 
 export const createRoom = async (
+  ownerId: number,
   name: string,
   totalRounds: number,
-  ownerId: number,
   isPrivate: boolean,
   capacity: number,
+  cards: Card[],
 ): Promise<Room | null> => {
   try {
     const room = await prisma.rooms.create({
@@ -72,6 +73,7 @@ export const createRoom = async (
         capacity,
         code: await createUniqueRoomCode(),
         currentRound: 0,
+        cards,
       },
     });
 

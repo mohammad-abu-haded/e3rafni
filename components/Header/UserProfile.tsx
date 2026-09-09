@@ -70,8 +70,6 @@ const UserProfile = ({ name }: { name: string }) => {
             alt="profile-image"
             width={32}
             height={32}
-            placeholder="blur"
-            blurDataURL={profilePlaceholderBase64}
           />
           <p>{name}</p>
         </div>

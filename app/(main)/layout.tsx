@@ -6,9 +6,9 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div style={{paddingTop: "65px"}}>
       <Header />
       <main>{children}</main>
-    </>
+    </div>
   );
 }

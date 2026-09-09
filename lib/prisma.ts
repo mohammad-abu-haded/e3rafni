@@ -1,8 +1,18 @@
 import { PrismaClient } from "@/app/generated/prisma/client";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
-const adapter = new PrismaMariaDb(process.env.MySQL_URL!);
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-const prisma = new PrismaClient({ adapter });
+const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    adapter: new PrismaMariaDb(process.env.MySQL_URL!),
+  });
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}
 
 export default prisma;

@@ -8,6 +8,6 @@ type ToastProps = {
 };
 
 const Toast = ({ position = "top-right" }: ToastProps) => {
-  return <ToastContainer position={position} />;
+  return <ToastContainer position={position} style={{ zIndex: 9999 }} />;
 };
 export default Toast;

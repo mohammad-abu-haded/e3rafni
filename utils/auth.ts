@@ -1,5 +1,7 @@
 import { User } from "@/types";
 import { compareSync, hashSync } from "bcryptjs";
+import { NextRequest } from "next/server";
+
 import * as jose from "jose";
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -40,4 +42,22 @@ const verifyToken = async (token: string): Promise<User | null> => {
   }
 };
 
-export { compareHash, hashValue, generateJWT, verifyToken };
+
+const getAuthUser = async (request: NextRequest) => {
+  const token = request.cookies.get("token")?.value;
+
+  if (!token) {
+    return null;
+  }
+
+  const user = await verifyToken(token);
+
+  if (!user) {
+    return null;
+  }
+
+  return user;
+};
+
+
+export { compareHash, hashValue, generateJWT, verifyToken, getAuthUser };

@@ -1,0 +1,375 @@
+.room-container {
+  width: 100%;
+  display: flex;
+  align-content: center;
+  justify-self: center;
+  column-gap: 40px;
+}
+
+.room-form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  row-gap: 24px;
+  width: 100%;
+}
+
+.room-sections-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  row-gap: 32px;
+  width: 100%;
+}
+
+.room-section-container {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  column-gap: 40px;
+}
+
+.room-section {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  row-gap: 32px;
+  padding: 42px;
+  border-radius: 32px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.room-section-label {
+  display: flex;
+  column-gap: 16px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.room-section-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background-color: var(--background-color);
+  color: var(--primary-color);
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.room-section-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.room-section-label h2 {
+  font-size: 20px;
+}
+
+.room-field {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  column-gap: 32px;
+  width: 100%;
+}
+
+.room-field-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.room-field-item label {
+  font-weight: bold;
+  font-size: 14px;
+  color: #1d1f23;
+}
+
+.room-field-item input {
+  all: unset;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  width: 384px;
+  padding: 8px;
+}
+
+.room-field-item textarea {
+  all: unset;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  width: 100%;
+  padding: 8px;
+}
+.room-visibility {
+  display: flex;
+  align-items: center;
+  column-gap: 22px;
+}
+
+.room-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.room-cards {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 16px 8px;
+  background-color: #eaecee33;
+  border-radius: 16px;
+  border: 1px dashed var(--border-color);
+  height: auto;
+  width: 100%;
+  padding: 18px;
+}
+
+.room-card-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 81px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.room-card-selected {
+  outline: 1px solid #000;
+  outline-offset: -2px;
+}
+
+.room-card-update-btn {
+  background-color: #3b82f6;
+}
+
+.room-card-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-alert-color);
+  color: var(--secondary-color);
+  transition: transform 0.2s;
+}
+
+.room-card-update-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 16px;
+}
+
+.room-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  column-gap: 16px;
+}
+
+.room-actions > button:not(:first-child) {
+  width: 20%;
+}
+
+.room-actions > button:first-child {
+  width: 80%;
+}
+
+.keyboard-shortcut-hint {
+  display: flex;
+  align-items: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  border-radius: 14px;
+  background: rgba(254, 240, 138, 0.16);
+  color: #854d0e;
+  direction: rtl;
+  line-height: 1.7;
+  box-shadow: 0 6px 18px rgba(133, 77, 14, 0.08);
+}
+
+.keyboard-shortcut-hint p {
+  margin: 0;
+}
+
+.keyboard-shortcut-hint b {
+  display: inline-block;
+  margin-inline: 0.25rem;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid rgba(161, 98, 7, 0.35);
+  border-bottom-width: 3px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.7);
+  color: #92400e;
+  direction: ltr;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85em;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.card-live-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.card-live-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 6px;
+  padding-right: 8px;
+  margin-bottom: 6px;
+  color: var(--secondary-font-color);
+}
+
+.card-live-label-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.card-live-label > P {
+  font-size: 16px;
+}
+
+.card-icon-container {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+}
+
+.card-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.card-live {
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  width: 422px;
+  height: 562px;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-radius: 40px;
+  margin-bottom: 32px;
+  display: flex;
+}
+
+.card-divider {
+  height: 1px;
+  width: 100%;
+  margin-bottom: 25px;
+}
+
+.card-footer {
+  width: 100%;
+}
+
+.card-info-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
+}
+
+.card-title-desc {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+}
+
+.card-title-desc > h3 {
+  font-size: 30px;
+  font-weight: bolder;
+}
+
+.card-title-desc > p {
+  font-size: 16p;
+}
+
+.card-cardMaxPerPlayer {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-cardMaxPerPlayer > h4 {
+  font-size: 10px;
+}
+
+.card-cardMaxPerPlayer > p {
+  font-size: 24px;
+  font-weight: bolder;
+}
+
+
+.card-live-hin > p {
+  font-size: 12px;
+  color: var(--secondary-font-color);
+}
+
+.share-section {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  row-gap: 16px;
+  padding: 26px;
+  border-radius: 32px;
+  background-color: #7c3aed0d;
+  border: 1px solid #7c3aed33;
+}
+
+.share-info {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+}
+
+.share-title {
+  display: flex;
+  column-gap: 8px;
+  align-items: center;
+}
+
+.share-title > h3 {
+  font-size: 18px;
+}
+
+.share-title-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--primary-color);
+}
+
+.share-description {
+  font-size: 14px;
+  color: var(--secondary-font-color);
+}
+
+.room-code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  font-size: 18px;
+  background-color: #f7f5ff4d;
+  border-radius: 16px;
+  border: 1px dashed #7c3aed33;
+  color: #7c3aed33;
+  font-weight: bolder;
+}
