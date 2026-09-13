@@ -1,6 +1,7 @@
 import { createRoom } from "@/services/room.service";
 import { CreateRoomBody } from "@/types";
-import { getAuthUser } from "@/utils/auth";
+import { getAuthUser, roomToken } from "@/utils/auth";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 const POST = async (request: NextRequest) => {
@@ -106,8 +107,17 @@ const POST = async (request: NextRequest) => {
       );
     }
 
+    const token = await roomToken(roomCreated);
+    (await cookies()).set("room-token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 365 * 100,
+      path: "/",
+    });
+
     return NextResponse.json(
-      { success: true, message: "تم إنشاء الغرفة بنجاح" },
+      { success: true, message: "تم إنشاء الغرفة بنجاح", data: roomCreated },
       { status: 201 },
     );
   } catch (error) {

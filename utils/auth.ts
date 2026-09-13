@@ -1,4 +1,4 @@
-import { User } from "@/types";
+import { Room, User } from "@/types";
 import { compareSync, hashSync } from "bcryptjs";
 import { NextRequest } from "next/server";
 
@@ -24,6 +24,19 @@ const generateJWT = async (user: User): Promise<string> => {
     name: user.name,
   })
     .setExpirationTime("1w")
+    .setProtectedHeader({ alg: "HS256" })
+    .sign(new TextEncoder().encode(JWT_SECRET));
+
+  return token;
+};
+
+const roomToken = async (room: Room): Promise<string> => {
+  const token = await new jose.SignJWT({
+    id: room.id,
+    roomCode: room.code,
+    currentRound: room.currentRound
+  })
+    .setExpirationTime("100y")
     .setProtectedHeader({ alg: "HS256" })
     .sign(new TextEncoder().encode(JWT_SECRET));
 
@@ -60,4 +73,4 @@ const getAuthUser = async (request: NextRequest) => {
 };
 
 
-export { compareHash, hashValue, generateJWT, verifyToken, getAuthUser };
+export { compareHash, hashValue, generateJWT, roomToken, verifyToken, getAuthUser };

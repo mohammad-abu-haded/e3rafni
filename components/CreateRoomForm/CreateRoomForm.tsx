@@ -12,11 +12,12 @@ import PersonAddIcon from "@/public/person-add.svg";
 import ColorPickerC from "../ColorPicker/ColorPicker";
 import styles from "./CreateRoomForm.module.css";
 import { useEffect, useState } from "react";
-import { ApiResponse, Card, CreateRoomBody } from "@/types";
+import { ApiResponse, Card, CreateRoomBody, Room } from "@/types";
 import { toast } from "react-toastify";
 import { nanoid } from "nanoid";
 import { PostData } from "@/services/api.service";
 import ActionButton from "../ActionButton/ActionButton";
+import { redirect } from "next/navigation";
 
 const getTextColor = (backgroundColor: string) => {
   if (typeof document === "undefined") {
@@ -240,7 +241,7 @@ const CreateRoomForm = () => {
       cards,
     };
 
-    const result: ApiResponse = await PostData<CreateRoomBody>(
+    const result: ApiResponse<Room> = await PostData<CreateRoomBody>(
       "/api/rooms",
       createRoomBody,
     );
@@ -263,7 +264,8 @@ const CreateRoomForm = () => {
     setCards([]);
     setCardIndex(-1);
     setIsUpdateCard(false);
-    setLastRoomSettings(createRoomBody);
+    setLastRoomSettings(createRoomBody);    
+    result.data && redirect(`/rooms/${result.data.code.toLocaleLowerCase()}`);
   };
 
   const cancelSubmit = () => {
