@@ -63,3 +63,14 @@ export type Card = {
   description: string;
   maxPerPlayer: number;
 };
+
+export type RoomMember = {
+  roomId: number;
+  userId: number;
+  wins: number;
+  roundsPlayed: number;
+  user: {
+    name: string;
+    picture: string | null;
+  };
+};

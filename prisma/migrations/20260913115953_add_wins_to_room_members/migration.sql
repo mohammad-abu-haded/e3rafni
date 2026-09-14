@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `RoomMembers` ADD COLUMN `wins` INTEGER NOT NULL DEFAULT 0;

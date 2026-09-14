@@ -70,6 +70,7 @@ model Rooms {
 model RoomMembers {
   roomId Int
   userId Int
+  wins   Int @default(0)
   room Rooms @relation(fields: [roomId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user Users @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   @@id([roomId, userId])

@@ -1,8 +1,11 @@
-import RoomInfoCard from "@/components/RoomInfoCard/RoomInfoCard";
 import { getRoomByCode } from "@/services/room.service";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import styles from "./room.module.css";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/utils/auth";
+import RoomPage from "@/components/RoomPage/RoomPage";
+
 interface IProps {
   params: Promise<{ roomCode: string }>;
 }
@@ -11,7 +14,9 @@ export const generateMetadata = async ({
   params,
 }: IProps): Promise<Metadata> => {
   const roomCode = (await params).roomCode.toLocaleUpperCase();
-  const room = await getRoomByCode(roomCode);
+  const token = (await cookies()).get("token")!.value;
+  const userId = (await verifyToken(token))!.id;
+  const room = await getRoomByCode(roomCode, userId);
   if (!room) {
     notFound();
   }
@@ -24,22 +29,9 @@ export const generateMetadata = async ({
 
 const page = async ({ params }: IProps) => {
   const roomCode = (await params).roomCode.toLocaleUpperCase();
-  const room = await getRoomByCode(roomCode);
-  if (!room) {
-    notFound();
-  }
-  return (
-    <div className={styles['room-page']}>
-      <div className={styles['room-info']}>
-        <RoomInfoCard
-          roomName={room.name}
-          currentRound={room.currentRound}
-          playerCount={0}
-          roomCode={roomCode}
-        />
-      </div>
-    </div>
-  );
+  const token = (await cookies()).get("token")!.value;
+  const userId = (await verifyToken(token))!.id;
+  return <RoomPage roomCode={roomCode} userId={userId} />;
 };
 
 export default page;

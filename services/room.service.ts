@@ -64,6 +64,7 @@ export const createRoom = async (
   cards: Card[],
 ): Promise<Room | null> => {
   try {
+    const roomCode = await createUniqueRoomCode();
     const room = await prisma.rooms.create({
       data: {
         name,
@@ -71,12 +72,12 @@ export const createRoom = async (
         ownerId,
         isPrivate,
         capacity,
-        code: await createUniqueRoomCode(),
+        code: roomCode,
         currentRound: 0,
         cards,
       },
     });
-
+    await joinRoom(ownerId, roomCode);
     return room;
   } catch (error) {
     return null;
@@ -97,13 +98,21 @@ export const getRoomById = async (id: number): Promise<Room | null> => {
   }
 };
 
-export const getRoomByCode = async (code: string): Promise<Room | null> => {
+export const getRoomByCode = async (
+  code: string,
+  userId: number,
+): Promise<Room | null> => {
   try {
+    code = code.toUpperCase();
     const room = await prisma.rooms.findUnique({
       where: {
         code,
       },
     });
+
+    if (!room || !(await isRoomMember(room.id, userId))) {
+      return null;
+    }
 
     return room;
   } catch (error) {
@@ -111,11 +120,27 @@ export const getRoomByCode = async (code: string): Promise<Room | null> => {
   }
 };
 
-export const getRoomMembers = async (roomId: number) => {
+export const getRoomMembers = async (userId: number, roomCode: string) => {
   try {
+    const room = await getRoomByCode(roomCode, userId);
+    if (!room) {
+      return null;
+    }
+
     const roomMembers = await prisma.roomMembers.findMany({
       where: {
-        roomId,
+        roomId: room.id,
+      },
+      orderBy: {
+        wins: "desc",
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            picture: true,
+          },
+        },
       },
     });
 
@@ -135,7 +160,11 @@ export const getRoomMemberCount = async (roomId: number) => {
 
 export const joinRoom = async (userId: number, code: string) => {
   try {
-    const room = await getRoomByCode(code);
+    const room = await prisma.rooms.findUnique({
+      where: {
+        code,
+      },
+    });
     if (
       !room ||
       !((await getRoomMemberCount(room.id)) < room.capacity) ||
@@ -235,6 +264,89 @@ export const setRoomStatus = async (
     });
 
     return roomUpdated;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const incrementPlayerWins = async (
+  userId: number,
+  playerId: number,
+  roomId: number,
+) => {
+  try {
+    if (
+      !(
+        (await isRoomOwner(roomId, userId)) &&
+        (await isRoomMember(roomId, playerId))
+      )
+    ) {
+      return null;
+    }
+
+    await prisma.roomMembers.update({
+      where: {
+        roomId_userId: {
+          roomId,
+          userId: playerId,
+        },
+      },
+      data: {
+        wins: {
+          increment: 1,
+        },
+      },
+    });
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getPlayerWins = async (playerId: number, roomId: number) => {
+  try {
+    if (!(await isRoomMember(roomId, playerId))) {
+      return null;
+    }
+
+    const playerWins = (
+      await prisma.roomMembers.findUnique({
+        where: {
+          roomId_userId: {
+            roomId,
+            userId: playerId,
+          },
+        },
+        select: {
+          wins: true,
+        },
+      })
+    )?.wins;
+
+    return playerWins;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getPlayerRoundsPlayed = async (
+  userId: number,
+  playerId: number,
+  roomCode: string,
+) => {
+  try {
+    const room = await getRoomByCode(roomCode, userId);
+    if (!room) {
+      return null;
+    }
+    const playerRoundsPlayed = await prisma.roundMembers.count({
+      where: {
+        userId: playerId,
+        roomId: room.id,
+        type: "PLAYER",
+      },
+    });
+
+    return playerRoundsPlayed;
   } catch (error) {
     return null;
   }

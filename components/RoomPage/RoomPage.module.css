@@ -1,0 +1,12 @@
+.room-page {
+    display: flex;
+    flex-direction: column;
+    padding: 32px 104px;
+}
+
+.room-info {
+    display: flex;
+    flex-direction: column;
+    row-gap: 24px;
+    width: 60%;
+}
