@@ -6,10 +6,12 @@ const ActionButton = ({
   title,
   className = "",
   showIcon = true,
+  Icon,
 }: {
   title: string;
   className?: string;
   showIcon?: boolean;
+  Icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }) => {
   const { pending } = useFormStatus();
 
@@ -19,8 +21,8 @@ const ActionButton = ({
         <Spinner />
       ) : (
         <>
+          {showIcon && Icon ? <Icon className="icon" /> : <LeftArrowIcon className="icon" />}
           {title}
-          {showIcon && <LeftArrowIcon className="icon" />}
         </>
       )}
     </button>

@@ -12,6 +12,13 @@ interface IProps {
   playerCount: number;
   roomCode: string;
 }
+
+const getPlayerLabel = (count: number) => {
+  if (count === 1) return "لاعب";
+  if (count >= 2 && count <= 10) return "لاعبين";
+  return "لاعباً";
+};
+
 const RoomInfoCard = (props: IProps) => {
   const [roomUrl, setRoomUrl] = useState("");
   const [showRoomJoinCode, setShowRoomJoinCode] = useState(false);
@@ -41,7 +48,9 @@ const RoomInfoCard = (props: IProps) => {
           </div>
           <div className={styles["room-player-count"]}>
             <UsersIcon className={styles["users-icon"]} />
-            {props.playerCount} لاعباً
+            {props.playerCount}
+            &nbsp;
+            {getPlayerLabel(props.playerCount)}
           </div>
         </div>
       </div>

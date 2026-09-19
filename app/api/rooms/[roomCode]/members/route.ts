@@ -1,5 +1,6 @@
 import {
   getPlayerRoundsPlayed,
+  getPlayerRoundsRuled,
   getRoomMembers,
 } from "@/services/room.service";
 import { getAuthUser } from "@/utils/auth";
@@ -34,10 +35,16 @@ const GET = async (request: NextRequest, { params }: IProps) => {
           member.userId,
           roomCode,
         );
+        const roundsRuled = await getPlayerRoundsRuled(
+          user.id,
+          member.userId,
+          roomCode,
+        );
 
         return {
           ...member,
           roundsPlayed: roundsPlayed ?? 0,
+          roundRuled: roundsRuled ?? 0,
         };
       }),
     );

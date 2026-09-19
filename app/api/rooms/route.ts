@@ -1,7 +1,6 @@
 import { createRoom } from "@/services/room.service";
 import { CreateRoomBody } from "@/types";
-import { getAuthUser, roomToken } from "@/utils/auth";
-import { cookies } from "next/headers";
+import { getAuthUser } from "@/utils/auth";
 import { NextRequest, NextResponse } from "next/server";
 
 const POST = async (request: NextRequest) => {
@@ -26,7 +25,7 @@ const POST = async (request: NextRequest) => {
       !ownerId
     ) {
       return NextResponse.json(
-        { success: false, message: "هناك حقول مطلوبة لم تملأها" },
+        { success: false, message: "بيانات الطلب غير صحيحة أو هناك حقول مطلوبة مفقودة" },
         { status: 422 },
       );
     }
@@ -106,15 +105,6 @@ const POST = async (request: NextRequest) => {
         { status: 500 },
       );
     }
-
-    const token = await roomToken(roomCreated);
-    (await cookies()).set("room-token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 60 * 60 * 24 * 365 * 100,
-      path: "/",
-    });
 
     return NextResponse.json(
       { success: true, message: "تم إنشاء الغرفة بنجاح", data: roomCreated },

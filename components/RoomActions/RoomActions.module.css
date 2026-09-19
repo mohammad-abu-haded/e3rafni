@@ -1,0 +1,29 @@
+.room-actions-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+  padding: 32px;
+  overflow: hidden;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.room-actions-container > h3 {
+    font-size: 18px;
+}
+
+.room-actions {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.room-actions > button {
+    width: 100%;
+    box-sizing: border-box;
+}

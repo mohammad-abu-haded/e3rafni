@@ -69,6 +69,7 @@ export type RoomMember = {
   userId: number;
   wins: number;
   roundsPlayed: number;
+  roundsRuled: number;
   user: {
     name: string;
     picture: string | null;

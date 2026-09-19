@@ -1,5 +1,10 @@
 import prisma from "@/lib/prisma";
-import { getRoomById, isRoomMember, isRoomOwner } from "./room.service";
+import {
+  getRoomByCode,
+  getRoomById,
+  isRoomMember,
+  isRoomOwner,
+} from "./room.service";
 import {
   RoundMemberType,
   RoundMode,
@@ -9,18 +14,27 @@ import { RoundMemberInput } from "@/types";
 
 const numberOfPlayersAllowed = 2;
 
+export const isRoundRuler = async (roundId: number, userId: number) => {
+  return false;
+};
+
 export const createRound = async (
-  roomId: number,
-  roundDuration: number,
-  mode: RoundMode,
+  roomCode: string,
   userId: number,
+  rulerId: number,
 ) => {
   try {
-    if (!(await isRoomOwner(roomId, userId))) {
+    const room = await prisma.rooms.findUnique({
+      where: {
+        code: roomCode,
+      },
+    });
+
+    if (!room) {
       return null;
     }
-    const room = await getRoomById(roomId);
-    if (!room) {
+
+    if (!(await isRoomOwner(room.id, userId))) {
       return null;
     }
 
@@ -28,19 +42,27 @@ export const createRound = async (
     const createdRound = await prisma.$transaction(async (tx) => {
       const round = await tx.rounds.create({
         data: {
-          roomId,
+          roomId: room.id,
           roundNumber,
-          roundDuration,
-          mode,
+          roundDuration: 0,
         },
       });
 
       await tx.rooms.update({
         where: {
-          id: roomId,
+          id: room.id,
         },
         data: {
           currentRound: roundNumber,
+        },
+      });
+
+      await tx.roundMembers.create({
+        data: {
+          type: RoundMemberType.RULER,
+          roomId: room.id,
+          roundId: round.id,
+          userId: rulerId,
         },
       });
 
@@ -48,6 +70,83 @@ export const createRound = async (
     });
 
     return createdRound;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const updateRoundRuler = async (
+  roomCode: string,
+  userId: number,
+  newRulerId: number,
+  oldRulerId: number,
+) => {
+  try {
+    const room = await prisma.rooms.findUnique({
+      where: {
+        code: roomCode,
+      },
+    });
+
+    if (!room) {
+      return null;
+    }
+
+    if (!(await isRoomOwner(room.id, userId))) {
+      return null;
+    }
+
+    const updatedRoundMember = await prisma.$transaction(async (tx) => {
+      const round = await tx.rounds.findUnique({
+        where: {
+          roomId_roundNumber: {
+            roomId: room.id,
+            roundNumber: room.currentRound,
+          },
+        },
+      });
+
+      if (!round) {
+        return;
+      }
+      
+      await tx.roundMembers.update({
+        where: {
+          roundId_userId: {
+            roundId: round?.id,
+            userId: oldRulerId,
+          },
+          type: "RULER",
+        },
+        data: {
+          userId: newRulerId,
+        },
+      });
+      
+      return round;
+    });
+
+    return updatedRoundMember;
+  } catch (error) {    
+    return null;
+  }
+};
+
+export const getRoundRuler = async (roomCode: string, roundId: number, userId: number) => {
+  try {
+    const room = await getRoomByCode(roomCode, userId);
+    const roundRuler = await prisma.roundMembers.findMany({
+      where: {
+        roundId,
+        type: "RULER"
+      },
+    });
+
+    if (!roundRuler || roundRuler.length !== 1 || !room || !(await isRoomMember(room.id, userId))) {
+      return null;
+    }
+
+    return roundRuler[0];
   } catch (error) {
     return null;
   }
@@ -71,10 +170,10 @@ export const getRound = async (roundId: number, userId: number) => {
   }
 };
 
-export const getCurrentRound = async (roomId: number, userId: number) => {
+export const getCurrentRound = async (roomCode: string, userId: number) => {
   try {
-    const room = await getRoomById(roomId);
-    if (!room || !(await isRoomMember(roomId, userId))) {
+    const room = await getRoomByCode(roomCode, userId);
+    if (!room || !(await isRoomMember(room.id, userId))) {
       return null;
     }
 
@@ -82,7 +181,7 @@ export const getCurrentRound = async (roomId: number, userId: number) => {
     const round = await prisma.rounds.findUnique({
       where: {
         roomId_roundNumber: {
-          roomId,
+          roomId: room.id,
           roundNumber: currentRound,
         },
       },
@@ -143,11 +242,13 @@ export const startRound = async (
   userId: number,
   roomId: number,
   roundId: number,
-  roundMembers: RoundMemberInput[],
+  mode: RoundMode,
+  roundDuration: number,
+  roundPlayersViewers: RoundMemberInput[],
 ) => {
   try {
     let playerCount = 0;
-    if (!(await isRoomOwner(roomId, userId))) {
+    if (!(await isRoundRuler(roundId, userId))) {
       return null;
     }
 
@@ -166,8 +267,11 @@ export const startRound = async (
       return null;
     }
 
-    for (const item of roundMembers) {
-      if (!(await isRoomMember(roomId, item.userId))) {
+    for (const item of roundPlayersViewers) {
+      if (
+        !(await isRoomMember(roomId, item.userId)) ||
+        item.type === RoundMemberType.RULER
+      ) {
         return null;
       }
       if (item.type === RoundMemberType.PLAYER) {
@@ -179,8 +283,23 @@ export const startRound = async (
       return null;
     }
 
+    const roundRuler = (
+      await prisma.roundMembers.findMany({
+        where: {
+          roundId,
+        },
+        select: {
+          type: true,
+        },
+      })
+    ).filter((item) => item.type === RoundMemberType.RULER);
+
+    if (roundRuler.length !== 1) {
+      return null;
+    }
+
     const result = await prisma.$transaction(async (tx) => {
-      for (const item of roundMembers) {
+      for (const item of roundPlayersViewers) {
         await tx.roundMembers.create({
           data: {
             roundId,
@@ -197,6 +316,8 @@ export const startRound = async (
         },
         data: {
           status: RoundStatus.PLAYING,
+          mode,
+          roundDuration,
         },
       });
 
@@ -215,7 +336,10 @@ export const endRound = async (
   roundId: number,
 ) => {
   try {
-    if (!(await isRoomOwner(roomId, userId))) {
+    if (
+      !(await isRoomOwner(roomId, userId)) &&
+      !(await isRoundRuler(roundId, userId))
+    ) {
       return null;
     }
 
@@ -460,7 +584,7 @@ export const setRoundStatus = async (
   status: RoundStatus,
 ) => {
   try {
-    if (!(await isRoomOwner(roomId, userId))) {
+    if (!(await isRoundRuler(roundId, userId))) {
       return null;
     }
 

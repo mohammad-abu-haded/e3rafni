@@ -23,20 +23,7 @@ const generateJWT = async (user: User): Promise<string> => {
     role: user.role,
     name: user.name,
   })
-    .setExpirationTime("1w")
-    .setProtectedHeader({ alg: "HS256" })
-    .sign(new TextEncoder().encode(JWT_SECRET));
-
-  return token;
-};
-
-const roomToken = async (room: Room): Promise<string> => {
-  const token = await new jose.SignJWT({
-    id: room.id,
-    roomCode: room.code,
-    currentRound: room.currentRound
-  })
-    .setExpirationTime("100y")
+    .setExpirationTime("1m")
     .setProtectedHeader({ alg: "HS256" })
     .sign(new TextEncoder().encode(JWT_SECRET));
 
@@ -55,7 +42,6 @@ const verifyToken = async (token: string): Promise<User | null> => {
   }
 };
 
-
 const getAuthUser = async (request: NextRequest) => {
   const token = request.cookies.get("token")?.value;
 
@@ -72,5 +58,4 @@ const getAuthUser = async (request: NextRequest) => {
   return user;
 };
 
-
-export { compareHash, hashValue, generateJWT, roomToken, verifyToken, getAuthUser };
+export { compareHash, hashValue, generateJWT, verifyToken, getAuthUser };

@@ -13,7 +13,7 @@ interface IProps {
 export const generateMetadata = async ({
   params,
 }: IProps): Promise<Metadata> => {
-  const roomCode = (await params).roomCode.toLocaleUpperCase();
+  const roomCode = (await params).roomCode.toUpperCase();
   const token = (await cookies()).get("token")!.value;
   const userId = (await verifyToken(token))!.id;
   const room = await getRoomByCode(roomCode, userId);
@@ -28,7 +28,7 @@ export const generateMetadata = async ({
 };
 
 const page = async ({ params }: IProps) => {
-  const roomCode = (await params).roomCode.toLocaleUpperCase();
+  const roomCode = (await params).roomCode.toUpperCase();
   const token = (await cookies()).get("token")!.value;
   const userId = (await verifyToken(token))!.id;
   return <RoomPage roomCode={roomCode} userId={userId} />;

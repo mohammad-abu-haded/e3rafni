@@ -1,0 +1,193 @@
+.ruler-selector-container {
+  position: fixed;
+  z-index: 999;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(31, 41, 55, 0.65);
+}
+
+.ruler-selector-main {
+  width: 60%;
+  max-height: 90vh;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 48px;
+  border-radius: 16px;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  padding: 24px;
+}
+
+.ruler-selector-header {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: flex-start;
+  row-gap: 32px;
+}
+
+.ruler-selector-label {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  row-gap: 8px;
+}
+
+.ruler-selector-title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  column-gap: 12px;
+  color: var(--primary-color);
+  font-size: 16px;
+}
+
+.ruler-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.ruler-selector-label > h2 {
+  font-size: 32px;
+}
+
+.ruler-selector-label > p {
+  font-size: 16px;
+}
+
+.search-container {
+  position: relative;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: var(--secondary-font-color);
+}
+
+.search-container > input {
+  all: unset;
+  width: 40%;
+  padding: 12px 48px 12px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  font-size: 16px;
+}
+
+.room-members-container {
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+}
+
+.room-members-label {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  column-gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--secondary-font-color);
+  font-size: 16px;
+}
+
+.room-members-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.room-members {
+  width: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  overflow-y: auto;
+  padding-left: 8px;
+}
+
+.room-member-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  padding: 26px;
+  user-select: none;
+}
+
+.room-member-card-selected {
+  border: 1px solid var(--primary-color);
+}
+
+.radio-icon {
+  position: absolute;
+  left: 18px;
+  top: 18px;
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s;
+}
+
+.radio-icon:hover {
+  transform: scale(1.1);
+}
+
+.radio-checked-icon {
+  color: var(--primary-color);
+}
+
+.radio-unchecked-icon {
+  color: var(--secondary-font-color);
+}
+
+.member-picture {
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  column-gap: 16px;
+  width: 100%;
+}
+
+.member-info {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.member-history > p {
+  margin: 0;
+  padding: 0;
+}

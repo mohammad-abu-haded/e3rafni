@@ -122,6 +122,7 @@ export const getRoomByCode = async (
 
 export const getRoomMembers = async (userId: number, roomCode: string) => {
   try {
+    roomCode = roomCode.toUpperCase();
     const room = await getRoomByCode(roomCode, userId);
     if (!room) {
       return null;
@@ -160,6 +161,7 @@ export const getRoomMemberCount = async (roomId: number) => {
 
 export const joinRoom = async (userId: number, code: string) => {
   try {
+    code = code.toUpperCase();
     const room = await prisma.rooms.findUnique({
       where: {
         code,
@@ -343,6 +345,30 @@ export const getPlayerRoundsPlayed = async (
         userId: playerId,
         roomId: room.id,
         type: "PLAYER",
+      },
+    });
+
+    return playerRoundsPlayed;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getPlayerRoundsRuled = async (
+  userId: number,
+  playerId: number,
+  roomCode: string,
+) => {
+  try {
+    const room = await getRoomByCode(roomCode, userId);
+    if (!room) {
+      return null;
+    }
+    const playerRoundsPlayed = await prisma.roundMembers.count({
+      where: {
+        userId: playerId,
+        roomId: room.id,
+        type: "RULER",
       },
     });
 
