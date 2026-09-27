@@ -23,7 +23,7 @@ const generateJWT = async (user: User): Promise<string> => {
     role: user.role,
     name: user.name,
   })
-    .setExpirationTime("1m")
+    .setExpirationTime("30d")
     .setProtectedHeader({ alg: "HS256" })
     .sign(new TextEncoder().encode(JWT_SECRET));
 

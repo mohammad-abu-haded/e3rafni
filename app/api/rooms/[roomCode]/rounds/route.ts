@@ -2,6 +2,7 @@ import {
   createRound,
   getCurrentRound,
   getRoundRuler,
+  setRoundRuler,
   updateRoundRuler,
 } from "@/services/round.service";
 import { getAuthUser } from "@/utils/auth";
@@ -40,7 +41,6 @@ const POST = async (request: NextRequest, { params }: IProps) => {
     }
 
     const currentRound = await getCurrentRound(roomCode, user.id);
-    
     if (currentRound) {
       if (currentRound.status === "PLAYING") {
         return NextResponse.json(
@@ -56,15 +56,29 @@ const POST = async (request: NextRequest, { params }: IProps) => {
         );
       }
 
-      const currentRoundRuler = await getRoundRuler(roomCode, currentRound.id, user.id);
-      const updatedRoundRuler = await updateRoundRuler(
+      const currentRoundRuler = await getRoundRuler(
         roomCode,
+        currentRound.id,
         user.id,
-        rulerId,
-        currentRoundRuler!.userId,
       );
-
-      if (!updatedRoundRuler) {
+      let hasError = false;
+      if (!currentRoundRuler) {
+        const roundRuler = await setRoundRuler(roomCode, user.id, rulerId);
+        if (!roundRuler) {
+          hasError = true;
+        }
+      } else {
+        const updatedRoundRuler = await updateRoundRuler(
+          roomCode,
+          user.id,
+          rulerId,
+          currentRoundRuler!.userId,
+        );
+        if (!updatedRoundRuler) {
+          hasError = true;
+        }
+      }
+      if (hasError) {
         return NextResponse.json(
           { success: false, message: "حدث خطأ اثناء تعديل الحكم" },
           { status: 500 },

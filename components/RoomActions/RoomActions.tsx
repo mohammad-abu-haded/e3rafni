@@ -9,6 +9,7 @@ interface IProps {
   roomName: string;
   roomCode: string;
   roomMembers: RoomMember[];
+  isRoomOwner: boolean;
 }
 
 
@@ -46,9 +47,8 @@ const RoomActions = (props: IProps) => {
           مشاركة رابط الغرفة
         </button>
       </div>
-
       {
-        showRoundRulerSelector && <RulerSelector currentRound={props.currentRound} roomCode={props.roomCode} roomMembers={props.roomMembers} onClose={() => setShowRoundRulerSelector(false)} />
+        showRoundRulerSelector && props.isRoomOwner && <RulerSelector roomCode={props.roomCode} roomMembers={props.roomMembers} onClose={() => setShowRoundRulerSelector(false)} />
       }
     </div>
   )

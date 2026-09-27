@@ -109,7 +109,7 @@ export const updateRoundRuler = async (
       if (!round) {
         return;
       }
-      
+
       await tx.roundMembers.update({
         where: {
           roundId_userId: {
@@ -122,27 +122,88 @@ export const updateRoundRuler = async (
           userId: newRulerId,
         },
       });
-      
+
       return round;
     });
 
     return updatedRoundMember;
-  } catch (error) {    
+  } catch (error) {
     return null;
   }
 };
 
-export const getRoundRuler = async (roomCode: string, roundId: number, userId: number) => {
+export const setRoundRuler = async (
+  roomCode: string,
+  userId: number,
+  rulerId: number,
+) => {
+  try {
+    const room = await prisma.rooms.findUnique({
+      where: {
+        code: roomCode,
+      },
+    });
+
+    if (!room) {
+      return null;
+    }
+
+    if (!(await isRoomOwner(room.id, userId))) {
+      return null;
+    }
+
+    const RoundMember = await prisma.$transaction(async (tx) => {
+      const round = await tx.rounds.findUnique({
+        where: {
+          roomId_roundNumber: {
+            roomId: room.id,
+            roundNumber: room.currentRound,
+          },
+        },
+      });
+
+      if (!round) {
+        return;
+      }
+
+      await tx.roundMembers.create({
+        data: {
+          roundId: round?.id,
+          userId: rulerId,
+          type: "RULER",
+          roomId: room.id
+        },
+      });
+
+      return round;
+    });
+
+    return RoundMember;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getRoundRuler = async (
+  roomCode: string,
+  roundId: number,
+  userId: number,
+) => {
   try {
     const room = await getRoomByCode(roomCode, userId);
     const roundRuler = await prisma.roundMembers.findMany({
       where: {
         roundId,
-        type: "RULER"
+        type: "RULER",
       },
     });
 
-    if (!roundRuler || roundRuler.length !== 1 || !room || !(await isRoomMember(room.id, userId))) {
+    if (
+      !roundRuler ||
+      roundRuler.length !== 1 ||
+      !room ||
+      !(await isRoomMember(room.id, userId))
+    ) {
       return null;
     }
 
@@ -389,6 +450,35 @@ export const getRoundMembers = async (
     });
 
     return roundMembers;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getRoundMember = async (
+  roomId: number,
+  roundId: number,
+  memberId: number,
+  userId: number,
+) => {
+  try {
+    if (
+      !(await isRoomMember(roomId, memberId)) ||
+      !(await isRoomMember(roomId, userId))
+    ) {
+      return null;
+    }
+
+    const roundMember = await prisma.roundMembers.findUnique({
+      where: {
+        roundId_userId: {
+          roundId,
+          userId: memberId,
+        },
+      },
+    });
+
+    return roundMember;
   } catch (error) {
     return null;
   }

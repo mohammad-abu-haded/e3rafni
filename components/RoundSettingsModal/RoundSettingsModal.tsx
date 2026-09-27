@@ -61,6 +61,9 @@ export default RoundSettingsModal;
         if (!player2) {
             toast.error("يرجى إختيار اللاعب الثاني");
             return;
+            }
+            
+            if(player1===player2) {
         }
 
         if (!player1Word) {

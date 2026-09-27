@@ -1,8 +1,8 @@
 import { Server } from "socket.io";
 
-const io = new Server(3001, {
+export const io = new Server(Number(process.env.SOCKET_PORT), {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.CLIENT_URL,
   },
 });
 
@@ -19,9 +19,13 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on("server:round-ruler-selected", (roomCode) => {
+    io.to(roomCode).emit("round:ruler-selected");
+  });
+
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);
   });
 });
 
-console.log("Socket.IO server running on port 3001");
+console.log(`Socket.IO server running on port ${process.env.SOCKET_PORT}`);

@@ -75,3 +75,10 @@ export type RoomMember = {
     picture: string | null;
   };
 };
+
+export interface RoundMember {
+  userId: number;
+  roomId: number;
+  type: RoundMemberType;
+  roundId: number;
+}

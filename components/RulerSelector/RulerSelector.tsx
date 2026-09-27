@@ -13,22 +13,20 @@ import Image from "next/image";
 import { profilePlaceholderBase64 } from "@/constant/profilePlaceholder";
 import { PostData } from "@/services/api.service";
 import { API_ERROR_RESPONSE } from "@/constant/api.constants";
+import { io } from "socket.io-client";
 
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
 interface IProps {
-  currentRound: number;
   roomCode: string;
   roomMembers: RoomMember[];
   onClose: () => void;
 }
 
-const RulerSelector = ({
-  currentRound,
-  roomCode,
-  roomMembers,
-  onClose,
-}: IProps) => {
+const RulerSelector = ({ roomCode, roomMembers, onClose }: IProps) => {
   const [rulerId, setRulerId] = useState<number>();
-  const [nameSearched, setNameSearched] = useState<string>();
+  const [nameSearched, setNameSearched] = useState<string>('');
+  const [roomMemberFiltered, setRoomMemberFiltered] =
+    useState<RoomMember[]>(roomMembers);
 
   const handleSubmit = async () => {
     if (!rulerId) {
@@ -36,22 +34,36 @@ const RulerSelector = ({
       return;
     }
 
-    const result: ApiResponse = await PostData(`/api/rooms/${roomCode}/rounds`, {rulerId}) || API_ERROR_RESPONSE;
-    if(!result.success) {
+    const result: ApiResponse =
+      (await PostData(`/api/rooms/${roomCode}/rounds`, { rulerId })) ||
+      API_ERROR_RESPONSE;
+    if (!result.success) {
       toast.error(result.message);
       return;
     }
-    
-    toast.success(result.message);
-    onClose();
 
+    toast.success(result.message);
+    socket.emit("server:round-ruler-selected", roomCode, rulerId);
+    onClose();
   };
 
-  useEffect(() => {}, [nameSearched]);
+  useEffect(() => {
+      const roomMemberFiltered = roomMembers.filter((item) =>
+        item.user.name.includes(nameSearched),
+      );
+      setRoomMemberFiltered(roomMemberFiltered);
+  }, [nameSearched]);
 
   return (
-    <div className={styles["ruler-selector-container"]} onClick={() => onClose()}>
-      <form action={handleSubmit} className={styles["ruler-selector-main"]} onClick={(e) => e.stopPropagation()}>
+    <div
+      className={styles["ruler-selector-container"]}
+      onClick={() => onClose()}
+    >
+      <form
+        action={handleSubmit}
+        className={styles["ruler-selector-main"]}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className={styles["ruler-selector-header"]}>
           <div className={styles["ruler-selector-label"]}>
             <div className={styles["ruler-selector-title"]}>
@@ -78,10 +90,10 @@ const RulerSelector = ({
         <div className={styles["room-members-container"]}>
           <div className={styles["room-members-label"]}>
             <UsersIcon className={styles["room-members-icon"]} />
-            اللاعبون المتحاون ({roomMembers.length})
+            اللاعبون المتحاون ({roomMemberFiltered.length})
           </div>
           <div className={styles["room-members"]}>
-            {roomMembers.map((item) => (
+            {roomMemberFiltered.map((item) => (
               <div
                 key={item.userId}
                 className={`${styles["room-member-card"]} ${rulerId === item.userId && styles["room-member-card-selected"]}`}
