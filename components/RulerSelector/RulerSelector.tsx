@@ -24,7 +24,7 @@ interface IProps {
 
 const RulerSelector = ({ roomCode, roomMembers, onClose }: IProps) => {
   const [rulerId, setRulerId] = useState<number>();
-  const [nameSearched, setNameSearched] = useState<string>('');
+  const [nameSearched, setNameSearched] = useState<string>("");
   const [roomMemberFiltered, setRoomMemberFiltered] =
     useState<RoomMember[]>(roomMembers);
 
@@ -48,10 +48,10 @@ const RulerSelector = ({ roomCode, roomMembers, onClose }: IProps) => {
   };
 
   useEffect(() => {
-      const roomMemberFiltered = roomMembers.filter((item) =>
-        item.user.name.includes(nameSearched),
-      );
-      setRoomMemberFiltered(roomMemberFiltered);
+    const roomMemberFiltered = roomMembers.filter((item) =>
+      item.user.name.includes(nameSearched),
+    );
+    setRoomMemberFiltered(roomMemberFiltered);
   }, [nameSearched]);
 
   return (
@@ -128,12 +128,15 @@ const RulerSelector = ({ roomCode, roomMembers, onClose }: IProps) => {
           </div>
         </div>
         <div className={styles["actions"]}>
-          <ActionButton
-            title="تأكيد الحكم"
-            className="btn btn-primary"
-            Icon={SelectIcon}
-          />
-          <button className="btn btn-unselected" onClick={() => onClose()}>
+          <div className={styles["ruler-selector"]}>
+            <ActionButton
+              title="تأكيد الحكم"
+              className="btn btn-primary "
+              Icon={SelectIcon}
+              disabled={rulerId ? false: true}
+            />
+          </div>
+          <button className="btn btn-secondary" onClick={() => onClose()}>
             اغلاق
           </button>
         </div>

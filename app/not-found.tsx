@@ -25,7 +25,7 @@ const NotFound = () => {
             للصفحة الرئيسية
           </button>
           <button
-            className="btn btn-secondary"
+            className="btn btn-muted"
             onClick={() => router.back()}
           >
             <BackIcon className="icon" />

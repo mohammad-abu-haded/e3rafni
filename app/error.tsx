@@ -38,7 +38,7 @@ const Error = ({ reset }: IProps) => {
           </button>
 
           <button
-            className="btn btn-secondary"
+            className="btn btn-muted"
             onClick={() => router.replace("/")}
           >
             <HomeIcon className="icon" />

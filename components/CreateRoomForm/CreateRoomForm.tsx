@@ -369,7 +369,7 @@ const CreateRoomForm = () => {
                   <div className={styles["room-visibility"]}>
                     <button
                       type="button"
-                      className={`btn ${isPrivate ? "btn-primary" : "btn-unselected"}`}
+                      className={`btn ${isPrivate ? "btn-primary" : "btn-secondary"}`}
                       onClick={() => !isPrivate && setIsPrivate((old) => !old)}
                     >
                       <PrivateIcon className="icon" />
@@ -377,7 +377,7 @@ const CreateRoomForm = () => {
                     </button>
                     <button
                       type="button"
-                      className={`btn ${!isPrivate ? "btn-primary" : "btn-unselected"}`}
+                      className={`btn ${!isPrivate ? "btn-primary" : "btn-secondary"}`}
                       onClick={() => isPrivate && setIsPrivate((old) => !old)}
                     >
                       <PublicIcon className="icon" />
@@ -628,7 +628,7 @@ const CreateRoomForm = () => {
           />
           <button
             type="button"
-            className="btn btn-unselected"
+            className="btn btn-secondary"
             onClick={() => cancelSubmit()}
           >
             إلغاء
