@@ -5,9 +5,10 @@ import RoomParticipants from "../RoomParticipants/RoomParticipants";
 import styles from "./RoomPage.module.css";
 import { useEffect, useState } from "react";
 import { GetData } from "@/services/api.service";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import RoomActions from "../RoomActions/RoomActions";
 import { io } from "socket.io-client";
+import { toast } from "react-toastify";
 
 interface IProps {
   roomCode: string;
@@ -67,8 +68,16 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
     socket.on("room:members-updated", () => {
       getRoomMembers();
     });
+
+    socket.on("room:member-left", () => {
+      getRoomMembers();
+    });
     socket.on("round:ruler-selected", () => {
       getRoundMembers();
+    });
+    socket.on("room:ended", () => {
+      toast.info("تم إنهاء الغرفة من قبل صاحبها");
+      redirect("/");
     });
     return () => {
       socket.disconnect();

@@ -1,13 +1,13 @@
 import { toast } from "react-toastify";
 
-const PostData = async <T>(uri: string, data: T) => {
+const PostData = async <T>(uri: string, data?: T) => {
   try {
     const response = await fetch(uri, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: data !== undefined ? JSON.stringify(data) : undefined,
     });
 
     if (!response) {

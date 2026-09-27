@@ -43,7 +43,7 @@ const RulerSelector = ({ roomCode, roomMembers, onClose }: IProps) => {
     }
 
     toast.success(result.message);
-    socket.emit("server:round-ruler-selected", roomCode, rulerId);
+    socket.emit("server:round-ruler-selected", roomCode);
     onClose();
   };
 

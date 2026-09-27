@@ -19,6 +19,14 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on("server:room-ended", (roomCode) => {
+    socket.to(roomCode).emit("room:ended");
+  });
+
+  socket.on("server:room-member-left", (roomCode) => {
+    io.to(roomCode).emit("room:member-left");
+  });
+
   socket.on("server:round-ruler-selected", (roomCode) => {
     io.to(roomCode).emit("round:ruler-selected");
   });

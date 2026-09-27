@@ -6,7 +6,7 @@ const ActionButton = ({
   title,
   className = "",
   showIcon = true,
-  disabled = true,
+  disabled = false,
   Icon,
 }: {
   title: string;

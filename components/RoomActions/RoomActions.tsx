@@ -2,10 +2,19 @@ import styles from "./RoomActions.module.css";
 import SelectIcon from "@/public/select.svg";
 import ShareIcon from "@/public/share.svg";
 import LeaveIcon from "@/public/logout.svg";
+import DeleteIcon from "@/public/delete.svg";
 import { useState } from "react";
-import { RoomMember } from "@/types";
+import { ApiResponse, RoomMember } from "@/types";
 import RulerSelector from "../RulerSelector/RulerSelector";
 import ActionButton from "../ActionButton/ActionButton";
+import { PostData } from "@/services/api.service";
+import { API_ERROR_RESPONSE } from "@/constant/api.constants";
+import { toast } from "react-toastify";
+import { redirect } from "next/navigation";
+import { io } from "socket.io-client";
+
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
+
 interface IProps {
   currentRound: number;
   roomName: string;
@@ -34,11 +43,37 @@ const RoomActions = (props: IProps) => {
       await navigator.clipboard.writeText(roomUrl);
     }
   };
-  const handleLeave = async () => {};
+  const handleExitRoom = async () => {
+    const confirmed = window.confirm(
+      props.isRoomOwner
+        ? "هل أنت متأكد أنك تريد إنهاء الغرفة؟ لا يمكن التراجع عن هذا الإجراء."
+        : "هل أنت متأكد أنك تريد الخروج من الغرفة؟",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+    const result: ApiResponse =
+      (await PostData(`/api/rooms/${props.roomCode}/leave`)) ||
+      API_ERROR_RESPONSE;
+
+    if (!result.success) {
+      toast.error(result.message);
+      return;
+    }
+
+    if (props.isRoomOwner) {
+      socket.emit("server:room-ended", props.roomCode);
+    } else {
+      socket.emit("server:room-member-left", props.roomCode);
+    }
+    toast.success(result.message);
+    redirect("/");
+  };
   return (
     <div className={styles["room-actions-container"]}>
       <h3>إجراءات الغرفة</h3>
-      <form action={handleLeave}>
+      <form action={handleExitRoom}>
         <div className={styles["room-actions"]}>
           <button
             type="button"
@@ -57,8 +92,8 @@ const RoomActions = (props: IProps) => {
             مشاركة رابط الغرفة
           </button>
           <ActionButton
-            title="الخروج من الغرفة"
-            Icon={LeaveIcon}
+            title={props.isRoomOwner ? "إنهاء الغرفة" : "الخروج من الغرفة"}
+            Icon={props.isRoomOwner ? DeleteIcon : LeaveIcon}
             className="btn btn-leave"
           />
         </div>
