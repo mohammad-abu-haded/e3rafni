@@ -1,5 +1,6 @@
 import styles from "./RoomActions.module.css";
 import SelectIcon from "@/public/select.svg";
+import EditIcon from "@/public/edit.svg";
 import ShareIcon from "@/public/share.svg";
 import LeaveIcon from "@/public/logout.svg";
 import DeleteIcon from "@/public/delete.svg";
@@ -21,6 +22,7 @@ interface IProps {
   roomCode: string;
   roomMembers: RoomMember[];
   isRoomOwner: boolean;
+  hasRuler: boolean;
 }
 
 const RoomActions = (props: IProps) => {
@@ -80,8 +82,16 @@ const RoomActions = (props: IProps) => {
             className="btn btn-primary"
             onClick={() => setShowRoundRulerSelector(true)}
           >
-            <SelectIcon className="icon" />
-            إختيار حكم الجولة التالية
+            {props.hasRuler ? (
+              <>
+                <EditIcon className="icon" /> تعديل حكم الجولة التالية
+              </>
+            ) : (
+              <>
+                <SelectIcon className="icon" />
+                إختيار حكم الجولة التالية
+              </>
+            )}
           </button>
           <button
             type="button"

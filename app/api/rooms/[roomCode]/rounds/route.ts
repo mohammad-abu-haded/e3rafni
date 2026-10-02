@@ -109,4 +109,29 @@ const POST = async (request: NextRequest, { params }: IProps) => {
   }
 };
 
-export { POST };
+const GET = async (request: NextRequest, { params }: IProps) => {
+  try {
+    const roomCode = (await params).roomCode.toUpperCase();
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "غير مصرح" },
+        { status: 401 },
+      );
+    }
+
+
+    const currentRound = await getCurrentRound(roomCode, user.id);
+    return NextResponse.json(
+      { success: true, data: currentRound },
+      { status:  200 },
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, message: "حدث خطأ ما" },
+      { status: 500 },
+    );
+  }
+};
+
+export { POST, GET };

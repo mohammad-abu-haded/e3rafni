@@ -1,16 +1,29 @@
 .room-page {
-    display: flex;
-    column-gap: 32px;
-    padding: 32px 104px;
+  display: flex;
+  column-gap: 32px;
+  padding: 32px 104px;
 }
 
 .room-info {
-    display: flex;
-    flex-direction: column;
-    row-gap: 24px;
-    width: 60%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+  width: 60%;
 }
 
-.room-actions {
-    width: 20%;
+.room-cards {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+  align-items: center;
+}
+
+.room-card {
+  padding: 32px;
+  overflow: hidden;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

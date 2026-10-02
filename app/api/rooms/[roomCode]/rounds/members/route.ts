@@ -28,16 +28,9 @@ const GET = async (request: NextRequest, { params }: IProps) => {
     user.id,
   );
 
-  if (!roundMembers || roundMembers.length === 0) {
-    return NextResponse.json(
-      { success: false, message: "لم يتم العثور على أعضاء الجولة" },
-      { status: 404 },
-    );
-  }
-
   return NextResponse.json({
     success: true,
-    data: roundMembers,
+    data: roundMembers ?? [],
   });
 };
 

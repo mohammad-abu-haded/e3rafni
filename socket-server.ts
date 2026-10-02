@@ -27,8 +27,8 @@ io.on("connection", (socket) => {
     io.to(roomCode).emit("room:member-left");
   });
 
-  socket.on("server:round-ruler-selected", (roomCode) => {
-    io.to(roomCode).emit("round:ruler-selected");
+  socket.on("server:round-members-updated", (roomCode) => {
+    io.to(roomCode).emit("round:members-updated");
   });
 
   socket.on("disconnect", () => {

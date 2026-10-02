@@ -9,6 +9,7 @@ import { notFound, redirect } from "next/navigation";
 import RoomActions from "../RoomActions/RoomActions";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
+import CurrentRoundCard from "../CurrentRoundCard/CurrentRoundCard";
 
 interface IProps {
   roomCode: string;
@@ -38,6 +39,7 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
       const result: ApiResponse = await GetData(
         `/api/rooms/${roomCode}/members`,
       );
+
       if (!result || !result.data) {
         notFound();
       }
@@ -50,6 +52,8 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
       const result: ApiResponse = await GetData(
         `/api/rooms/${roomCode}/rounds/members`,
       );
+      console.log(result);
+
       if (!result || !result.data) {
         notFound();
       }
@@ -71,8 +75,9 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
 
     socket.on("room:member-left", () => {
       getRoomMembers();
+      getRoundMembers();
     });
-    socket.on("round:ruler-selected", () => {
+    socket.on("round:members-updated", () => {
       getRoundMembers();
     });
     socket.on("room:ended", () => {
@@ -101,14 +106,22 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
         <RoomParticipants roomMembers={roomMembers} userId={userId} />
       </div>
 
-      <div className={styles["room-actions"]}>
-        <RoomActions
-          currentRound={room.currentRound}
-          roomCode={roomCode}
-          roomName={room.name}
-          roomMembers={roomMembers}
-          isRoomOwner={room.ownerId === userId}
-        />
+      <div className={styles["room-cards"]}>
+        <div className={styles["room-card"]}>
+          <RoomActions
+            currentRound={room.currentRound}
+            roomCode={roomCode}
+            roomName={room.name}
+            roomMembers={roomMembers}
+            isRoomOwner={room.ownerId === userId}
+            hasRuler={
+              roundMembers && roundMembers.some((item) => item.type === "RULER")
+            }
+          />
+        </div>
+        <div className={styles["room-card"]}>
+          <CurrentRoundCard roomMembers={roomMembers} roundMembers={roundMembers} roomCode={roomCode}/>
+        </div>
       </div>
     </div>
   );
