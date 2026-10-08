@@ -1,21 +1,28 @@
 import prisma from "@/lib/prisma";
-import {
-  getRoomByCode,
-  getRoomById,
-  isRoomMember,
-  isRoomOwner,
-} from "./room.service";
-import {
-  RoundMemberType,
-  RoundMode,
-  RoundStatus,
-} from "@/app/generated/prisma/enums";
+import { getRoomByCode, isRoomMember, isRoomOwner } from "./room.service";
+import { RoundMemberType, RoundStatus } from "@/app/generated/prisma/enums";
 import { RoundMemberInput } from "@/types";
 
 const numberOfPlayersAllowed = 2;
 
 export const isRoundRuler = async (roundId: number, userId: number) => {
-  return false;
+  try {
+    const roundMember = await prisma.roundMembers.findFirst({
+      where: {
+        roundId,
+        userId,
+      },
+    });
+
+    if (!roundMember) {
+      return null;
+    }
+
+    return roundMember.type === "RULER";
+
+  } catch (error) {
+    return null;
+  }
 };
 
 export const createRound = async (
@@ -171,7 +178,7 @@ export const setRoundRuler = async (
           roundId: round?.id,
           userId: rulerId,
           type: "RULER",
-          roomId: room.id
+          roomId: room.id,
         },
       });
 
@@ -303,13 +310,12 @@ export const startRound = async (
   userId: number,
   roomId: number,
   roundId: number,
-  mode: RoundMode,
   roundDuration: number,
   roundPlayersViewers: RoundMemberInput[],
 ) => {
   try {
     let playerCount = 0;
-    if (!(await isRoundRuler(roundId, userId))) {
+    if (!(await isRoundRuler(roundId, userId))) {      
       return null;
     }
 
@@ -369,6 +375,16 @@ export const startRound = async (
             type: item.type,
           },
         });
+
+        if (item.type === "PLAYER") {
+          await tx.roundWords.create({
+            data: {
+              roundId,
+              playerId: item.userId,
+              word: item.word!,
+            },
+          });
+        }
       }
 
       const updatedRound = await tx.rounds.update({
@@ -377,7 +393,6 @@ export const startRound = async (
         },
         data: {
           status: RoundStatus.PLAYING,
-          mode,
           roundDuration,
         },
       });

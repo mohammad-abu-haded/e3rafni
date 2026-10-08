@@ -4,6 +4,7 @@ import EditIcon from "@/public/edit.svg";
 import ShareIcon from "@/public/share.svg";
 import LeaveIcon from "@/public/logout.svg";
 import DeleteIcon from "@/public/delete.svg";
+import SettingsIcon from "@/public/settings.svg";
 import { useState } from "react";
 import { ApiResponse, RoomMember } from "@/types";
 import RulerSelector from "../RulerSelector/RulerSelector";
@@ -13,6 +14,7 @@ import { API_ERROR_RESPONSE } from "@/constant/api.constants";
 import { toast } from "react-toastify";
 import { redirect } from "next/navigation";
 import { io } from "socket.io-client";
+import RoundSetup from "../RoundSettingsModal/RoundSettingsModal";
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
 
@@ -23,11 +25,14 @@ interface IProps {
   roomMembers: RoomMember[];
   isRoomOwner: boolean;
   hasRuler: boolean;
+  isRuler: boolean;
+  userId: number;
 }
 
 const RoomActions = (props: IProps) => {
   const roomUrl = `${window.location.origin}/rooms/${props.roomCode.toLocaleLowerCase()}`;
   const [showRoundRulerSelector, setShowRoundRulerSelector] = useState(false);
+  const [showRoundSetup, setShowRoundSetup] = useState(false);
   const shareRoom = async () => {
     const shareData = {
       title: `🎮 اعرفني | ${props.roomName}`,
@@ -77,22 +82,33 @@ const RoomActions = (props: IProps) => {
       <h3>إجراءات الغرفة</h3>
       <form action={handleExitRoom}>
         <div className={styles["room-actions"]}>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => setShowRoundRulerSelector(true)}
-          >
-            {props.hasRuler ? (
-              <>
-                <EditIcon className="icon" /> تعديل حكم الجولة التالية
-              </>
-            ) : (
-              <>
-                <SelectIcon className="icon" />
-                إختيار حكم الجولة التالية
-              </>
-            )}
-          </button>
+          {props.isRoomOwner && (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setShowRoundRulerSelector(true)}
+            >
+              {props.hasRuler ? (
+                <>
+                  <EditIcon className="icon" /> تعديل حكم الجولة التالية
+                </>
+              ) : (
+                <>
+                  <SelectIcon className="icon" />
+                  إختيار حكم الجولة التالية
+                </>
+              )}
+            </button>
+          )}
+          {props.isRuler && (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setShowRoundSetup(true)}
+            >
+              <SettingsIcon className="icon" /> إعداد الجولة التالية
+            </button>
+          )}
           <button
             type="button"
             className="btn btn-secondary"
@@ -114,6 +130,14 @@ const RoomActions = (props: IProps) => {
           roomCode={props.roomCode}
           roomMembers={props.roomMembers}
           onClose={() => setShowRoundRulerSelector(false)}
+        />
+      )}
+      {showRoundSetup && props.isRuler && (
+        <RoundSetup
+          userId={props.userId}
+          roomCode={props.roomCode}
+          roomMembers={props.roomMembers}
+          onClose={() => setShowRoundSetup(false)}
         />
       )}
     </div>

@@ -7,12 +7,9 @@ export const io = new Server(Number(process.env.SOCKET_PORT), {
 });
 
 io.on("connection", (socket) => {
-  console.log("Client connected:", socket.id);
 
   socket.on("join-room", (roomCode) => {
     socket.join(roomCode);
-
-    console.log(`${socket.id} joined room ${roomCode}`);
 
     io.to(roomCode).emit("room:members-updated", {
       message: `${socket.id} joined the room`,
@@ -32,8 +29,5 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
   });
 });
-
-console.log(`Socket.IO server running on port ${process.env.SOCKET_PORT}`);

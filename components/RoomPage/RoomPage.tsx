@@ -52,7 +52,6 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
       const result: ApiResponse = await GetData(
         `/api/rooms/${roomCode}/rounds/members`,
       );
-      console.log(result);
 
       if (!result || !result.data) {
         notFound();
@@ -109,18 +108,26 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
       <div className={styles["room-cards"]}>
         <div className={styles["room-card"]}>
           <RoomActions
+            userId={userId}
             currentRound={room.currentRound}
             roomCode={roomCode}
             roomName={room.name}
             roomMembers={roomMembers}
             isRoomOwner={room.ownerId === userId}
+            isRuler={roundMembers.some(
+              (item) => item.type === "RULER" && item.userId === userId,
+            )}
             hasRuler={
               roundMembers && roundMembers.some((item) => item.type === "RULER")
             }
           />
         </div>
         <div className={styles["room-card"]}>
-          <CurrentRoundCard roomMembers={roomMembers} roundMembers={roundMembers} roomCode={roomCode}/>
+          <CurrentRoundCard
+            roomMembers={roomMembers}
+            roundMembers={roundMembers}
+            roomCode={roomCode}
+          />
         </div>
       </div>
     </div>

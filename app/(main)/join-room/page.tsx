@@ -19,7 +19,6 @@ const page = () => {
     }
 
     toast.success(result.message);
-    console.log(result.data);
 
     result.data &&
       redirect(`/rooms/${result.data.roomCode.toLocaleLowerCase()}`);

@@ -307,7 +307,6 @@ const CreateRoomForm = () => {
     const handleShortcut = (event: KeyboardEvent) => {
       if (event.altKey && event.code === "KeyR") {
         event.preventDefault();
-        console.log(lastRoomSettings);
 
         if (lastRoomSettings) {
           setName(lastRoomSettings.name);

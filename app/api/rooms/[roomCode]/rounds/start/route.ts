@@ -1,4 +1,4 @@
-import { RoundMode } from "@/app/generated/prisma/enums";
+import { RoundMemberType } from "@/app/generated/prisma/enums";
 import { getCurrentRound, startRound } from "@/services/round.service";
 import { RoundMemberInput } from "@/types";
 import { getAuthUser } from "@/utils/auth";
@@ -20,42 +20,69 @@ const POST = async (request: NextRequest, { params }: IProps) => {
     }
 
     const body = (await request.json()) as {
-      roundPlayersViewers: RoundMemberInput[];
-      mode: RoundMode;
       roundDuration: number;
+      player1: number;
+      player2: number;
+      viewers: number[];
+      player1Word: string;
+      player2Word: string;
     };
 
-    const { roundPlayersViewers, mode, roundDuration } = body;
+    const {
+      roundDuration,
+      player1,
+      player2,
+      viewers,
+      player1Word,
+      player2Word,
+    } = body;
 
-    if (!roundPlayersViewers || roundPlayersViewers.length < 2) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "يجب أن تحتوي الجولة على لاعبين اثنين",
-        },
-        { status: 422 },
-      );
-    }
-
-    if (!Object.values(RoundMode).includes(mode)) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "نوع الجولة غير صالح",
-        },
-        { status: 422 },
-      );
-    }
+    let errorMessage = "";
 
     if (!Number.isInteger(roundDuration) || roundDuration <= 0) {
+      errorMessage = "مدة الجولة غير صالحة أو لم تحددها";
+    } else if (!player1) {
+      errorMessage = "يرجى اختيار اللاعب الأول";
+    } else if (!player2) {
+      errorMessage = "يرجى اختيار اللاعب الثاني";
+    } else if ([player1, player2].includes(user.id)) {
+      errorMessage = "لا يمكنك إختيار نفسك كلاعب";
+    } else if (player1 === player2) {
+      errorMessage = "يرجى اختيار لاعبين مختلفين";
+    } else if (viewers.includes(player1) || viewers.includes(player2)) {
+      errorMessage = "لا يمكنك اختيار اللاعبين كمشاهدين";
+    } else if (!player1Word) {
+      errorMessage = "يرجى تحديد كلمة اللاعب الأول";
+    } else if (!player2Word) {
+      errorMessage = "يرجى تحديد كلمة اللاعب الثاني";
+    }
+
+    if (errorMessage) {
       return NextResponse.json(
         {
           success: false,
-          message: "مدة الجولة غير صالحة",
+          message: errorMessage,
         },
         { status: 422 },
       );
     }
+
+    const roundPlayersViewers: RoundMemberInput[] = [
+      {
+        userId: player1,
+        type: RoundMemberType.PLAYER,
+        word: player1Word,
+      },
+      {
+        userId: player2,
+        type: RoundMemberType.PLAYER,
+        word: player2Word,
+      },
+      ...(viewers ?? []).map((userId) => ({
+        userId,
+        type: RoundMemberType.VIEWER,
+      })),
+    ];
 
     const currentRound = await getCurrentRound(roomCode, user.id);
     if (!currentRound) {
@@ -72,7 +99,6 @@ const POST = async (request: NextRequest, { params }: IProps) => {
       user.id,
       currentRound.roomId,
       currentRound.id,
-      mode,
       roundDuration,
       roundPlayersViewers,
     );

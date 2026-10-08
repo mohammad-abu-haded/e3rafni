@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authMiddleware } from "./middleware/auth.middleware";
 import { Role } from "./app/generated/prisma/enums";
 
-const middleware = async (request: NextRequest) => {
-  console.log("Here is a Middleware.");
-  
+const middleware = async (request: NextRequest) => {  
   switch (request.nextUrl.pathname) {
     case "/login":
       return NextResponse.next();

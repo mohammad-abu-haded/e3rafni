@@ -47,6 +47,7 @@ export type Round = {
 export type RoundMemberInput = {
   userId: number;
   type: RoundMemberType;
+  word?: string;
 };
 
 export type CreateRoomBody = {
