@@ -1,7 +1,6 @@
 import {
   Role,
   RoundMemberType,
-  RoomStatus,
   RoundMode,
 } from "@/app/generated/prisma/enums";
 
@@ -32,7 +31,6 @@ export type Room = {
   isPrivate: boolean;
   capacity: number;
   isActive: boolean;
-  status: RoomStatus;
 };
 
 export type Round = {

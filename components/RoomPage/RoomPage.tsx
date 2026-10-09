@@ -83,6 +83,9 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
       toast.info("تم إنهاء الغرفة من قبل صاحبها");
       redirect("/");
     });
+    socket.on("round:started", () => {
+      toast.info("تم بدء الجولة");
+    });
     return () => {
       socket.disconnect();
     };

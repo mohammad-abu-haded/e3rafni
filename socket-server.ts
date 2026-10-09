@@ -23,6 +23,10 @@ io.on("connection", (socket) => {
   socket.on("server:room-member-left", (roomCode) => {
     io.to(roomCode).emit("room:member-left");
   });
+  
+  socket.on("server:round-started", (roomCode) => {
+    io.to(roomCode).emit("round:started");
+  });
 
   socket.on("server:round-members-updated", (roomCode) => {
     io.to(roomCode).emit("round:members-updated");

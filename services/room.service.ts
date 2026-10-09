@@ -1,4 +1,3 @@
-import { RoomStatus } from "@/app/generated/prisma/enums";
 import prisma from "@/lib/prisma";
 import { Card, Room } from "@/types";
 
@@ -237,31 +236,6 @@ export const updateRoom = async (
         totalRounds,
         isPrivate,
         capacity,
-      },
-    });
-
-    return roomUpdated;
-  } catch (error) {
-    return null;
-  }
-};
-
-export const setRoomStatus = async (
-  roomId: number,
-  userId: number,
-  status: RoomStatus,
-) => {
-  try {
-    if (!(await isRoomOwner(roomId, userId))) {
-      return null;
-    }
-
-    const roomUpdated = await prisma.rooms.update({
-      where: {
-        id: roomId,
-      },
-      data: {
-        status,
       },
     });
 
