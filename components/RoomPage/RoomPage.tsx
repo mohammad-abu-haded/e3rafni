@@ -84,7 +84,7 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
       redirect("/");
     });
     socket.on("round:started", () => {
-      toast.info("تم بدء الجولة");
+      getRoundMembers();
     });
     return () => {
       socket.disconnect();
@@ -127,6 +127,7 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
         </div>
         <div className={styles["room-card"]}>
           <CurrentRoundCard
+            userId={userId}
             roomMembers={roomMembers}
             roundMembers={roundMembers}
             roomCode={roomCode}

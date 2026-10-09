@@ -29,7 +29,7 @@
 }
 
 .header-label {
-  background-color: #7c3aed1a;
+  background-color: var(--background-color);
   color: var(--primary-color);
   border-radius: 12px;
   padding: 6px 12px;

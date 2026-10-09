@@ -54,3 +54,11 @@
     height: 16px;
     color: var(--primary-color);
 }
+
+.is-me {
+  background: var(--background-color);
+}
+
+.is-me b{
+  color: var(--primary-color);
+}
