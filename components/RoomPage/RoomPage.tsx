@@ -11,6 +11,10 @@ import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 import CurrentRoundCard from "../CurrentRoundCard/CurrentRoundCard";
 import NotFound from "@/app/not-found";
+import {
+  fetchRoomMembers,
+  fetchRoundMembers,
+} from "@/services/room-api.service";
 
 interface IProps {
   roomCode: string;
@@ -39,35 +43,32 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
 
   useEffect(() => {
     const getRoomMembers = async () => {
-      const result: ApiResponse = await GetData(
-        `/api/rooms/${roomCode}/members`,
-      );
+      const result = await fetchRoomMembers(roomCode);
 
-      if (!result || !result.data) {
+      if (result.hasError) {
         setHasError(true);
         return;
       }
 
-      const fetchedRoomMembers: RoomMember[] = result.data;
-      setRoomMembers(fetchedRoomMembers);
+      setRoomMembers(result.roomMembers ?? []);
     };
 
     const getRoundMembers = async () => {
-      const result: ApiResponse = await GetData(
-        `/api/rooms/${roomCode}/rounds/members`,
-      );
+      const result = await fetchRoundMembers(roomCode);
 
-      if (!result || !result.data) {
+      if (result.hasError) {
         setHasError(true);
         return;
       }
 
-      const fetchedRoundMembers: RoundMember[] = result.data;
-      setRoundMembers(fetchedRoundMembers);
+      setRoundMembers(result.roundMembers ?? []);
     };
 
-    getRoomMembers();
-    getRoundMembers();
+    const getMembers = async () => {
+      await Promise.all([getRoomMembers(), getRoundMembers()]);
+    };
+
+    getMembers();
 
     const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
     socket.on("connect", () => {
@@ -78,8 +79,7 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
     });
 
     socket.on("room:member-left", () => {
-      getRoomMembers();
-      getRoundMembers();
+      getMembers();
     });
     socket.on("round:members-updated", () => {
       getRoundMembers();
@@ -97,9 +97,9 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
   }, [roomCode]);
 
   if (hasError) {
-    return <NotFound/>;
+    return <NotFound />;
   }
-  
+
   if (!room) {
     return <div>جاري تحميل الغرفة...</div>;
   }
