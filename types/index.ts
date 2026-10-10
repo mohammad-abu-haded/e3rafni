@@ -1,8 +1,4 @@
-import {
-  Role,
-  RoundMemberType,
-  RoundMode,
-} from "@/app/generated/prisma/enums";
+import { Role, RoundMemberType, RoundMode } from "@/app/generated/prisma/enums";
 
 export type User = {
   id: number;
@@ -81,3 +77,24 @@ export interface RoundMember {
   type: RoundMemberType;
   roundId: number;
 }
+
+export type CardUsed = {
+  id: number;
+  roomId: number;
+  userId: number;
+  roundId: number;
+  cardId: string;
+  usedAt: Date;
+};
+
+export type CardWithUsage = {
+  cardId: string;
+  title: string;
+  description: string;
+  color: string;
+  maxPerPlayer: number;
+  players: {
+    userId: number;
+    usedCount: number;
+  }[];
+};

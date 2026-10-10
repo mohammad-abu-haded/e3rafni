@@ -1,7 +1,6 @@
 import { getRoomByCode } from "@/services/room.service";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import styles from "./room.module.css";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/utils/auth";
 import RoomPage from "@/components/RoomPage/RoomPage";

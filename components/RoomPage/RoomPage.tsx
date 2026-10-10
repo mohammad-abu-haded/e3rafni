@@ -5,11 +5,12 @@ import RoomParticipants from "../RoomParticipants/RoomParticipants";
 import styles from "./RoomPage.module.css";
 import { useEffect, useState } from "react";
 import { GetData } from "@/services/api.service";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import RoomActions from "../RoomActions/RoomActions";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 import CurrentRoundCard from "../CurrentRoundCard/CurrentRoundCard";
+import NotFound from "@/app/not-found";
 
 interface IProps {
   roomCode: string;
@@ -20,11 +21,13 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
   const [room, setRoom] = useState<Room>();
   const [roomMembers, setRoomMembers] = useState<RoomMember[]>([]);
   const [roundMembers, setRoundMembers] = useState<RoundMember[]>([]);
+  const [hasError, setHasError] = useState(false);
   useEffect(() => {
     const getRoom = async () => {
       const result: ApiResponse = await GetData(`/api/rooms/${roomCode}`);
       if (!result || !result.data) {
-        notFound();
+        setHasError(true);
+        return;
       }
 
       const fetchedRoom: Room = result.data;
@@ -41,7 +44,8 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
       );
 
       if (!result || !result.data) {
-        notFound();
+        setHasError(true);
+        return;
       }
 
       const fetchedRoomMembers: RoomMember[] = result.data;
@@ -54,7 +58,8 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
       );
 
       if (!result || !result.data) {
-        notFound();
+        setHasError(true);
+        return;
       }
 
       const fetchedRoundMembers: RoundMember[] = result.data;
@@ -91,6 +96,10 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
     };
   }, [roomCode]);
 
+  if (hasError) {
+    return <NotFound/>;
+  }
+  
   if (!room) {
     return <div>جاري تحميل الغرفة...</div>;
   }

@@ -1,7 +1,8 @@
 import prisma from "@/lib/prisma";
-import { Card, Room } from "@/types";
+import { Card, CardUsed, Room } from "@/types";
 
 import { customAlphabet } from "nanoid";
+import { getRoundPlayers } from "./round.service";
 
 const generateRoomCode = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 6);
 
@@ -64,20 +65,40 @@ export const createRoom = async (
 ): Promise<Room | null> => {
   try {
     const roomCode = await createUniqueRoomCode();
-    const room = await prisma.rooms.create({
-      data: {
-        name,
-        totalRounds,
-        ownerId,
-        isPrivate,
-        capacity,
-        code: roomCode,
-        currentRound: 0,
-        cards,
-      },
+    const result = await prisma.$transaction(async (tx) => {
+      const room = await tx.rooms.create({
+        data: {
+          name,
+          totalRounds,
+          ownerId,
+          isPrivate,
+          capacity,
+          code: roomCode,
+          currentRound: 0,
+        },
+      });
+
+      for (const card of cards) {
+        await tx.cards.create({
+          data: {
+            title: card.title,
+            description: card.description,
+            color: card.color,
+            maxPerPlayer: card.maxPerPlayer,
+            roomId: room.id,
+          },
+        });
+      }
+
+      await tx.roomMembers.create({
+        data: {
+          roomId: room.id,
+          userId: ownerId,
+        },
+      });
+      return room;
     });
-    await joinRoom(ownerId, roomCode);
-    return room;
+    return result;
   } catch (error) {
     return null;
   }
@@ -347,6 +368,54 @@ export const getPlayerRoundsRuled = async (
     });
 
     return playerRoundsPlayed;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getRoomCards = async (userId: number, roomId: number) => {
+  try {
+    if (!(await isRoomMember(roomId, userId))) {
+      return null;
+    }
+    const cards = await prisma.cards.findMany({
+      where: {
+        roomId: roomId,
+      },
+    });
+    return cards;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getPlayersCardUsage = async (
+  userId: number,
+  roomId: number,
+  roundId: number,
+) => {
+  try {
+    if (!(await isRoomMember(roomId, userId))) {
+      return null;
+    }
+
+    const roundPlayers = await getRoundPlayers(roomId, roundId, userId);
+    if (!roundPlayers) {
+      return null;
+    }
+
+    const playerCardUsages: CardUsed[] = [] 
+    for (const roundPlayer of roundPlayers) {
+      const cardUsed = await prisma.playerCardUsages.findMany({
+        where: {
+          userId: roundPlayer.userId,
+          roomId: roomId,
+        },
+      });
+
+      playerCardUsages.push(...cardUsed);
+    }
+    return playerCardUsages;
   } catch (error) {
     return null;
   }

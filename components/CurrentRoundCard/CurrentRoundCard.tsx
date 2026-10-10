@@ -63,7 +63,7 @@ const CurrentRoundCard = ({
         <div className={styles["current-round-settings-field"]}>
           <div className={styles["current-round-setting"]}>
             <p>رقم الجولة</p>
-            <b>{currentRound?.roundNumber}</b>
+            <b>{currentRound?.roundNumber || 0}</b>
           </div>
           <div className={styles["current-round-setting"]}>
             <p>المدة</p>

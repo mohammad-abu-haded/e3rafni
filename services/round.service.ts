@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { getRoomByCode, isRoomMember, isRoomOwner } from "./room.service";
+import { getRoomByCode, getRoomById, isRoomMember, isRoomOwner } from "./room.service";
 import { RoundMemberType, RoundStatus } from "@/app/generated/prisma/enums";
 import { RoundMemberInput } from "@/types";
 
@@ -186,6 +186,35 @@ export const setRoundRuler = async (
     });
 
     return RoundMember;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getRoundPlayers = async (
+  roomId: number,
+  roundId: number,
+  userId: number,
+) => {
+  try {
+    const room = await getRoomById(roomId);
+    const roundPlayers = await prisma.roundMembers.findMany({
+      where: {
+        roundId,
+        type: "PLAYER",
+      },
+    });
+
+    if (
+      !roundPlayers ||
+      roundPlayers.length !== 2 ||
+      !room ||
+      !(await isRoomMember(room.id, userId))
+    ) {
+      return null;
+    }
+
+    return roundPlayers;
   } catch (error) {
     return null;
   }

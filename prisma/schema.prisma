@@ -55,10 +55,41 @@ model Rooms {
   isPrivate Boolean @default(false)
   capacity Int @default(10)
   owner Users @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  
   isActive Boolean @default(true)
-  cards Json
   roomMembers RoomMembers[]
   roomRounds Rounds[]
+  roomCards Cards[]
+}
+
+model Cards {
+  id String @id @default(cuid())
+  roomId Int
+  title String
+  description String
+  color String
+  maxPerPlayer Int
+
+  room Rooms @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  usages PlayerCardUsages[]
+
+  @@index([roomId])
+}
+
+model PlayerCardUsages {
+  id Int @id @default(autoincrement())
+  roomId Int
+  roundId Int
+  userId Int
+  cardId String
+  usedAt DateTime @default(now())
+
+  roundMember RoundMembers @relation(fields: [roundId, userId], references: [roundId, userId], onDelete: Cascade)
+  card Cards @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([roomId, userId, cardId])
+  @@index([roundId, userId, cardId])
 }
 
 model RoomMembers {
@@ -69,7 +100,7 @@ model RoomMembers {
   user Users @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   @@id([roomId, userId])
   @@index([userId])
-
+ 
   roundMembers RoundMembers[]
 }
 
@@ -100,6 +131,7 @@ model RoundMembers {
   @@index([roundId, type])
 
   roundWords RoundWords[]
+  cardUsages PlayerCardUsages[]
 }
 
 model RoundWords {
