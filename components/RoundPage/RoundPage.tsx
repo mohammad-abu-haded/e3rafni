@@ -7,6 +7,7 @@ import {
   RoomMember,
   Round,
   RoundMember,
+  VisiblePlayerWord,
 } from "@/types";
 import { GetData } from "@/services/api.service";
 import NotFound from "@/app/not-found";
@@ -14,17 +15,20 @@ import { RoundMemberType } from "@/app/generated/prisma/enums";
 import {
   fetchRoomMembers,
   fetchRoundMembers,
+  fetchVisiblePlayerWords,
 } from "@/services/room-api.service";
 interface IProps {
   roomCode: string;
   userId: number;
 }
+
 const RoundPage = ({ roomCode, userId }: IProps) => {
   const [roomMembers, setRoomMembers] = useState<RoomMember[]>([]);
   const [roundMembers, setRoundMembers] = useState<RoundMember[]>([]);
   const [round, setRound] = useState<Round>();
   const [roomCards, setRoomCards] = useState<CardWithUsage[]>([]);
   const [roundRule, setRoundRule] = useState<RoundMemberType>();
+  const [playerWords, setPlayerWords] = useState<VisiblePlayerWord[]>([]);
   const [hasError, setHasError] = useState(false);
   useEffect(() => {
     const getRoomMembers = async () => {
@@ -57,6 +61,17 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
       await Promise.all([getRoomMembers(), getRoundMembers()]);
     };
 
+    const getPlayerWords = async () => {
+      const result = await fetchVisiblePlayerWords(roomCode);
+
+      if (result.hasError) {
+        setHasError(true);
+        return;
+      }
+      
+      setPlayerWords(result.visiblePlayerWords ?? []);
+    };
+
     const getRoomCards = async () => {
       const result: ApiResponse = await GetData(
         `/api/rooms/${roomCode}/cards/usage`,
@@ -86,6 +101,7 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
     };
 
     getMembers();
+    getPlayerWords();
     getRoomCards();
     getRound();
   }, [roomCode]);
@@ -94,7 +110,21 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
     return <NotFound />;
   }
 
-  return <div></div>;
+  return (
+    <div>
+      {round?.roundDuration}
+      &nbsp;
+      {round &&
+        (round?.startedAt.toLocaleString("en-GB") ?? "لم تبدأ الجولة بعد")}
+      {playerWords.map((item) => (
+        <div key={item.playerId}>
+          PlayerId: {item.playerId}
+          <br/>
+          Word: {item.word}
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default RoundPage;

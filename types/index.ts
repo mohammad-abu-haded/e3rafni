@@ -98,3 +98,8 @@ export type CardWithUsage = {
     usedCount: number;
   }[];
 };
+
+export type VisiblePlayerWord = {
+  playerId: number;
+  word: string;
+};

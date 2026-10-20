@@ -1,4 +1,4 @@
-import { ApiResponse, RoomMember, RoundMember } from "@/types";
+import { ApiResponse, RoomMember, RoundMember, VisiblePlayerWord } from "@/types";
 import { GetData } from "./api.service";
 
 export const fetchRoomMembers  = async (
@@ -25,4 +25,25 @@ export const fetchRoundMembers = async (
   }
 
   return { roundMembers: result.data as RoundMember[], hasError: false };
+};
+
+interface VisiblePlayerWordsResponse {
+  visiblePlayerWords: VisiblePlayerWord[];
+}
+
+export const fetchVisiblePlayerWords = async (
+  roomCode: string,
+): Promise<{ visiblePlayerWords?: VisiblePlayerWord[]; hasError: boolean }> => {
+  const result: ApiResponse<VisiblePlayerWordsResponse> = await GetData(
+    `/api/rooms/${roomCode}/rounds/words`,
+  );
+
+  if (!result || !result.success || !result.data) {
+    return { hasError: true };
+  }
+
+  return {
+    visiblePlayerWords: result.data.visiblePlayerWords,
+    hasError: false,
+  };
 };

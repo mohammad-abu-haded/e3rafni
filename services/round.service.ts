@@ -1,5 +1,10 @@
 import prisma from "@/lib/prisma";
-import { getRoomByCode, getRoomById, isRoomMember, isRoomOwner } from "./room.service";
+import {
+  getRoomByCode,
+  getRoomById,
+  isRoomMember,
+  isRoomOwner,
+} from "./room.service";
 import { RoundMemberType, RoundStatus } from "@/app/generated/prisma/enums";
 import { RoundMemberInput } from "@/types";
 
@@ -19,7 +24,6 @@ export const isRoundRuler = async (roundId: number, userId: number) => {
     }
 
     return roundMember.type === "RULER";
-
   } catch (error) {
     return null;
   }
@@ -344,7 +348,7 @@ export const startRound = async (
 ) => {
   try {
     let playerCount = 0;
-    if (!(await isRoundRuler(roundId, userId))) {      
+    if (!(await isRoundRuler(roundId, userId))) {
       return null;
     }
 
@@ -613,9 +617,6 @@ export const getRoundWords = async (
     let roundWords = await prisma.roundWords.findMany({
       where: {
         roundId,
-        playerId: {
-          not: userId,
-        },
       },
     });
 
@@ -765,6 +766,35 @@ export const getRoundStatus = async (
     }
 
     return status;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getUserRoundRule = async (
+  userId: number,
+  roundId: number,
+  roomId: number,
+) => {
+  try {
+    if (!(await isRoomMember(roomId, userId))) {
+      return null;
+    }
+
+    const rule = (
+      await prisma.roundMembers.findUnique({
+        where: {
+          roundId_userId: {
+            roundId,
+            userId,
+          },
+        },
+        select: {
+          type: true,
+        },
+      })
+    )?.type;
+    return rule;
   } catch (error) {
     return null;
   }
