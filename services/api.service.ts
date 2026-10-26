@@ -38,4 +38,21 @@ const GetData = async (uri: string) => {
   }
 };
 
-export { PostData, GetData };
+const PatchData = async <T>(uri: string, data?: T) => {
+  try {
+    const response = await fetch(uri, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: data !== undefined ? JSON.stringify(data) : undefined,
+    });
+
+    return response.json();
+  } catch (error) {
+    toast.error("حدث خطأ ما، يرجى المحاولة مرة أخرى");
+    console.error("Error fetching data: ", error);
+  }
+};
+
+export { PostData, GetData, PatchData };

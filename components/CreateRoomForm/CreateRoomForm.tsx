@@ -18,6 +18,7 @@ import { nanoid } from "nanoid";
 import { PostData } from "@/services/api.service";
 import ActionButton from "../ActionButton/ActionButton";
 import { redirect } from "next/navigation";
+import LeftArrowIcon from "@/public/left-arrow.svg";
 
 const getTextColor = (backgroundColor: string) => {
   if (typeof document === "undefined") {
@@ -608,7 +609,7 @@ const CreateRoomForm = () => {
                         color: getTextColor(cardColor),
                       }}
                     >
-                      {typeof cardMaxPerPlayer === "number"
+                      {Number.isInteger(cardMaxPerPlayer)
                         ? cardMaxPerPlayer
                         : 0}
                     </p>
@@ -623,7 +624,7 @@ const CreateRoomForm = () => {
           <ActionButton
             title="إنشاء الغرفة الآن"
             className="btn btn-primary"
-            showIcon={false}
+            Icon={LeftArrowIcon}
           />
           <button
             type="button"

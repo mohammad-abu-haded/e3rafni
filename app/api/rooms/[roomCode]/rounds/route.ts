@@ -30,7 +30,7 @@ const POST = async (request: NextRequest, { params }: IProps) => {
     let isUpdated = false;
     let successMessage = "تم تحديد الحكم بنجاح";
 
-    if (!(roomCode && typeof rulerId === "number")) {
+    if (!(roomCode && Number.isInteger(rulerId))) {
       return NextResponse.json(
         {
           success: false,

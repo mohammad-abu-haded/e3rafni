@@ -32,6 +32,10 @@ io.on("connection", (socket) => {
     io.to(roomCode).emit("round:members-updated");
   });
 
+  socket.on("round:player-word-updated", (roomCode, playerId: number) => {  
+    io.to(roomCode).emit("player:word-updated", playerId);
+  });
+
   socket.on("disconnect", () => {
   });
 });

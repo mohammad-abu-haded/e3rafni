@@ -57,7 +57,6 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
       const result = await fetchRoundMembers(roomCode);
 
       if (result.hasError) {
-        setHasError(true);
         return;
       }
 
@@ -89,7 +88,7 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
       redirect("/");
     });
     socket.on("round:started", () => {
-      getRoundMembers();
+      redirect(`/rooms/${roomCode.toLocaleLowerCase()}/round`);
     });
     return () => {
       socket.disconnect();

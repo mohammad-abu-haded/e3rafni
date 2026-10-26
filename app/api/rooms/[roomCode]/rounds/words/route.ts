@@ -49,9 +49,12 @@ const GET = async (request: NextRequest, { params }: IProps) => {
         myRoundRule === RoundMemberType.RULER ||
         myRoundRule === RoundMemberType.VIEWER
       ) {
-        roundWords.map((item) =>
-          visiblePlayerWords.push({ playerId: item.playerId, word: item.word }),
-        );
+        for (const roundWord of roundWords) {
+          visiblePlayerWords.push({
+            playerId: roundWord.playerId,
+            word: roundWord.word,
+          });
+        }
       } else if (myRoundRule === RoundMemberType.PLAYER) {
         for (const roundWord of roundWords) {
           roundWord.playerId !== user.id &&

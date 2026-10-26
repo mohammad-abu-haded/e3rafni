@@ -389,7 +389,7 @@ export const getRoomCards = async (userId: number, roomId: number) => {
   }
 };
 
-export const getPlayersCardUsage = async (
+export const getPlayerCardUsages = async (
   userId: number,
   roomId: number,
   roundId: number,
@@ -404,7 +404,7 @@ export const getPlayersCardUsage = async (
       return null;
     }
 
-    const playerCardUsages: CardUsed[] = [] 
+    const playerCardUsages: CardUsed[] = [];
     for (const roundPlayer of roundPlayers) {
       const cardUsed = await prisma.playerCardUsages.findMany({
         where: {
@@ -416,6 +416,32 @@ export const getPlayersCardUsage = async (
       playerCardUsages.push(...cardUsed);
     }
     return playerCardUsages;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const recordPlayerCardUsage = async (
+  userId: number,
+  cardId: string,
+  roundId: number,
+  roomId: number,
+) => {
+  try {
+    if (!(await isRoomMember(roomId, userId))) {
+      return null;
+    }
+
+    const cardUpdated = await prisma.playerCardUsages.create({
+      data:{
+        roomId,
+        roundId,
+        userId,
+        cardId
+      }
+    })
+
+    return cardUpdated;
   } catch (error) {
     return null;
   }

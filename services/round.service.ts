@@ -285,6 +285,9 @@ export const getCurrentRound = async (roomCode: string, userId: number) => {
           roomId: room.id,
           roundNumber: currentRound,
         },
+        status: {
+          not: RoundStatus.FINISHED
+        }
       },
     });
 

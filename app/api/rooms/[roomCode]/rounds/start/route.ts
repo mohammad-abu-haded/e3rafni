@@ -36,7 +36,6 @@ const POST = async (request: NextRequest, { params }: IProps) => {
       player1Word,
       player2Word,
     } = body;
-
     let errorMessage = "";
 
     if (!Number.isInteger(roundDuration) || roundDuration <= 0) {
@@ -55,6 +54,10 @@ const POST = async (request: NextRequest, { params }: IProps) => {
       errorMessage = "يرجى تحديد كلمة اللاعب الأول";
     } else if (!player2Word) {
       errorMessage = "يرجى تحديد كلمة اللاعب الثاني";
+    } else if (player1Word.trim().length > 100) {
+      errorMessage = "كلمة اللاعب الأول يجب ألا تتجاوز 100 حرف";
+    } else if (player2Word.trim().length > 100) {
+      errorMessage = "كلمة اللاعب الثاني يجب ألا تتجاوز 100 حرف";
     }
 
     if (errorMessage) {
@@ -71,12 +74,12 @@ const POST = async (request: NextRequest, { params }: IProps) => {
       {
         userId: player1,
         type: RoundMemberType.PLAYER,
-        word: player1Word,
+        word: player1Word.trim(),
       },
       {
         userId: player2,
         type: RoundMemberType.PLAYER,
-        word: player2Word,
+        word: player2Word.trim(),
       },
       ...(viewers ?? []).map((userId) => ({
         userId,

@@ -12,6 +12,7 @@ import { profilePlaceholderBase64 } from "@/constant/profilePlaceholder";
 import { PostData } from "@/services/api.service";
 import { API_ERROR_RESPONSE } from "@/constant/api.constants";
 import { io } from "socket.io-client";
+import { redirect } from "next/navigation";
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
 
 interface IProps {
@@ -81,6 +82,15 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
       toast.error("يرجى تحديد كلمة اللاعب الثاني");
       return;
     }
+    if (player1Word.trim().length > 100) {
+      toast.error("كلمة اللاعب الأول يجب ألا تتجاوز 100 حرف");
+      return;
+    }
+    if (player2Word.trim().length > 100) {
+      toast.error("كلمة اللاعب الثاني يجب ألا تتجاوز 100 حرف");
+      return;
+    }
+
     const result: ApiResponse =
       (await PostData(`/api/rooms/${roomCode}/rounds/start`, {
         roundDuration: roundDurationInSeconds,
@@ -96,7 +106,7 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
     }
     toast.success(result.message);
     socket.emit("server:round-started", roomCode);
-    onClose();
+    redirect(`/rooms/${roomCode.toLocaleLowerCase()}/round`);
   };
 
   const handlePlayerSelect = (memberId: number, player: 1 | 2) => {
@@ -170,6 +180,12 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
     return true;
   });
 
+  const player1Name = roomMembers.find((item) => item.userId === player1)?.user
+    .name;
+
+  const player2Name = roomMembers.find((item) => item.userId === player2)?.user
+    .name;
+
   return (
     <div className={styles["round-setup-container"]} onClick={() => onClose()}>
       <form
@@ -224,7 +240,10 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
 
             <div className={styles["player-settings"]}>
               <div className={styles["player-setting"]}>
-                <label>كلمة اللاعب الأول</label>
+                <label>
+                  كلمة اللاعب الأول
+                  {player1Name && <span> ({player1Name})</span>}
+                </label>
 
                 <input
                   type="text"
@@ -235,7 +254,10 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
               </div>
 
               <div className={styles["player-setting"]}>
-                <label>كلمة اللاعب الثاني</label>
+                <label>
+                  كلمة اللاعب الثاني
+                  {player2Name && <span> ({player2Name})</span>}
+                </label>
 
                 <input
                   type="text"

@@ -5,13 +5,11 @@ import Spinner from "@/components/Spinner/Spinner";
 const ActionButton = ({
   title,
   className = "",
-  showIcon = true,
   disabled = false,
   Icon,
 }: {
   title: string;
   className?: string;
-  showIcon?: boolean;
   disabled?: boolean
   Icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }) => {
@@ -28,11 +26,7 @@ const ActionButton = ({
         <Spinner />
       ) : (
         <>
-          {showIcon && Icon ? (
-            <Icon className="icon" />
-          ) : (
-            <LeftArrowIcon className="icon" />
-          )}
+          {Icon && (<Icon className="icon" />)}
           {title}
         </>
       )}

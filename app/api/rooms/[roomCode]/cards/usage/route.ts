@@ -1,5 +1,5 @@
 import {
-  getPlayersCardUsage,
+  getPlayerCardUsages,
   getRoomByCode,
   getRoomCards,
 } from "@/services/room.service";
@@ -37,7 +37,7 @@ const GET = async (request: NextRequest, { params }: IProps) => {
         { status: 400 },
       );
     }
-    const playersCardUsage = await getPlayersCardUsage(
+    const playersCardUsage = await getPlayerCardUsages(
       user.id,
       room.id,
       currentRound.id,
