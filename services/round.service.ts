@@ -286,8 +286,8 @@ export const getCurrentRound = async (roomCode: string, userId: number) => {
           roundNumber: currentRound,
         },
         status: {
-          not: RoundStatus.FINISHED
-        }
+          not: RoundStatus.FINISHED,
+        },
       },
     });
 
@@ -722,7 +722,10 @@ export const setRoundStatus = async (
   status: RoundStatus,
 ) => {
   try {
-    if (!(await isRoundRuler(roundId, userId))) {
+    if (
+      !(await isRoomOwner(roomId, userId)) &&
+      !(await isRoundRuler(roundId, userId))
+    ) {
       return null;
     }
 

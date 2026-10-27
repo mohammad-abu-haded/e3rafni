@@ -1,5 +1,4 @@
 import { useFormStatus } from "react-dom";
-import LeftArrowIcon from "@/public/left-arrow.svg";
 import Spinner from "@/components/Spinner/Spinner";
 
 const ActionButton = ({

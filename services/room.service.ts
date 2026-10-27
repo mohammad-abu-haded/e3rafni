@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { Card, CardUsed, Room } from "@/types";
 
 import { customAlphabet } from "nanoid";
-import { getRoundPlayers } from "./round.service";
+import { getRoundPlayers, getUserRoundRule, isRoundRuler } from "./round.service";
 
 const generateRoomCode = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 6);
 
@@ -270,18 +270,17 @@ export const incrementPlayerWins = async (
   userId: number,
   playerId: number,
   roomId: number,
+  roundId: number,
 ) => {
   try {
     if (
-      !(
-        (await isRoomOwner(roomId, userId)) &&
-        (await isRoomMember(roomId, playerId))
-      )
-    ) {
+      !(await isRoomOwner(roomId, userId)) &&
+      !(await isRoundRuler(roundId, userId))
+    ) {      
       return null;
     }
 
-    await prisma.roomMembers.update({
+    const incrementedPlayerWins = await prisma.roomMembers.update({
       where: {
         roomId_userId: {
           roomId,
@@ -294,6 +293,8 @@ export const incrementPlayerWins = async (
         },
       },
     });
+
+    return incrementedPlayerWins;
   } catch (error) {
     return null;
   }
@@ -433,13 +434,13 @@ export const recordPlayerCardUsage = async (
     }
 
     const cardUpdated = await prisma.playerCardUsages.create({
-      data:{
+      data: {
         roomId,
         roundId,
         userId,
-        cardId
-      }
-    })
+        cardId,
+      },
+    });
 
     return cardUpdated;
   } catch (error) {

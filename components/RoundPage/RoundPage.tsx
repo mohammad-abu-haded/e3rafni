@@ -13,7 +13,6 @@ import {
   VisiblePlayerWord,
 } from "@/types";
 import { GetData, PatchData, PostData } from "@/services/api.service";
-import NotFound from "@/app/not-found";
 import { RoundMemberType } from "@/app/generated/prisma/enums";
 import {
   fetchRoomMembers,
@@ -29,6 +28,8 @@ import EditIcon from "@/public/edit.svg";
 import ActionButton from "../ActionButton/ActionButton";
 import { API_ERROR_RESPONSE } from "@/constant/api.constants";
 import { profilePlaceholderBase64 } from "@/constant/profilePlaceholder";
+import EndRoundDialog from "../EndRoundDialog/EndRoundDialog";
+import { redirect } from "next/navigation";
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
 
@@ -40,6 +41,7 @@ interface IProps {
 const RoundPage = ({ roomCode, userId }: IProps) => {
   const [roomMembers, setRoomMembers] = useState<RoomMember[]>([]);
   const roomMembersRef = useRef<RoomMember[]>([]);
+  const roomCardsRef = useRef<CardWithUsage[]>([]);
   const [roundMembers, setRoundMembers] = useState<RoundMember[]>([]);
   const [round, setRound] = useState<Round>();
   const [roomCards, setRoomCards] = useState<CardWithUsage[]>([]);
@@ -49,14 +51,12 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
   const [editingPlayerId, setEditingPlayerId] = useState<number | null>(null);
   const [editedWord, setEditedWord] = useState("");
   const [isUpdatingWord, setIsUpdatingWord] = useState(false);
-  const [hasError, setHasError] = useState(false);
 
   const getRoomMembers = async () => {
     const result = await fetchRoomMembers(roomCode);
 
     if (result.hasError) {
-      setHasError(true);
-      return;
+      redirect(`/rooms/${roomCode}`);
     }
 
     const members = result.roomMembers ?? [];
@@ -69,8 +69,7 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
     const result = await fetchRoundMembers(roomCode);
 
     if (result.hasError) {
-      setHasError(true);
-      return;
+      redirect(`/rooms/${roomCode}`);
     }
 
     const fetchedRoundMembers = result.roundMembers ?? [];
@@ -85,8 +84,7 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
     const result = await fetchVisiblePlayerWords(roomCode);
 
     if (result.hasError) {
-      setHasError(true);
-      return;
+      redirect(`/rooms/${roomCode}`);
     }
 
     setPlayerWords(result.visiblePlayerWords ?? []);
@@ -107,11 +105,12 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
     );
 
     if (!result?.success || !result.data) {
-      setHasError(true);
-      return;
+      redirect(`/rooms/${roomCode}`);
     }
 
-    setRoomCards(result.data);
+    const roomCard = result.data;
+    roomCardsRef.current = roomCard;
+    setRoomCards(roomCard);
   };
 
   const getRound = async () => {
@@ -120,8 +119,7 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
     );
 
     if (!result?.success || !result.data) {
-      setHasError(true);
-      return;
+      redirect(`/rooms/${roomCode}`);
     }
 
     setRound(result.data);
@@ -137,17 +135,19 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
 
   const handleUseCard = async (card: CardWithUsage) => {
     try {
-    
-    const result: ApiResponse = await PostData(`/api/rooms/${roomCode}/rounds/players/cards/${card.cardId}/use`) || API_ERROR_RESPONSE;
+      const result: ApiResponse =
+        (await PostData(
+          `/api/rooms/${roomCode}/rounds/players/cards/${card.cardId}/use`,
+        )) || API_ERROR_RESPONSE;
 
-    if(result.success) {
-      toast.success(result.message);
-    }
-    else {
-      toast.error(result.message);
-    }
-  } catch {
-    toast.error("حدث خطأ أثناء استخدام الكرت");
+      if (result.success) {
+        toast.success(result.message);
+        socket.emit("round:card-used", roomCode, userId, card.cardId);
+      } else {
+        toast.error(result.message);
+      }
+    } catch {
+      toast.error("حدث خطأ أثناء استخدام الكرت");
     }
   };
 
@@ -178,7 +178,7 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
       getPlayerWords();
       setEditingPlayerId(null);
       setEditedWord("");
-    } catch {      
+    } catch {
       toast.error("حدث خطأ أثناء تعديل الكلمة");
     } finally {
       setIsUpdatingWord(false);
@@ -219,9 +219,25 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
       getPlayerWords(playerEditedId);
     };
 
+    const handleCardUsed = (userId: number, cardId: string) => {
+      const cardTitle =
+        roomCardsRef.current.find((item) => item.cardId === cardId)?.title ||
+        "؟";
+      const playerName =
+        roomMembersRef.current.find((item) => item.userId === userId)?.user
+          .name || "؟";
+      toast.info(`اللاعب ${playerName} استخدم الكرت '${cardTitle}'`);
+      getRoomCards();
+    };
+
     const handleRoomEnded = () => {
       toast.info("تم إنهاء الغرفة من قبل صاحبها");
       window.location.href = "/";
+    };
+
+    const handleRoundEnded = () => {
+      toast.info("تم إنهاء الجولة");
+      redirect(`/rooms/${roomCode}`);
     };
 
     socket.on("connect", handleConnect);
@@ -230,7 +246,9 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
     socket.on("round:members-updated", handleRoundMembersUpdated);
     socket.on("round:started", handleRoundStarted);
     socket.on("player:word-updated", handlePlayerWordUpdated);
+    socket.on("card:used", handleCardUsed);
     socket.on("room:ended", handleRoomEnded);
+    socket.on("round:ended", handleRoundEnded);
 
     if (socket.connected) {
       handleConnect();
@@ -245,13 +263,12 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
       socket.off("round:members-updated", handleRoundMembersUpdated);
       socket.off("round:started", handleRoundStarted);
       socket.off("player:word-updated", handlePlayerWordUpdated);
+      socket.off("card:used", handleCardUsed);
       socket.off("room:ended", handleRoomEnded);
+      socket.off("round:ended", handleRoundEnded);
     };
   }, [roomCode]);
 
-  if (hasError) {
-    return <NotFound />;
-  }
 
   if (!round) {
     return <div className={styles["round-loading"]}>جاري تحميل الجولة...</div>;
@@ -277,6 +294,13 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
                 ? "أنت مشاهد"
                 : "غير مصنف"}
         </div>
+
+        <EndRoundDialog
+          userId={userId}
+          roundMembers={roundMembers}
+          roomMembers={roomMembers}
+          roomCode={roomCode}
+        />
       </section>
 
       <section className={styles["round-words-section"]}>
@@ -300,13 +324,13 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
                 <div key={member.userId} className={styles["player-word-card"]}>
                   <div className={styles["player-word-header"]}>
                     <div className={styles["player-avatar"]}>
-                        <Image
-                          className={styles["user-image"]}
-                          src={player?.user.picture || profilePlaceholderBase64}
-                          alt="profile-image"
-                          width={48}
-                          height={48}
-                        />
+                      <Image
+                        className={styles["user-image"]}
+                        src={player?.user.picture || profilePlaceholderBase64}
+                        alt="profile-image"
+                        width={48}
+                        height={48}
+                      />
                     </div>
 
                     <h4>{player?.user.name ?? `اللاعب ${member.userId}`}</h4>

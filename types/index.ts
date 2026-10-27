@@ -103,3 +103,13 @@ export type VisiblePlayerWord = {
   playerId: number;
   word: string;
 };
+
+export type EndRoundRequest =
+  | {
+      result: "WIN";
+      winnerId: number;
+    }
+  | {
+      result: "DRAW";
+      winnerId: null;
+    };

@@ -20,6 +20,10 @@ io.on("connection", (socket) => {
     socket.to(roomCode).emit("room:ended");
   });
 
+  socket.on("server:round-ended", (roomCode) => {
+    socket.to(roomCode).emit("round:ended");
+  });
+
   socket.on("server:room-member-left", (roomCode) => {
     io.to(roomCode).emit("room:member-left");
   });
@@ -34,6 +38,10 @@ io.on("connection", (socket) => {
 
   socket.on("round:player-word-updated", (roomCode, playerId: number) => {  
     io.to(roomCode).emit("player:word-updated", playerId);
+  });
+
+  socket.on("round:card-used", (roomCode, userId: number, cardId: string) => {  
+    io.to(roomCode).emit("card:used", userId, cardId);
   });
 
   socket.on("disconnect", () => {
