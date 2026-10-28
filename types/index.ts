@@ -1,4 +1,4 @@
-import { Role, RoundMemberType, RoundMode } from "@/app/generated/prisma/enums";
+import { PlayerResult, Role, RoundMemberType, RoundMode } from "@/app/generated/prisma/enums";
 
 export type User = {
   id: number;
@@ -104,12 +104,7 @@ export type VisiblePlayerWord = {
   word: string;
 };
 
-export type EndRoundRequest =
-  | {
-      result: "WIN";
-      winnerId: number;
-    }
-  | {
-      result: "DRAW";
-      winnerId: null;
-    };
+export type PlayerRoundResultInput = {
+  playerId: number,
+  result: PlayerResult
+};

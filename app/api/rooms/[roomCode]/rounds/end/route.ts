@@ -1,11 +1,11 @@
-import { RoundMemberType } from "@/app/generated/prisma/enums";
-import { incrementPlayerWins, isRoomOwner } from "@/services/room.service";
+import { PlayerResult } from "@/app/generated/prisma/enums";
+import { isRoomOwner } from "@/services/room.service";
 import {
-  endRound,
+  finalizeRound,
   getCurrentRound,
   isRoundRuler,
 } from "@/services/round.service";
-import { EndRoundRequest } from "@/types";
+import { PlayerRoundResultInput } from "@/types";
 import { getAuthUser } from "@/utils/auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -43,42 +43,36 @@ const POST = async (request: NextRequest, { params }: IProps) => {
       );
     }
 
-    const body = (await request.json()) as EndRoundRequest;
-    if (
-      typeof body !== "object" ||
-      body === null ||
-      !("result" in body) ||
-      !("winnerId" in body) ||
-      (body.result !== "WIN" && body.result !== "DRAW")
-    ) {
+    const body = (await request.json()) as PlayerRoundResultInput[];
+    const playerResults = body;
+    if (Array.isArray(playerResults) && playerResults.length === 2) {
+      for (const playerResult of playerResults) {
+        if (
+          !(
+            Number.isInteger(playerResult.playerId) &&
+            Object.values(PlayerResult).includes(playerResult.result)
+          )
+        ) {
+          return NextResponse.json(
+            { success: false, message: "بيانات الطلب غير صحيحة" },
+            { status: 400 },
+          );
+        }
+      }
+    } else {
       return NextResponse.json(
         { success: false, message: "بيانات الطلب غير صحيحة" },
         { status: 400 },
       );
     }
-    const { result, winnerId } = body;
-    if (result === "WIN") {
-      const incrementedPlayerWins = await incrementPlayerWins(
-        user.id,
-        winnerId,
-        currentRound.roomId,
-        currentRound.id,
-      );
-      if (!incrementedPlayerWins) {
-        return NextResponse.json(
-          { success: false, message: "حدث خطأ ما أثناء إنهاء الجولة" },
-          { status: 500 },
-        );
-      }
-    }
 
-    const endedRound = await endRound(
+    const finalizedRound = await finalizeRound(
       user.id,
       currentRound.roomId,
       currentRound.id,
+      playerResults,
     );
-
-    if (!endedRound) {
+    if (!finalizedRound) {
       return NextResponse.json(
         { success: false, message: "حدث خطأ ما أثناء إنهاء الجولة" },
         { status: 500 },

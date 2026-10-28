@@ -30,6 +30,12 @@ enum RoundStatus {
   FINISHED
 }
 
+enum PlayerResult {
+  WIN
+  LOSS
+  DRAW
+}
+
 model Users {
   id Int @id @default(autoincrement())
   role Role @default(USER)
@@ -132,6 +138,7 @@ model RoundMembers {
 
   roundWords RoundWords[]
   cardUsages PlayerCardUsages[]
+  result RoundPlayerResults?
 }
 
 model RoundWords {
@@ -143,4 +150,16 @@ model RoundWords {
   roundMembers RoundMembers @relation(fields: [roundId, playerId], references: [roundId, userId], onDelete: Cascade, onUpdate: Cascade)
   @@unique([roundId, playerId])
   @@index([roundId])
+}
+
+model RoundPlayerResults {
+  roundId Int
+  userId Int
+  result PlayerResult
+  createdAt DateTime @default(now())
+
+  roundMember RoundMembers @relation(fields: [roundId, userId],references: [roundId, userId],onDelete: Cascade)
+
+  @@id([roundId, userId])
+  @@index([userId, result])
 }

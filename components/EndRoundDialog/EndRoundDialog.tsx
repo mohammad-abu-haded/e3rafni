@@ -5,7 +5,7 @@ import styles from "./EndRoundDialog.module.css";
 import { RoundMemberType } from "@/app/generated/prisma/enums";
 import {
   ApiResponse,
-  EndRoundRequest,
+  PlayerRoundResultInput,
   Room,
   RoomMember,
   RoundMember,
@@ -53,26 +53,35 @@ const EndRoundDialog = ({
     });
 
   const handleSubmit = async (formData: FormData) => {
-    const winner = formData.get("winner");
-
-    if (winner === null) {
-      return;
-    }
-
-    const winnerId = winner === "draw" ? null : Number(winner);
-    const endRoundRequest: EndRoundRequest =
-      winnerId === null
-        ? { result: "DRAW", winnerId: null }
-        : { result: "WIN", winnerId: winnerId };
-    if (
-      winner !== "draw" &&
-      (!Number.isInteger(winnerId) ||
-        !players.some((player) => player.userId === winnerId))
-    ) {
-      return;
-    }
-
     try {
+      const winner = formData.get("winner");
+
+      if (winner === null) {
+        return;
+      }
+
+      const winnerId = winner === "draw" ? null : Number(winner);
+      const firstPlayerId: number = roundMembers.find(
+        (item) => item.type === "PLAYER",
+      )?.userId!;
+      const secondPlayerId: number = roundMembers.find(
+        (item) => item.type === "PLAYER" && item.userId !== firstPlayerId,
+      )?.userId!;
+      const endRoundRequest: PlayerRoundResultInput[] =
+        winnerId === null
+          ? [
+              { result: "DRAW", playerId: firstPlayerId },
+              { result: "DRAW", playerId: secondPlayerId },
+            ]
+          : [
+              { result: "WIN", playerId: winnerId },
+              {
+                result: "LOSS",
+                playerId:
+                  winnerId === firstPlayerId ? secondPlayerId : firstPlayerId,
+              },
+            ];
+
       const result: ApiResponse =
         (await PostData(
           `/api/rooms/${roomCode}/rounds/end`,

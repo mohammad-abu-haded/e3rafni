@@ -232,7 +232,7 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
 
     const handleRoomEnded = () => {
       toast.info("تم إنهاء الغرفة من قبل صاحبها");
-      window.location.href = "/";
+      redirect("/");
     };
 
     const handleRoundEnded = () => {
@@ -268,7 +268,6 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
       socket.off("round:ended", handleRoundEnded);
     };
   }, [roomCode]);
-
 
   if (!round) {
     return <div className={styles["round-loading"]}>جاري تحميل الجولة...</div>;

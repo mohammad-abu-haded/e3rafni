@@ -6,7 +6,7 @@ import {
   isRoomOwner,
 } from "./room.service";
 import { RoundMemberType, RoundStatus } from "@/app/generated/prisma/enums";
-import { RoundMemberInput } from "@/types";
+import { PlayerRoundResultInput, RoundMemberInput } from "@/types";
 
 const numberOfPlayersAllowed = 2;
 
@@ -801,6 +801,73 @@ export const getUserRoundRule = async (
       })
     )?.type;
     return rule;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const finalizeRound = async (
+  userId: number,
+  roomId: number,
+  roundId: number,
+  playerResults: PlayerRoundResultInput[],
+) => {
+  try {
+    if (
+      !(await isRoomOwner(roomId, userId)) &&
+      !(await isRoundRuler(roundId, userId))
+    ) {
+      return null;
+    }
+
+    const roundStatus = await getRoundStatus(roomId, roundId, userId);
+    if (roundStatus !== "PLAYING") {
+      return null;
+    }
+
+    if (playerResults.length !== 2) {
+      return null;
+    }
+
+    const finalizedRound = await prisma.$transaction(async (tx) => {
+      for (const playerResult of playerResults) {
+        await tx.roundPlayerResults.create({
+          data: {
+            roundId,
+            userId: playerResult.playerId,
+            result: playerResult.result,
+          },
+        });
+
+        if (playerResult.result === "WIN") {
+          await tx.roomMembers.update({
+            where: {
+              roomId_userId: {
+                roomId,
+                userId: playerResult.playerId,
+              },
+            },
+            data: {
+              wins: {
+                increment: 1,
+              },
+            },
+          });
+        }
+      }
+
+      return await tx.rounds.update({
+        where: {
+          id: roundId,
+          roomId,
+        },
+        data: {
+          status: "FINISHED",
+        },
+      });
+    });
+
+    return finalizedRound;
   } catch (error) {
     return null;
   }
