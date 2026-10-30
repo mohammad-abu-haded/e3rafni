@@ -11,6 +11,7 @@ import { RoomMember } from "@/types";
 interface IProps {
   roomMembers: RoomMember[];
   userId: number;
+  ownerId: number;
 }
 
 export const getRoundLabel = (count: number) => {
@@ -39,8 +40,7 @@ const MedalIcon = [
   },
 ];
 
-const RoomParticipants = ({ roomMembers, userId }: IProps) => {
-
+const RoomParticipants = ({ roomMembers, userId, ownerId }: IProps) => {
   if (!roomMembers || roomMembers.length === 0) {
     return <div>جاري تحميل الأعضاء...</div>;
   }
@@ -68,7 +68,10 @@ const RoomParticipants = ({ roomMembers, userId }: IProps) => {
                   width={48}
                   height={48}
                 />
-                <h3>{item.user.name}</h3>
+                <div>
+                  <h3>{item.user.name}</h3>
+                  <p>{item.userId === ownerId && "(مالك الغرفة)"}</p>
+                </div>
               </div>
             </div>
             <div className={styles["participant-wins"]}>

@@ -113,7 +113,7 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
           roomCode={roomCode}
         />
 
-        <RoomParticipants roomMembers={roomMembers} userId={userId} />
+        <RoomParticipants roomMembers={roomMembers} userId={userId} ownerId={room.ownerId}/>
       </div>
 
       <div className={styles["room-cards"]}>
@@ -139,6 +139,7 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
             roomMembers={roomMembers}
             roundMembers={roundMembers}
             roomCode={roomCode}
+            ownerId={room.ownerId}
           />
         </div>
       </div>
