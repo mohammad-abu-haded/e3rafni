@@ -25,4 +25,37 @@ const deleteRedisValue = async (key: string) => {
   await redis.del(key);
 };
 
-export { setRedisValue, getRedisValue, deleteRedisValue };
+const incrementRedisValue = async (
+  key: string,
+  ttl: number,
+): Promise<number | null> => {
+  const multi = redis.multi();
+
+  multi.incr(key);
+  multi.ttl(key);
+
+  const result = await multi.exec();
+  if (!result) {
+    return null;
+  }
+
+  const count = result[0][1] as number;
+  const remainingTTL = result[1][1] as number;
+
+  if (remainingTTL === -1) {
+    await redis.expire(key, ttl);
+  }
+
+  return count;
+};
+
+const getRedisTTL = async (key: string): Promise<number | null> => {
+  try {
+    const ttl = await redis.ttl(key);
+    return ttl;
+  } catch {
+    return null;
+  }
+};
+
+export { setRedisValue, getRedisValue, deleteRedisValue, incrementRedisValue, getRedisTTL };

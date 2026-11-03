@@ -1,170 +1,193 @@
-const otpEmailTemplate = (otp: string) => `
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+const BRAND = {
+  name: "اعرفني",
+  primary: "#7c3aed",
+  primarySoft: "#f5f3ff",
+  primaryBorder: "#ddd6fe",
+  text: "#18181b",
+  muted: "#52525b",
+  subtle: "#a1a1aa",
+  border: "#e4e4e7",
+  bg: "#f4f4f5",
+};
+
+const FONT =
+  "Tahoma,'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif";
+
+export interface OtpEmailOptions {
+  otp: string;
+  name?: string;
+  expiresInMinutes?: number;
+  purpose?: string;
+  logoUrl?: string;
+  supportEmail?: string;
+  secureAccountUrl?: string;
+}
+
+const esc = (s: string) =>
+  s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+
+export const otpEmailSubject = () =>
+  `رمز التحقق الخاص بك من ${BRAND.name} (Verification code)`;
+
+export const otpEmailTemplate = (opts: OtpEmailOptions | string) => {
+  const o: OtpEmailOptions = typeof opts === "string" ? { otp: opts } : opts;
+  const otp = esc(o.otp);
+  const minutes = o.expiresInMinutes ?? 5;
+  const purpose = esc(o.purpose ?? "لإتمام عملية التسجيل");
+  const name = o.name ? esc(o.name) : "";
+  const year = new Date().getFullYear();
+
+  const logo = o.logoUrl
+    ? `<img src="${esc(o.logoUrl)}" width="40" height="40" alt="${BRAND.name}" style="display:block;border:0;border-radius:10px;" />`
+    : `<span style="font-family:${FONT};font-size:22px;font-weight:800;color:#ffffff;">${BRAND.name}</span>`;
+
+  const secureLink = o.secureAccountUrl
+    ? ` <a href="${esc(o.secureAccountUrl)}" style="color:${BRAND.primary};font-weight:700;text-decoration:underline;">تأمين الحساب</a>`
+    : "";
+
+  const support = o.supportEmail
+    ? `<a href="mailto:${esc(o.supportEmail)}" style="color:${BRAND.primary};text-decoration:none;">${esc(o.supportEmail)}</a>`
+    : "";
+
+  return `<!DOCTYPE html>
+<html lang="ar" dir="rtl" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="color-scheme" content="light" />
-  <title>رمز التحقق الخاص بك</title>
+  <meta name="supported-color-schemes" content="light" />
+  <meta name="format-detection" content="telephone=no,date=no,address=no,email=no" />
+  <title>رمز التحقق - ${BRAND.name}</title>
+  <style>
+    body,table,td,a{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
+    table,td{mso-table-lspace:0pt;mso-table-rspace:0pt;}
+    img{-ms-interpolation-mode:bicubic;border:0;outline:none;text-decoration:none;}
+    body{margin:0!important;padding:0!important;width:100%!important;}
+    @media only screen and (max-width:520px){
+      .container{width:100%!important;}
+      .px{padding-left:20px!important;padding-right:20px!important;}
+      .otp{font-size:34px!important;letter-spacing:6px!important;}
+    }
+  </style>
 </head>
-<body dir="rtl" style="margin:0;padding:0;background:#f4f4f5;-webkit-font-smoothing:antialiased;direction:rtl;">
-  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:transparent;">
-    رمز التسجيل الخاص بك: ${otp} — صالح لمدة 5 دقائق. لا تشاركه مع أحد.&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;
+<body dir="rtl" style="margin:0;padding:0;background:${BRAND.bg};direction:rtl;-webkit-font-smoothing:antialiased;">
+
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#f4f4f5;opacity:0;">
+    رمز التحقق الخاص بك هو ${otp}. صالح لمدة ${minutes} دقائق. Your verification code is ${otp}.
+    &#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;
   </div>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl"
-    style="background:#f4f4f5;padding:48px 16px;min-width:320px;direction:rtl;">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${BRAND.bg};">
     <tr>
-      <td align="center" valign="top">
-        <table width="480" cellpadding="0" cellspacing="0" border="0" dir="rtl"
-          style="max-width:480px;width:100%;background:#ffffff;border-radius:16px;
-                 border:1px solid #e4e4e7;overflow:hidden;direction:rtl;">
+      <td align="center" style="padding:32px 12px;">
+
+        <table role="presentation" class="container" width="560" cellpadding="0" cellspacing="0" border="0"
+          style="width:560px;max-width:560px;background:#ffffff;border:1px solid ${BRAND.border};border-radius:16px;">
+
           <tr>
-            <td style="height:3px;background:linear-gradient(90deg, #8B5CF6FF 0%, #04B6D4FF 100%);font-size:0;line-height:0;">&nbsp;</td>
+            <td class="px" align="right" bgcolor="${BRAND.primary}"
+              style="background:${BRAND.primary};padding:24px 36px;border-radius:16px 16px 0 0;">
+              ${logo}
+            </td>
           </tr>
+
           <tr>
-            <td style="padding:28px 36px 24px;border-bottom:1px solid #f4f4f5;">
-              <table cellpadding="0" cellspacing="0" border="0" width="100%" dir="rtl">
+            <td class="px" align="right" style="padding:36px 36px 8px;font-family:${FONT};">
+              <h1 style="margin:0;font-size:22px;line-height:1.4;font-weight:700;color:${BRAND.text};font-family:${FONT};text-align:right;">
+                رمز التحقق الخاص بك
+              </h1>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="px" align="right" style="padding:8px 36px 0;font-family:${FONT};font-size:15px;line-height:1.9;color:${BRAND.muted};text-align:right;">
+              ${name ? `مرحباً <strong style="color:${BRAND.text};">${name}</strong>،<br />` : ""}
+              استخدم الرمز التالي ${purpose} في ${BRAND.name}:
+            </td>
+          </tr>
+
+          <tr>
+            <td class="px" align="center" style="padding:24px 36px 8px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td align="right">
-                    <table cellpadding="0" cellspacing="0" border="0">
-                      <tr>
-                        <td style="
-                          background:#f5f3ff;
-                          border:1px solid #c4b5fd;
-                          border-radius:6px;
-                          padding:5px 12px;
-                        ">
-                          <span style="
-                            font-size:12px;font-weight:700;color:#7c3aed;
-                            letter-spacing:0.02em;
-                            font-family:'Tahoma','Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;
-                          ">اعرفني</span>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td align="left">
-                    <table cellpadding="0" cellspacing="0" border="0">
-                      <tr>
-                        <td style="
-                          background:#ecfeff;
-                          border:1px solid #67e8f9;
-                          border-radius:99px;
-                          padding:4px 10px;
-                        ">
-                          <span style="
-                            font-size:11px;font-weight:600;color:#0e7490;
-                            font-family:'Tahoma','Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;
-                          ">&#9203; 5 دقائق</span>
-                        </td>
-                      </tr>
-                    </table>
+                  <td align="center" bgcolor="${BRAND.primarySoft}"
+                    style="background:${BRAND.primarySoft};border:1px solid ${BRAND.primaryBorder};border-radius:12px;padding:26px 12px;">
+                    <div dir="ltr" class="otp"
+                      style="direction:ltr;text-align:center;font-family:'SF Mono','Roboto Mono',Consolas,'Courier New',monospace;font-size:42px;line-height:1.1;font-weight:700;letter-spacing:10px;color:${BRAND.primary};">${otp}</div>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
+
           <tr>
-            <td style="padding:32px 36px 28px;text-align:right;">
-              <p style="
-                margin:0 0 6px;font-size:22px;font-weight:700;color:#09090b;line-height:1.35;text-align:right;
-                font-family:'Tahoma','Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;
-              ">تحقق من هويتك</p>
-              <p style="
-                margin:0 0 28px;font-size:14px;color:#71717a;line-height:1.8;text-align:right;
-                font-family:'Tahoma','Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;
-              ">
-                أدخل هذا الرمز لإتمام عملية التسجيل. لا تشاركه مع أي شخص.
-              </p>
-              <table cellpadding="0" cellspacing="0" border="0" width="100%" dir="rtl">
-                <tr>
-                  <td style="
-                    background:#fafafa;
-                    border:2px solid transparent;
-                    border-radius:12px;
-                    padding:24px;
-                    text-align:center;
-                    background-image: linear-gradient(#fafafa, #fafafa), linear-gradient(90deg, #8B5CF6FF 0%, #04B6D4FF 100%);
-                    background-origin: border-box;
-                    background-clip: padding-box, border-box;
-                  ">
-                    <p style="
-                      margin:0 0 10px;
-                      font-size:10px;font-weight:600;color:#a1a1aa;
-                      letter-spacing:0.05em;text-align:center;
-                      font-family:'Tahoma','Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;
-                    ">رمز التسجيل الخاص بك</p>
-                    <span dir="ltr" style="
-                      direction:ltr;unicode-bidi:embed;
-                      display:block;
-                      font-size:46px;
-                      font-weight:800;
-                      color:#09090b;
-                      letter-spacing:0.2em;
-                      font-family:'SF Mono','Fira Code','Fira Mono','Roboto Mono',
-                                  'Courier New',Courier,monospace;
-                      line-height:1;
-                      text-align:center;
-                    ">${otp}</span>
-                    <div style="margin-top:18px;height:3px;background:#e4e4e7;border-radius:99px;">
-                      <div style="width:100%;height:3px;background:linear-gradient(90deg, #8B5CF6FF 0%, #04B6D4FF 100%);border-radius:99px;"></div>
-                    </div>
-                    <p style="
-                      margin:8px 0 0;font-size:11px;color:#a1a1aa;text-align:center;
-                      font-family:'Tahoma','Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;
-                    ">تنتهي صلاحيته خلال 5 دقائق</p>
-                  </td>
-                </tr>
-              </table>
+            <td class="px" align="right" style="padding:12px 36px 0;font-family:${FONT};font-size:13px;line-height:1.8;color:${BRAND.muted};text-align:right;">
+              ينتهي هذا الرمز خلال <strong style="color:${BRAND.text};">${minutes} دقائق</strong> ويُستخدم مرة واحدة فقط.
             </td>
           </tr>
+
           <tr>
-            <td style="padding:0 36px 28px;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl" style="
-                background:#fafafa;
-                border:1px solid #e4e4e7;
-                border-right:3px solid #8B5CF6;
-                border-radius:0 8px 8px 0;
-              ">
+            <td class="px" style="padding:28px 36px 8px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="padding:12px 16px;text-align:right;">
-                    <p style="
-                      margin:0 0 2px;font-size:12px;font-weight:600;color:#09090b;text-align:right;
-                      font-family:'Tahoma','Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;
-                    ">لم تطلب هذا؟</p>
-                    <p style="
-                      margin:0;font-size:12px;color:#71717a;line-height:1.75;text-align:right;
-                      font-family:'Tahoma','Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;
-                    ">
-                      تجاهل هذه الرسالة — سينتهي صلاحية الرمز تلقائياً.
-                      إذا تكرر الأمر، يرجى تأمين حسابك.
+                  <td width="4" bgcolor="${BRAND.primary}" style="background:${BRAND.primary};font-size:0;line-height:0;border-radius:0 4px 4px 0;">&nbsp;</td>
+                  <td align="right" bgcolor="#fafafa"
+                    style="background:#fafafa;padding:14px 18px;font-family:${FONT};text-align:right;border-radius:4px 0 0 4px;">
+                    <p style="margin:0 0 4px;font-size:13px;font-weight:700;color:${BRAND.text};font-family:${FONT};">🔒 حافظ على أمان حسابك</p>
+                    <p style="margin:0;font-size:12.5px;line-height:1.8;color:${BRAND.muted};font-family:${FONT};">
+                      لن يطلب منك فريق ${BRAND.name} هذا الرمز عبر الهاتف أو الرسائل أبداً. لا تشاركه مع أي شخص.
                     </p>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
+
           <tr>
-            <td style="
-              padding:16px 36px;
-              background:#fafafa;
-              border-top:1px solid #f4f4f5;
-              border-radius:0 0 16px 16px;
-              text-align:right;
-            ">
-              <p style="
-                margin:0;font-size:11px;color:#a1a1aa;text-align:right;
-                font-family:'Tahoma','Segoe UI',-apple-system,BlinkMacSystemFont,Arial,sans-serif;
-              ">
-                &copy; ${new Date().getFullYear()} اعرفني &middot; رسالة أمان تلقائية
+            <td class="px" align="right" style="padding:16px 36px 32px;font-family:${FONT};font-size:13px;line-height:1.9;color:${BRAND.muted};text-align:right;">
+              إذا لم تطلب هذا الرمز، يمكنك تجاهل هذه الرسالة بأمان.${secureLink}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="px" align="right" bgcolor="#fafafa"
+              style="background:#fafafa;border-top:1px solid ${BRAND.border};padding:20px 36px;border-radius:0 0 16px 16px;font-family:${FONT};text-align:right;">
+              <p style="margin:0 0 4px;font-size:12px;line-height:1.7;color:${BRAND.subtle};font-family:${FONT};">
+                هذه رسالة أمان تلقائية، يرجى عدم الرد عليها.${support ? ` للمساعدة: ${support}` : ""}
+              </p>
+              <p style="margin:0;font-size:12px;color:${BRAND.subtle};font-family:${FONT};">
+                &copy; ${year} ${BRAND.name}. جميع الحقوق محفوظة.
               </p>
             </td>
           </tr>
+
         </table>
       </td>
     </tr>
   </table>
 </body>
-</html>
-`;
-export { otpEmailTemplate };
+</html>`;
+};
+
+export const otpEmailText = (opts: OtpEmailOptions | string) => {
+  const o: OtpEmailOptions = typeof opts === "string" ? { otp: opts } : opts;
+  const minutes = o.expiresInMinutes ?? 5;
+  return [
+    BRAND.name,
+    "",
+    o.name ? `مرحباً ${o.name}،` : "مرحباً،",
+    "",
+    `رمز التحقق الخاص بك هو: ${o.otp}`,
+    `Your verification code is: ${o.otp}`,
+    "",
+    `ينتهي خلال ${minutes} دقائق ويُستخدم مرة واحدة فقط.`,
+    "لا تشاركه مع أي شخص. إذا لم تطلبه، تجاهل هذه الرسالة.",
+    "",
+    `© ${new Date().getFullYear()} ${BRAND.name}`,
+  ].join("\n");
+};

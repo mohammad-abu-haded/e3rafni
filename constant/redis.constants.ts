@@ -1,0 +1,2 @@
+export const SIGNUP_OTP_TTL_SECONDS = 60 * 5;
+export const SIGNUP_OTP_COOLDOWN_SECONDS = 90;

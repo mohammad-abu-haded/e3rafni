@@ -1,6 +1,6 @@
 import { getRoomByCode } from "@/services/room.service";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/utils/auth";
 import RoomPage from "@/components/RoomPage/RoomPage";
@@ -13,7 +13,10 @@ export const generateMetadata = async ({
   params,
 }: IProps): Promise<Metadata> => {
   const roomCode = (await params).roomCode.toUpperCase();
-  const token = (await cookies()).get("token")!.value;
+  const token = (await cookies()).get("token")?.value;
+  if (!token) {
+    redirect("/login");
+  }
   const userId = (await verifyToken(token))!.id;
   const room = await getRoomByCode(roomCode, userId);
   if (!room) {
@@ -28,7 +31,10 @@ export const generateMetadata = async ({
 
 const page = async ({ params }: IProps) => {
   const roomCode = (await params).roomCode.toUpperCase();
-  const token = (await cookies()).get("token")!.value;
+  const token = (await cookies()).get("token")?.value;
+  if (!token) {
+    redirect("/login");
+  }
   const userId = (await verifyToken(token))!.id;
   return <RoomPage roomCode={roomCode} userId={userId} />;
 };
