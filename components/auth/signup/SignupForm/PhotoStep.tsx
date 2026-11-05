@@ -5,17 +5,21 @@ import { UploadFile } from "antd";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import styles from "../signup.module.css";
 
 const PhotoStep = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const router = useRouter();
+
   const handleSubmit = async () => {
     if (fileList.length === 0) {
       toast.error("يرجى اختيار صورة");
       return;
     }
+
     const file = fileList[0]?.originFileObj;
     if (!file) return;
+
     const formData = new FormData();
     formData.append("image", file);
 
@@ -31,9 +35,8 @@ const PhotoStep = () => {
       }
 
       const result: ApiResponse = await response.json();
-      
+
       if (result.success) {
-        toast.success(result.message);
         router.replace("/");
       } else {
         toast.error(result.message);
@@ -43,11 +46,24 @@ const PhotoStep = () => {
       console.error("Error fetching data: ", error);
     }
   };
+
   return (
-    <div>
-      <form action={handleSubmit}>
-        <ProfileImageUploader fileList={fileList} setFileList={setFileList} />
-        <ActionButton title="حفظ ومتابعة" />
+    <div className={styles["step-panel"]}>
+      <h2 className={styles["step-title"]}>أضف صورتك الشخصية</h2>
+
+      <p className={styles["step-description"]}>
+        اختر صورة تساعد أصدقاءك على التعرّف عليك
+      </p>
+
+      <form className={styles["photo-form"]} action={handleSubmit}>
+        <div className={styles["upload-box"]}>
+          <ProfileImageUploader fileList={fileList} setFileList={setFileList} />
+        </div>
+
+        <ActionButton
+          title="حفظ ومتابعة"
+          className={`btn btn-primary ${styles["submit-button"]}`}
+        />
       </form>
     </div>
   );

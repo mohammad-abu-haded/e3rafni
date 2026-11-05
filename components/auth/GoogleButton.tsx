@@ -59,7 +59,6 @@ const GoogleButton = () => {
         text: "continue_with",
         shape: "rectangular",
         logo_alignment: "left",
-        width: 400,
       });
 
       return true;

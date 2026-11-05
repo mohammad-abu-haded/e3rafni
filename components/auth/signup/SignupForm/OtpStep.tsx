@@ -5,6 +5,7 @@ import { PostData } from "@/services/api.service";
 import { ApiResponse } from "@/types";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import styles from "../signup.module.css";
 
 interface IProps {
   onNext: () => void;
@@ -13,11 +14,13 @@ interface IProps {
 
 const OtpStep = ({ onNext, email }: IProps) => {
   const [otp, setOtp] = useState("");
+
   const handleSubmit = async () => {
     if (otp.length !== 6) {
       toast.error("الرجاء إدخال رمز التحقق المكون من 6 أرقام");
       return;
     }
+
     const result: ApiResponse =
       (await PostData("api/auth/verify-email", { otp, email })) ||
       API_ERROR_RESPONSE;
@@ -43,25 +46,36 @@ const OtpStep = ({ onNext, email }: IProps) => {
   };
 
   return (
-    <div>
+    <div className={styles["step-panel"]}>
       <div>
-        <h2>تحقق من بريدك الإلكتروني</h2>
-        <p>لقد أرسلنا رمز التحقق المكون من 6 أرقام إلى:</p>
-        <span dir="ltr">
+        <h2 className={styles["step-title"]}>تحقق من بريدك الإلكتروني</h2>
+        <p className={styles["step-description"]}>
+          لقد أرسلنا رمز التحقق المكون من 6 أرقام إلى:
+        </p>
+        <span className={styles["email-badge"]} dir="ltr">
           <b>{email}</b>
         </span>
       </div>
-      <form action={handleSubmit}>
-        <div>
+
+      <form className={styles["form"]} action={handleSubmit}>
+        <div className={styles["otp-wrap"]}>
           <OtpInput setOtp={setOtp} />
         </div>
+
         <div>
-          <ActionButton title="تأكيد الرمز" />
+          <ActionButton
+            title="تأكيد الرمز"
+            className={`btn btn-primary ${styles["submit-button"]}`}
+          />
         </div>
       </form>
-      <form action={handleReSendOtp}>
-        <p>لم يصلك الرمز؟</p>
-        <ActionButton title="إعادة إرسال رمز التحقق" />
+
+      <form className={styles["resend-form"]} action={handleReSendOtp}>
+        <p className={styles["resend-prompt"]}>لم يصلك الرمز؟</p>
+        <ActionButton
+          title="إعادة إرسال رمز التحقق"
+          className={`btn btn-muted ${styles["resend-button"]}`}
+        />
       </form>
     </div>
   );

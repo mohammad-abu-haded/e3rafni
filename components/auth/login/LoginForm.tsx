@@ -12,25 +12,22 @@ import { ApiResponse } from "@/types";
 import { PostData } from "@/services/api.service";
 import ActionButton from "../../ActionButton/ActionButton";
 import { API_ERROR_RESPONSE } from "@/constant/api.constants";
+
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const handleSubmit = async (formData: FormData) => {
     const emailInput = formData.get("email") as string;
     const passwordInput = formData.get("password") as string;
-    
-    if (!emailInput) {
-      toast.error("البريد الإلكتروني مطلوب");
-      return;
-    }
-
-    if (!passwordInput) {
-      toast.error("كلمة المرور مطلوبة");
-      return;
-    }
-
-    const result: ApiResponse = await PostData('api/auth/login', {email: emailInput, password: passwordInput}) || API_ERROR_RESPONSE;
+    if (!emailInput) return void toast.error("البريد الإلكتروني مطلوب");
+    if (!passwordInput) return void toast.error("كلمة المرور مطلوبة");
+    const result: ApiResponse =
+      (await PostData("api/auth/login", {
+        email: emailInput,
+        password: passwordInput,
+      })) || API_ERROR_RESPONSE;
     if (result.success) {
       toast.success(result.message);
       setEmail("");
@@ -42,19 +39,22 @@ const LoginForm = () => {
   };
 
   return (
-    <div>
-      <div>
+    <div className={styles["form-area"]}>
+      <div className={styles["google-button"]}>
         <GoogleButton />
       </div>
-      <div>
-        <p>أو عن طريق البريد الإلكتروني</p>
+
+      <div className={styles["divider"]}>
+        <span>أو عن طريق البريد الإلكتروني</span>
       </div>
 
-      <form action={handleSubmit}>
-        <div>
+      <form className={styles["form"]} action={handleSubmit}>
+        <div className={styles["field"]}>
           <label htmlFor="email">البريد الإلكتروني</label>
-          <div>
+
+          <div className={styles["input-wrap"]}>
             <EmailIcon className={styles["email-icon"]} />
+
             <input
               type="email"
               name="email"
@@ -69,24 +69,37 @@ const LoginForm = () => {
           </div>
         </div>
 
-        <div>
+        <div className={styles["field"]}>
           <label htmlFor="password">كلمة المرور</label>
-          <div>
+
+          <div className={styles["input-wrap"]}>
             <LockIcon className={styles["lock-icon"]} />
+
             {showPassword ? (
-              <div onClick={() => setShowPassword(false)}>
+              <button
+                type="button"
+                className={styles["visibility-toggle"]}
+                aria-label="إخفاء كلمة المرور"
+                onClick={() => setShowPassword(false)}
+              >
                 <EyeClosedIcon className={styles["eye-closed-icon"]} />
-              </div>
+              </button>
             ) : (
-              <div onClick={() => setShowPassword(true)}>
+              <button
+                type="button"
+                className={styles["visibility-toggle"]}
+                aria-label="إظهار كلمة المرور"
+                onClick={() => setShowPassword(true)}
+              >
                 <EyeIcon className={styles["eye-icon"]} />
-              </div>
+              </button>
             )}
+
             <input
               type={showPassword ? "text" : "password"}
               name="password"
               id="password"
-              autoComplete="password"
+              autoComplete="current-password"
               dir="ltr"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -95,10 +108,12 @@ const LoginForm = () => {
           </div>
         </div>
 
-        <ActionButton title="تسجيل الدخول"/>
+        <ActionButton
+          title="تسجيل الدخول"
+          className={`btn btn-primary ${styles["submit-button"]}`}
+        />
       </form>
     </div>
   );
 };
-
 export default LoginForm;

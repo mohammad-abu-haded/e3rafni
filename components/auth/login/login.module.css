@@ -1,0 +1,256 @@
+.auth-page {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 40px 20px;
+  background:
+    radial-gradient(ellipse at 50% 0%, #eee7ff 0, transparent 48%),
+    var(--page-background-color);
+}
+
+.ambient {
+  position: absolute;
+  z-index: -1;
+  width: 560px;
+  height: 560px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed14, #a78bfa08);
+  filter: blur(2px);
+  top: -300px;
+  inset-inline-start: -170px;
+}
+
+.auth-card {
+  width: min(100%, 470px);
+  padding: 42px 46px 28px;
+  background: #fff;
+  border: 1px solid #ebe7f3;
+  border-radius: 26px;
+  box-shadow: 0 24px 75px #34205c12;
+  animation: card-in 0.45s ease both;
+}
+
+.brand-mark {
+  width: fit-content;
+  padding: 0 12px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 22px;
+  border-radius: 17px;
+  background: linear-gradient(145deg, #8b5cf6, #6d28d9);
+  color: white;
+  font-size: 28px;
+  font-weight: 800;
+  box-shadow: 0 9px 22px #7c3aed35;
+}
+
+.heading {
+  text-align: center;
+  margin-bottom: 26px;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--primary-color);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.heading h1 {
+  color: var(--primary-font-color);
+  font-size: 25px;
+  line-height: 1.4;
+  font-weight: 800;
+}
+
+.heading p {
+  margin-top: 7px;
+  line-height: 1.8;
+  color: var(--secondary-font-color);
+}
+
+.form-area {
+  width: 100%;
+}
+
+.google-button {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.google-button > div {
+  width: 100%;
+  min-width: 0;
+}
+
+.google-button iframe {
+  max-width: 100% !important;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 21px 0;
+  color: #92919a;
+  font-size: 12px;
+}
+
+.divider:before,
+.divider:after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: #eceaf0;
+}
+
+.form {
+  display: grid;
+  gap: 17px;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #34313b;
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 50px;
+  border: 1px solid #e3e0e9;
+  border-radius: 12px;
+  background: #fff;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
+}
+
+.input-wrap:focus-within {
+  border-color: var(--primary-color);
+  background: #fff;
+}
+
+.input-wrap input {
+  width: 100%;
+  height: 48px;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 0 44px;
+  color: var(--primary-font-color);
+  font: inherit;
+  font-size: 14px;
+}
+
+.input-wrap input::placeholder {
+  color: #aaa7b1;
+}
+
+.email-icon,
+.lock-icon {
+  position: absolute;
+  inset-inline-end: 12px;
+  width: 18px;
+  height: 18px;
+  color: #96919f;
+}
+
+.visibility-toggle {
+  position: absolute;
+  inset-inline-start: 14px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.eye-icon,
+.eye-closed-icon {
+  width: 18px;
+  height: 18px;
+  color: #85818d;
+}
+
+.submit-button {
+  box-sizing: border-box;
+  width: 100%;
+  height: 50px;
+  padding: 0 20px;
+  border-radius: 12px;
+  margin-top: 4px;
+  box-shadow: 0 7px 16px #7c3aed28;
+}
+
+.switch-prompt {
+  text-align: center;
+  margin: 22px 0 18px;
+  font-size: 13px;
+  color: #77727e;
+}
+
+.switch-prompt a {
+  color: var(--primary-color);
+  font-weight: 800;
+  text-decoration: none;
+  margin-inline-start: 4px;
+}
+
+.switch-prompt a:hover {
+  text-decoration: underline;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 520px) {
+  .auth-page {
+    padding: 22px 14px;
+  }
+
+  .auth-card {
+    padding: 32px 23px 22px;
+    border-radius: 21px;
+  }
+
+  .heading h1 {
+    font-size: 23px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-card {
+    animation: none;
+  }
+}

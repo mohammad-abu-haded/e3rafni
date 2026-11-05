@@ -13,7 +13,7 @@ import { API_ERROR_RESPONSE } from "@/constant/api.constants";
 interface IProps {
   onNext: () => void;
   email: string;
-  setEmail: Dispatch<SetStateAction<string>>
+  setEmail: Dispatch<SetStateAction<string>>;
 }
 
 const InformationStep = ({ onNext, email, setEmail }: IProps) => {
@@ -41,17 +41,17 @@ const InformationStep = ({ onNext, email, setEmail }: IProps) => {
       return;
     }
 
-    const result: ApiResponse = await PostData('api/auth/signup', {
-      name: nameInput,
-      email: emailInput,
-      password: passwordInput
-    }) || API_ERROR_RESPONSE;
+    const result: ApiResponse =
+      (await PostData("api/auth/signup", {
+        name: nameInput,
+        email: emailInput,
+        password: passwordInput,
+      })) || API_ERROR_RESPONSE;
 
-    if(result.success) {
+    if (result.success) {
       toast.success(result.message);
       onNext();
-    }
-    else {
+    } else {
       toast.error(result.message);
     }
   };
@@ -68,14 +68,16 @@ const InformationStep = ({ onNext, email, setEmail }: IProps) => {
   };
 
   return (
-    <div>
+    <div className={styles["step-panel"]}>
       <div>
-        <h2>أنشئ حسابك الجديد</h2>
-        <p>أدخل بياناتك الأساسية للبدء في مغامرة التخمين</p>
+        <h2 className={styles["step-title"]}>أنشئ حسابك الجديد</h2>
+        <p className={styles["step-description"]}>
+          أدخل بياناتك الأساسية للبدء في مغامرة التخمين
+        </p>
 
-        <form action={handleSubmit}>
+        <form className={styles["form"]} action={handleSubmit}>
           <div>
-            <div>
+            <div className={styles["field"]}>
               <label htmlFor="name">الاسم الكامل</label>
               <input
                 type="text"
@@ -87,11 +89,12 @@ const InformationStep = ({ onNext, email, setEmail }: IProps) => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                />
+              />
             </div>
-            <div>
+
+            <div className={styles["field"]}>
               <label htmlFor="email">البريد الإلكتروني</label>
-              <div>
+              <div className={styles["input-wrap"]}>
                 <EmailIcon className={styles["email-icon"]} />
                 <input
                   type="email"
@@ -103,22 +106,35 @@ const InformationStep = ({ onNext, email, setEmail }: IProps) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  />
+                />
               </div>
             </div>
-            <div>
+
+            <div className={styles["field"]}>
               <label htmlFor="password">كلمة المرور</label>
-              <div>
+              <div className={styles["input-wrap"]}>
                 <LockIcon className={styles["lock-icon"]} />
+
                 {showPassword ? (
-                  <div onClick={() => setShowPassword(false)}>
+                  <button
+                    type="button"
+                    className={styles["visibility-toggle"]}
+                    aria-label="إخفاء كلمة المرور"
+                    onClick={() => setShowPassword(false)}
+                  >
                     <EyeClosedIcon className={styles["eye-closed-icon"]} />
-                  </div>
+                  </button>
                 ) : (
-                  <div onClick={() => setShowPassword(true)}>
+                  <button
+                    type="button"
+                    className={styles["visibility-toggle"]}
+                    aria-label="إظهار كلمة المرور"
+                    onClick={() => setShowPassword(true)}
+                  >
                     <EyeIcon className={styles["eye-icon"]} />
-                  </div>
+                  </button>
                 )}
+
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
@@ -132,7 +148,11 @@ const InformationStep = ({ onNext, email, setEmail }: IProps) => {
               </div>
             </div>
           </div>
-          <ActionButton title="التالي" />
+
+          <ActionButton
+            title="التالي"
+            className={`btn btn-primary ${styles["submit-button"]}`}
+          />
         </form>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction } from "react";
 import { Flex, Input } from "antd";
 import type { GetProps } from "antd";
-
+import styles from "./OtpInput.module.css";
 type OTPProps = GetProps<typeof Input.OTP>;
 
 interface IProps {
@@ -9,7 +9,7 @@ interface IProps {
 }
 
 const OtpInput: React.FC<IProps> = ({ setOtp }) => {
-  const onChange: OTPProps["onChange"] = (text) => {    
+  const onChange: OTPProps["onChange"] = (text) => {
     setOtp(text);
   };
 
@@ -25,10 +25,9 @@ const OtpInput: React.FC<IProps> = ({ setOtp }) => {
   return (
     <Flex gap="medium" align="flex-start" vertical>
       <Input.OTP
+        className={styles["custom-otp"]}
         dir="ltr"
-        separator={(i) => (
-          <span style={{ color: "blue" }}>—</span>
-        )}
+        separator={(i) => <span style={{ color: "blue" }}>—</span>}
         {...sharedProps}
       />
     </Flex>
