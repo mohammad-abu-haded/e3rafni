@@ -1,14 +1,13 @@
-import { Metadata } from "next"
+import MatchHistory from "@/components/UserMatchHistory/UserMatchHistory";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "سجل المباريات",
-  description: "اطلع على مبارياتك السابقة وتحليلها."
-}
+  description: "اطلع على مبارياتك السابقة وتحليلها.",
+};
 
 const page = () => {
-  return (
-    <div>page</div>
-  )
-}
+  return <MatchHistory />;
+};
 
-export default page
+export default page;

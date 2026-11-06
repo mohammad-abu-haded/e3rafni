@@ -108,3 +108,22 @@ export type PlayerRoundResultInput = {
   playerId: number,
   result: PlayerResult
 };
+
+export type UserMatchHistory = {
+  result: PlayerResult;
+  createdAt: Date;
+  roundMember: {
+    roomMember: {
+      user: {
+        id: number | null;
+        name: string;
+      };
+    };
+    round: {
+      roundNumber: number;
+      room: {
+        name: string;
+      };
+    };
+  };
+};
