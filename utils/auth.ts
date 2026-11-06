@@ -1,4 +1,4 @@
-import { Room, User } from "@/types";
+import { User } from "@/types";
 import { compareSync, hashSync } from "bcryptjs";
 import { NextRequest } from "next/server";
 

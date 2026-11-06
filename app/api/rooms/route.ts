@@ -14,12 +14,11 @@ const POST = async (request: NextRequest) => {
     }
 
     const body = (await request.json()) as CreateRoomBody;
-    let { name, totalRounds, isPrivate, capacity, cards } = body;
+    let { name, isPrivate, capacity, cards } = body;
     const ownerId = user.id;
 
     if (
       !name ||
-      typeof totalRounds !== "number" ||
       typeof isPrivate !== "boolean" ||
       typeof capacity !== "number" ||
       !ownerId
@@ -27,13 +26,6 @@ const POST = async (request: NextRequest) => {
       return NextResponse.json(
         { success: false, message: "بيانات الطلب غير صحيحة أو هناك حقول مطلوبة مفقودة" },
         { status: 422 },
-      );
-    }
-
-    if (totalRounds < 1) {
-      return NextResponse.json(
-        { success: false, message: "يجب أن يكون هناك جولة واحدة على الأقل" },
-        { status: 400 },
       );
     }
 
@@ -93,7 +85,6 @@ const POST = async (request: NextRequest) => {
     const roomCreated = await createRoom(
       ownerId,
       name,
-      totalRounds,
       isPrivate,
       capacity,
       cards,

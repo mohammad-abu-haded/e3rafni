@@ -19,7 +19,6 @@ export type ApiResponse<T = undefined> = {
 export type Room = {
   id: number;
   name: string;
-  totalRounds: number;
   currentRound: number;
   createdAt: Date;
   ownerId: number;
@@ -46,7 +45,6 @@ export type RoundMemberInput = {
 
 export type CreateRoomBody = {
   name: string;
-  totalRounds: number;
   isPrivate: boolean;
   capacity: number;
   cards: Card[];

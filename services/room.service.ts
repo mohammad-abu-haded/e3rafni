@@ -58,7 +58,6 @@ export const isRoomMember = async (
 export const createRoom = async (
   ownerId: number,
   name: string,
-  totalRounds: number,
   isPrivate: boolean,
   capacity: number,
   cards: Card[],
@@ -69,7 +68,6 @@ export const createRoom = async (
       const room = await tx.rooms.create({
         data: {
           name,
-          totalRounds,
           ownerId,
           isPrivate,
           capacity,
@@ -99,7 +97,7 @@ export const createRoom = async (
       return room;
     });
     return result;
-  } catch (error) {
+  } catch (error) {    
     return null;
   }
 };
@@ -238,7 +236,6 @@ export const deleteRoom = async (roomId: number, userId: number) => {
 export const updateRoom = async (
   roomId: number,
   name: string,
-  totalRounds: number,
   userId: number,
   isPrivate: boolean,
   capacity: number,
@@ -254,7 +251,6 @@ export const updateRoom = async (
       },
       data: {
         name,
-        totalRounds,
         isPrivate,
         capacity,
       },

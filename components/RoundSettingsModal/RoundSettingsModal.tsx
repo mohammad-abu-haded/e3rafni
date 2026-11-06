@@ -330,7 +330,7 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
                 className={styles["viewer-action"]}
                 onClick={handleSelectAllViewers}
               >
-                اختيار الكل كمشاهدين
+               اختيار الباقين كمشاهدين
               </button>
 
               <button
@@ -338,7 +338,7 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
                 className={styles["viewer-action"]}
                 onClick={() => setViewers([])}
               >
-                إلغاء الكل
+               إلغاء تحديد جميع المشاهدين
               </button>
             </div>
           </div>

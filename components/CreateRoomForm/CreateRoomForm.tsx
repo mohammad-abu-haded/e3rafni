@@ -79,7 +79,6 @@ const validateCard = (
 
 const CreateRoomForm = () => {
   const [name, setName] = useState<string>("");
-  const [totalRounds, setTotalRounds] = useState<number | "">("");
   const [isPrivate, setIsPrivate] = useState<boolean>(true);
   const [capacity, setCapacity] = useState<number | "">("");
   const [cardTitle, setCardTitle] = useState<string>("");
@@ -192,16 +191,10 @@ const CreateRoomForm = () => {
   const handleSubmit = async () => {
     if (
       !name ||
-      typeof totalRounds !== "number" ||
       typeof isPrivate !== "boolean" ||
       typeof capacity !== "number"
     ) {
       toast.error("هناك حقول مطلوبة لم تملأها");
-      return;
-    }
-
-    if (totalRounds < 1) {
-      toast.error("يجب أن يكون هناك جولة واحدة على الأقل");
       return;
     }
 
@@ -237,7 +230,6 @@ const CreateRoomForm = () => {
     const createRoomBody: CreateRoomBody = {
       name,
       isPrivate,
-      totalRounds,
       capacity,
       cards,
     };
@@ -256,7 +248,6 @@ const CreateRoomForm = () => {
     localStorage.removeItem("cards");
     setName("");
     setIsPrivate(true);
-    setTotalRounds("");
     setCapacity("");
     setCardTitle("");
     setCardColor("#7c3aed");
@@ -312,7 +303,6 @@ const CreateRoomForm = () => {
         if (lastRoomSettings) {
           setName(lastRoomSettings.name);
           setIsPrivate(lastRoomSettings.isPrivate);
-          setTotalRounds(lastRoomSettings.totalRounds);
           setCapacity(lastRoomSettings.capacity);
           setCards(lastRoomSettings.cards);
         }
@@ -388,22 +378,6 @@ const CreateRoomForm = () => {
               </div>
 
               <div className={styles["room-field"]}>
-                <div className={styles["room-field-item"]}>
-                  <label htmlFor="total-rounds">عدد الجولات</label>
-                  <input
-                    type="number"
-                    id="total-rounds"
-                    value={totalRounds}
-                    min={1}
-                    placeholder="كم جولة بدك؟"
-                    onChange={(e) =>
-                      e.currentTarget.value === ""
-                        ? ""
-                        : setTotalRounds(Number(e.currentTarget.value))
-                    }
-                    required
-                  />
-                </div>
                 <div className={styles["room-field-item"]}>
                   <label htmlFor="capacity">سعة الغرفة</label>
                   <input
