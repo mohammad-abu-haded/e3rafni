@@ -17,7 +17,9 @@ import { API_ERROR_RESPONSE } from "@/constant/api.constants";
 import NotFound from "@/app/not-found";
 import { io } from "socket.io-client";
 
-const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
+  withCredentials: true,
+});
 
 interface IProps {
   userId: number;

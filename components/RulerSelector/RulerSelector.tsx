@@ -15,7 +15,10 @@ import { PostData } from "@/services/api.service";
 import { API_ERROR_RESPONSE } from "@/constant/api.constants";
 import { io } from "socket.io-client";
 
-const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
+  withCredentials: true,
+});
+
 interface IProps {
   roomCode: string;
   roomMembers: RoomMember[];
@@ -133,7 +136,7 @@ const RulerSelector = ({ roomCode, roomMembers, onClose }: IProps) => {
               title="تأكيد الحكم"
               className="btn btn-primary "
               Icon={SelectIcon}
-              disabled={rulerId ? false: true}
+              disabled={rulerId ? false : true}
             />
           </div>
           <button className="btn btn-secondary" onClick={() => onClose()}>

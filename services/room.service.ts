@@ -36,6 +36,23 @@ export const isRoomOwner = async (
   }
 };
 
+export const isRoomOwnerByCode = async (
+  roomCode: string,
+  userId: number,
+): Promise<boolean> => {
+  try {
+    const room = await prisma.rooms.findUnique({
+      where: {
+        code: roomCode.toUpperCase(),
+      }
+    });
+
+    return room?.ownerId === userId;
+  } catch {
+    return false;
+  }
+};
+
 export const isRoomMember = async (
   roomId: number,
   userId: number,

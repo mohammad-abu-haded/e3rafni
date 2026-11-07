@@ -1,12 +1,44 @@
 import { Server } from "socket.io";
+import { parse } from "cookie";
+import { jwtVerify } from "jose";
+import { isRoomOwnerByCode } from "./services/room.service";
+import { isRoundRulerByCode } from "./services/round.service";
 
 export const io = new Server(Number(process.env.SOCKET_PORT), {
   cors: {
     origin: process.env.CLIENT_URL,
+    credentials: true,
   },
 });
 
+io.use(async (socket, next) => {
+  try {
+    const cookieHeader = socket.handshake.headers.cookie;
+    const cookies = parse(cookieHeader || "");
+    const token = cookies.token;
+
+    if (!token) {
+      return next(new Error("Unauthorized"));
+    }
+
+    const { payload } = await jwtVerify(
+      token,
+      new TextEncoder().encode(process.env.JWT_SECRET!),
+    );
+
+    if (typeof payload.id !== "number") {
+      return next(new Error("Unauthorized"));
+    }
+
+    socket.data.userId = payload.id;
+    next();
+  } catch (error) {
+    next(new Error("Unauthorized"));
+  }
+});
+
 io.on("connection", (socket) => {
+  const userId = socket.data.userId;
 
   socket.on("join-room", (roomCode) => {
     socket.join(roomCode);
@@ -16,18 +48,21 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("server:room-ended", (roomCode) => {
-    socket.to(roomCode).emit("room:ended");
+  socket.on("server:room-ended", async (roomCode) => {
+    const isRoomOwner = await isRoomOwnerByCode(roomCode, userId);
+    isRoomOwner && socket.to(roomCode).emit("room:ended");
   });
 
-  socket.on("server:round-ended", (roomCode) => {
-    socket.to(roomCode).emit("round:ended");
+  socket.on("server:round-ended", async (roomCode) => {
+    const isRoomOwner = await isRoomOwnerByCode(roomCode, userId);
+    const isRoundRuler = await isRoundRulerByCode(roomCode, userId);
+    (isRoomOwner || isRoundRuler) && socket.to(roomCode).emit("round:ended");
   });
 
   socket.on("server:room-member-left", (roomCode) => {
     io.to(roomCode).emit("room:member-left");
   });
-  
+
   socket.on("server:round-started", (roomCode) => {
     io.to(roomCode).emit("round:started");
   });
@@ -36,14 +71,13 @@ io.on("connection", (socket) => {
     io.to(roomCode).emit("round:members-updated");
   });
 
-  socket.on("round:player-word-updated", (roomCode, playerId: number) => {  
+  socket.on("round:player-word-updated", (roomCode, playerId: number) => {
     io.to(roomCode).emit("player:word-updated", playerId);
   });
 
-  socket.on("round:card-used", (roomCode, userId: number, cardId: string) => {  
+  socket.on("round:card-used", (roomCode, userId: number, cardId: string) => {
     io.to(roomCode).emit("card:used", userId, cardId);
   });
 
-  socket.on("disconnect", () => {
-  });
+  socket.on("disconnect", () => {});
 });

@@ -31,7 +31,9 @@ import { profilePlaceholderBase64 } from "@/constant/profilePlaceholder";
 import EndRoundDialog from "../EndRoundDialog/EndRoundDialog";
 import { redirect } from "next/navigation";
 
-const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
+  withCredentials: true,
+});
 
 interface IProps {
   roomCode: string;

@@ -29,6 +29,48 @@ export const isRoundRuler = async (roundId: number, userId: number) => {
   }
 };
 
+export const isRoundRulerByCode = async (roomCode: string, userId: number) => {
+  try {
+    const room = await prisma.rooms.findUnique({
+      where: {
+        code: roomCode,
+      },
+    });
+
+    if (!room) {
+      return false;
+    }
+
+    const round = await prisma.rounds.findUnique({
+      where: {
+        roomId_roundNumber: {
+          roomId: room.id,
+          roundNumber: room.currentRound,
+        },
+      },
+    });
+
+    if (!round) {
+      return false;
+    }
+
+    const roundMember = await prisma.roundMembers.findFirst({
+      where: {
+        roundId: round.id,
+        userId,
+      },
+    });
+
+    if (!roundMember) {
+      return null;
+    }
+
+    return roundMember.type === "RULER";
+  } catch (error) {
+    return null;
+  }
+};
+
 export const createRound = async (
   roomCode: string,
   userId: number,

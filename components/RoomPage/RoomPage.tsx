@@ -69,7 +69,10 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
 
     getMembers();
 
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
+    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
+      withCredentials: true,
+    });
+    
     socket.on("connect", () => {
       socket.emit("join-room", roomCode);
     });
@@ -113,7 +116,11 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
           roomCode={roomCode}
         />
 
-        <RoomParticipants roomMembers={roomMembers} userId={userId} ownerId={room.ownerId}/>
+        <RoomParticipants
+          roomMembers={roomMembers}
+          userId={userId}
+          ownerId={room.ownerId}
+        />
       </div>
 
       <div className={styles["room-cards"]}>

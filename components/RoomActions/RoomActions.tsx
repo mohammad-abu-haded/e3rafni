@@ -16,7 +16,9 @@ import { redirect } from "next/navigation";
 import { io } from "socket.io-client";
 import RoundSetup from "../RoundSettingsModal/RoundSettingsModal";
 
-const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
+  withCredentials: true,
+});
 
 interface IProps {
   currentRound: number;
