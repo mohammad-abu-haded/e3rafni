@@ -3,6 +3,7 @@ import { Card, CardUsed, Room } from "@/types";
 
 import { customAlphabet } from "nanoid";
 import { getRoundPlayers, getUserRoundRule, isRoundRuler } from "./round.service";
+import { RoomStatus } from "@/app/generated/prisma/enums";
 
 const generateRoomCode = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 6);
 
@@ -107,6 +108,7 @@ export const getRoomById = async (id: number): Promise<Room | null> => {
     const room = await prisma.rooms.findUnique({
       where: {
         id,
+        status: RoomStatus.ACTIVE
       },
     });
 
@@ -125,6 +127,7 @@ export const getRoomByCode = async (
     const room = await prisma.rooms.findUnique({
       where: {
         code,
+        status: RoomStatus.ACTIVE
       },
     });
 
@@ -227,6 +230,25 @@ export const deleteRoom = async (roomId: number, userId: number) => {
       where: {
         id: roomId,
       },
+    });
+  } catch (error) {
+    return null;
+  }
+};
+
+export const finishRoom = async (roomId: number, userId: number) => {
+  try {
+    if (!(await isRoomOwner(roomId, userId))) {
+      return null;
+    }
+
+    return await prisma.rooms.update({
+      where: {
+        id: roomId,
+      },
+      data: {
+        status: RoomStatus.FINISHED
+      }
     });
   } catch (error) {
     return null;

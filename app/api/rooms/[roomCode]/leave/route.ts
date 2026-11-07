@@ -1,4 +1,4 @@
-import { deleteRoom, getRoomByCode, leaveRoom } from "@/services/room.service";
+import { finishRoom, getRoomByCode, leaveRoom } from "@/services/room.service";
 import { getAuthUser } from "@/utils/auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -26,7 +26,7 @@ const POST = async (request: NextRequest, { params }: IProps) => {
     const isRoomOwner = room.ownerId === user.id;
 
     if (isRoomOwner) {
-      const roomDeleted = await deleteRoom(room.id, user.id);
+      const roomDeleted = await finishRoom(room.id, user.id);
 
       if (roomDeleted) {
         return NextResponse.json(
