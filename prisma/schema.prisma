@@ -17,6 +17,11 @@ enum RoundMode {
   CONTINUOUS_QUESTIONS
 }
 
+enum RoomMemberStatus {
+  ACTIVE
+  LEFT
+}
+
 enum RoundMemberType {
   PLAYER
   VIEWER
@@ -105,7 +110,8 @@ model PlayerCardUsages {
 model RoomMembers {
   roomId Int
   userId Int
-  wins   Int @default(0)
+  wins Int @default(0)
+  status RoomMemberStatus @default(ACTIVE)
   room Rooms @relation(fields: [roomId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user Users @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   @@id([roomId, userId])

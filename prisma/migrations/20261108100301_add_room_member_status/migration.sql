@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `RoomMembers` ADD COLUMN `status` ENUM('ACTIVE', 'LEFT') NOT NULL DEFAULT 'ACTIVE';

@@ -2,8 +2,11 @@ import prisma from "@/lib/prisma";
 import { Card, CardUsed, Room } from "@/types";
 
 import { customAlphabet } from "nanoid";
-import { getRoundPlayers, getUserRoundRule, isRoundRuler } from "./round.service";
-import { RoomStatus } from "@/app/generated/prisma/enums";
+import {
+  getRoundPlayers,
+  isRoundRuler,
+} from "./round.service";
+import { RoomMemberStatus, RoomStatus } from "@/app/generated/prisma/enums";
 
 const generateRoomCode = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 6);
 
@@ -44,7 +47,7 @@ export const isRoomOwnerByCode = async (
     const room = await prisma.rooms.findUnique({
       where: {
         code: roomCode.toUpperCase(),
-      }
+      },
     });
 
     return room?.ownerId === userId;
@@ -115,7 +118,7 @@ export const createRoom = async (
       return room;
     });
     return result;
-  } catch (error) {    
+  } catch (error) {
     return null;
   }
 };
@@ -125,7 +128,7 @@ export const getRoomById = async (id: number): Promise<Room | null> => {
     const room = await prisma.rooms.findUnique({
       where: {
         id,
-        status: RoomStatus.ACTIVE
+        status: RoomStatus.ACTIVE,
       },
     });
 
@@ -144,7 +147,7 @@ export const getRoomByCode = async (
     const room = await prisma.rooms.findUnique({
       where: {
         code,
-        status: RoomStatus.ACTIVE
+        status: RoomStatus.ACTIVE,
       },
     });
 
@@ -158,17 +161,23 @@ export const getRoomByCode = async (
   }
 };
 
-export const getRoomMembers = async (userId: number, roomCode: string) => {
+export const getRoomMembers = async (
+  userId: number,
+  roomCode: string,
+  isActive = true,
+) => {
   try {
     roomCode = roomCode.toUpperCase();
+
     const room = await getRoomByCode(roomCode, userId);
-    if (!room) {
-      return null;
-    }
+    if (!room) return null;
 
     const roomMembers = await prisma.roomMembers.findMany({
       where: {
         roomId: room.id,
+        ...{
+          status: isActive ? RoomMemberStatus.ACTIVE : RoomMemberStatus.LEFT,
+        },
       },
       orderBy: {
         wins: "desc",
@@ -193,6 +202,7 @@ export const getRoomMemberCount = async (roomId: number) => {
   return await prisma.roomMembers.count({
     where: {
       roomId,
+      status: RoomMemberStatus.ACTIVE
     },
   });
 };
@@ -203,6 +213,7 @@ export const joinRoom = async (userId: number, code: string) => {
     const room = await prisma.rooms.findUnique({
       where: {
         code,
+        status: RoomStatus.ACTIVE
       },
     });
     if (
@@ -212,14 +223,27 @@ export const joinRoom = async (userId: number, code: string) => {
     ) {
       return null;
     }
-    const roomMember = await prisma.roomMembers.create({
-      data: {
-        roomId: room.id,
-        userId,
-      },
-    });
 
-    return roomMember;
+    const existingMember = await isRoomMember(room.id, userId);
+    if (existingMember) {
+      const roomMember = await prisma.roomMembers.update({
+        where: {
+          roomId_userId: { roomId: room.id, userId },
+        },
+        data: {
+          status: RoomMemberStatus.ACTIVE
+        },
+      });
+      return roomMember;
+    } else {
+      const roomMember = await prisma.roomMembers.create({
+        data: {
+          roomId: room.id,
+          userId,
+        },
+      });
+      return roomMember;
+    }
   } catch (error) {
     return null;
   }
@@ -227,9 +251,12 @@ export const joinRoom = async (userId: number, code: string) => {
 
 export const leaveRoom = async (roomId: number, userId: number) => {
   try {
-    return await prisma.roomMembers.delete({
+    return await prisma.roomMembers.update({
       where: {
         roomId_userId: { roomId, userId },
+      },
+      data: {
+        status: RoomMemberStatus.LEFT,
       },
     });
   } catch (error) {
@@ -264,8 +291,8 @@ export const finishRoom = async (roomId: number, userId: number) => {
         id: roomId,
       },
       data: {
-        status: RoomStatus.FINISHED
-      }
+        status: RoomStatus.FINISHED,
+      },
     });
   } catch (error) {
     return null;
@@ -311,7 +338,7 @@ export const incrementPlayerWins = async (
     if (
       !(await isRoomOwner(roomId, userId)) &&
       !(await isRoundRuler(roundId, userId))
-    ) {      
+    ) {
       return null;
     }
 
