@@ -1,4 +1,4 @@
-import { PlayerResult, Role, RoundMemberType, RoundMode } from "@/app/generated/prisma/enums";
+import { PlayerResult, Role, RoundMemberType, RoundMode, RoundStatus } from "@/app/generated/prisma/enums";
 
 export type User = {
   id: number;
@@ -35,6 +35,7 @@ export type Round = {
   roundDuration: number;
   startedAt: Date;
   mode: RoundMode;
+  status: RoundStatus;
 };
 
 export type RoundMemberInput = {

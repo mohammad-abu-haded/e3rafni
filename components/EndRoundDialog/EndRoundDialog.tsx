@@ -11,11 +11,14 @@ import {
   RoundMember,
 } from "@/types";
 import ActionButton from "@/components/ActionButton/ActionButton";
+import FinishIcon from "@/public/finish.svg";
 import { GetData, PostData } from "@/services/api.service";
 import { toast } from "react-toastify";
 import { API_ERROR_RESPONSE } from "@/constant/api.constants";
 import NotFound from "@/app/not-found";
 import { io } from "socket.io-client";
+import Image from "next/image";
+import { profilePlaceholderBase64 } from "@/constant/profilePlaceholder";
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
   withCredentials: true,
@@ -51,6 +54,7 @@ const EndRoundDialog = ({
       return {
         userId: member.userId,
         name: roomMember?.user.name ?? `اللاعب ${member.userId}`,
+        picture: roomMember?.user.picture ?? profilePlaceholderBase64,
       };
     });
 
@@ -124,9 +128,10 @@ const EndRoundDialog = ({
     <>
       <button
         type="button"
-        className={styles["end-round-button"]}
+        className="btn btn-leave"
         onClick={() => setIsOpen(true)}
       >
+        <FinishIcon className="icon" />
         إنهاء الجولة
       </button>
 
@@ -136,26 +141,30 @@ const EndRoundDialog = ({
           onClick={() => setIsOpen(false)}
         >
           <div
-            className={styles["dialog"]}
+            className={`${styles["dialog"]} ${styles["winner-dialog"]}`}
             role="dialog"
             aria-modal="true"
             aria-labelledby="end-round-title"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className={styles["dialog-header"]}>
+            <div
+              className={`${styles["dialog-header"]} ${styles["winner-header"]}`}
+            >
               <h2 id="end-round-title">إنهاء الجولة</h2>
 
-              <p>حدد نتيجة الجولة قبل التأكيد.</p>
+              <p>اختر الفائز أو سجّل تعادلًا لإنهاء الجولة.</p>
             </div>
 
             <form action={handleSubmit}>
-              <fieldset className={styles["winner-options"]}>
+              <fieldset
+                className={`${styles["winner-options"]} ${styles["winner-grid"]}`}
+              >
                 <legend>من الفائز؟</legend>
 
                 {players.map((player) => (
                   <label
                     key={player.userId}
-                    className={styles["winner-option"]}
+                    className={`${styles["winner-option"]} ${styles["winner-choice"]}`}
                   >
                     <input
                       type="radio"
@@ -164,27 +173,40 @@ const EndRoundDialog = ({
                       required
                     />
 
+                    <span className={styles["winner-avatar"]}>
+                      <Image
+                        className={styles["winner-avatar-image"]}
+                        src={player.picture}
+                        alt=""
+                        width={68}
+                        height={68}
+                      />
+                    </span>
                     <span>{player.name}</span>
                   </label>
                 ))}
 
-                <label className={styles["winner-option"]}>
+                <label
+                  className={`${styles["winner-option"]} ${styles["winner-choice"]} ${styles["draw-option"]}`}
+                >
                   <input type="radio" name="winner" value="draw" required />
 
                   <span>تعادل</span>
                 </label>
               </fieldset>
 
-              <div className={styles["dialog-actions"]}>
+              <div
+                className={`${styles["dialog-actions"]} ${styles["winner-actions"]}`}
+              >
                 <ActionButton
                   title="تأكيد النتيجة"
-                  className="btn btn-primary"
+                  className={`btn btn-primary ${styles["winner-confirm"]}`}
                   disabled={players.length !== 2}
                 />
 
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className={`btn btn-secondary ${styles["winner-cancel"]}`}
                   onClick={() => setIsOpen(false)}
                 >
                   إلغاء

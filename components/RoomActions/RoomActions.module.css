@@ -5,19 +5,28 @@
 }
 
 .room-actions-container > h3 {
-    font-size: 18px;
+  font-size: 18px;
 }
 
 .room-actions {
-    display: flex;
-    flex-direction: column;
-    row-gap: 16px;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
 }
 
 .room-actions > button {
-    width: 100%;
-    box-sizing: border-box;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.room-actions-container > form {
+  width: 100%;
+}
+
+.room-actions-container > form button {
+  width: 100%;
+  box-sizing: border-box;
 }

@@ -13,7 +13,7 @@ import {
   VisiblePlayerWord,
 } from "@/types";
 import { GetData, PatchData, PostData } from "@/services/api.service";
-import { RoundMemberType } from "@/app/generated/prisma/enums";
+import { RoundMemberType, RoundStatus } from "@/app/generated/prisma/enums";
 import {
   fetchRoomMembers,
   fetchRoundMembers,
@@ -23,6 +23,7 @@ import Image from "next/image";
 import ConfirmCardDialog from "../ConfirmCardDialog/ConfirmCardDialog";
 import RoundTimer from "../RoundTimer/RoundTimer";
 import SearchIcon from "@/public/search.svg";
+import BackIcon from "@/public/back.svg";
 import GoogleAIIcon from "@/public/GoogleAIIcon.svg";
 import EditIcon from "@/public/edit.svg";
 import ActionButton from "../ActionButton/ActionButton";
@@ -120,7 +121,12 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
       `/api/rooms/${roomCode}/rounds`,
     );
 
-    if (!result?.success || !result.data) {
+    if (
+      !result?.success ||
+      !result.data ||
+      result.data.status !== RoundStatus.PLAYING
+    ) {
+      toast.error("لم تبدأ الجولة بعد");
       redirect(`/rooms/${roomCode}`);
     }
 
@@ -210,7 +216,6 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
 
     const handleRoundMembersUpdated = () => {
       getRoundMembers();
-      getPlayerWords();
     };
 
     const handleRoundStarted = () => {
@@ -245,7 +250,6 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
     socket.on("connect", handleConnect);
     socket.on("room:members-updated", handleRoomMembersUpdated);
     socket.on("room:member-left", handleRoomMemberLeft);
-    socket.on("round:members-updated", handleRoundMembersUpdated);
     socket.on("round:started", handleRoundStarted);
     socket.on("player:word-updated", handlePlayerWordUpdated);
     socket.on("card:used", handleCardUsed);
@@ -262,7 +266,6 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
       socket.off("connect", handleConnect);
       socket.off("room:members-updated", handleRoomMembersUpdated);
       socket.off("room:member-left", handleRoomMemberLeft);
-      socket.off("round:members-updated", handleRoundMembersUpdated);
       socket.off("round:started", handleRoundStarted);
       socket.off("player:word-updated", handlePlayerWordUpdated);
       socket.off("card:used", handleCardUsed);
@@ -278,6 +281,10 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
   return (
     <div className={styles["round-page"]}>
       <section className={styles["round-header"]}>
+        <button onClick={() => redirect(`/rooms/${roomCode}`)} className="btn btn-primary">
+          <BackIcon className="icon" />
+          الرجوع إلى الغرفة
+        </button>
         <div>
           <h2>الجولة {round.roundNumber}</h2>
           <RoundTimer

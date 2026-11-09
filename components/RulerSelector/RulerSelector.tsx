@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "./RulerSelector.module.css";
-import { ApiResponse, RoomMember } from "@/types";
+import { ApiResponse, RoomMember, Round } from "@/types";
 import { toast } from "react-toastify";
 import ActionButton from "../ActionButton/ActionButton";
 import SelectIcon from "@/public/select.svg";
@@ -45,8 +45,9 @@ const RulerSelector = ({ roomCode, roomMembers, onClose }: IProps) => {
       return;
     }
 
+
     toast.success(result.message);
-    socket.emit("server:round-members-updated", roomCode);
+    socket.emit("server:round-ruler-updated", roomCode);
     onClose();
   };
 

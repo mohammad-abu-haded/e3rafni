@@ -1,28 +1,6 @@
-
-.end-round-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0 24px;
-  border: 1px solid #dc2626;
-  border-radius: 10px;
-  background: #dc2626;
-  color: #fff;
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-
-.end-round-button:hover {
-  background: #b91c1c;
-}
-
-.end-round-button:active {
-  transform: scale(0.98);
+.finish-icon {
+  width: 24px;
+  height: 24px;
 }
 
 .dialog-overlay {
@@ -49,6 +27,14 @@
   animation: dialog-appear 0.18s ease-out;
 }
 
+.winner-dialog {
+  max-width: 480px;
+  overflow: hidden;
+  border-color: #e8e4f2;
+  background: linear-gradient(160deg, #fff 60%, #faf8ff);
+  box-shadow: 0 28px 80px rgb(24 18 42 / 24%);
+}
+
 .dialog-header {
   margin-bottom: 24px;
   text-align: center;
@@ -66,6 +52,24 @@
   line-height: 1.7;
 }
 
+.winner-header {
+  margin: -24px -24px 24px;
+  padding: 28px 24px 22px;
+  border-bottom: 1px solid #eeeaf5;
+  background: radial-gradient(ellipse at top, #f3edff, #fff 76%);
+}
+
+.winner-header h2 {
+  color: #28134d;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.winner-header p {
+  color: #777184;
+}
+
 .winner-options {
   display: flex;
   flex-direction: column;
@@ -75,16 +79,29 @@
   border: none;
 }
 
+.winner-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
 .winner-options legend {
   margin-bottom: 12px;
   font-weight: 600;
 }
 
+.winner-grid legend {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+  color: #34284a;
+  font-size: 15px;
+}
+
 .winner-option {
   display: flex;
+  min-height: 52px;
   align-items: center;
   gap: 12px;
-  min-height: 52px;
   padding: 12px 14px;
   border: 1px solid #d4d6da;
   border-radius: 10px;
@@ -94,9 +111,44 @@
     background 0.2s ease;
 }
 
+.winner-choice {
+  position: relative;
+  min-height: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 12px 16px;
+  border-color: #e8e4ef;
+  border-radius: 16px;
+  background: #fff;
+  text-align: center;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.winner-choice:hover {
+  transform: translateY(-2px);
+  border-color: #c8b7ef;
+  box-shadow: 0 8px 20px rgb(71 40 122 / 8%);
+}
+
 .winner-option:has(input:checked) {
   border-color: #7c3aed;
   background: #f7f5ff;
+}
+
+.winner-choice:has(input:checked) {
+  border-color: #7c3aed;
+  background: linear-gradient(145deg, #f7f2ff, #fff);
+  box-shadow: 0 0 0 3px rgb(124 58 237 / 10%);
+}
+
+.winner-choice:focus-within {
+  outline: 3px solid rgb(124 58 237 / 25%);
+  outline-offset: 2px;
 }
 
 .winner-option input {
@@ -107,16 +159,81 @@
   cursor: pointer;
 }
 
-.winner-option span {
+.winner-choice input {
+  position: absolute;
+  top: 10px;
+  inset-inline-start: 10px;
+}
+
+.winner-option > span {
   font-size: 15px;
   font-weight: 500;
 }
 
+.winner-choice > span {
+  color: #332744;
+  font-size: 15px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.winner-avatar {
+  display: block;
+  width: 68px;
+  height: 68px;
+  overflow: hidden;
+  border: 3px solid #f0ebf8;
+  border-radius: 50%;
+  background: #f3eff8;
+  box-shadow: 0 4px 12px rgb(35 22 58 / 10%);
+}
+
+.winner-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.draw-option {
+  grid-column: 1 / -1;
+  min-height: 58px;
+  flex-direction: row;
+  justify-content: center;
+  padding: 12px 16px;
+  background: #faf9fc;
+}
+
 .dialog-actions {
   display: flex;
-  flex-direction: column;
   gap: 12px;
   margin-top: 24px;
+}
+
+.dialog-actions > button {
+  box-sizing: border-box;
+}
+
+.winner-actions {
+  margin-top: 20px;
+}
+
+.winner-confirm {
+  flex: 1;
+  border-radius: 10px;
+  background: #6d35c5;
+  box-shadow: 0 5px 12px rgb(109 53 197 / 18%);
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.winner-confirm:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #5927a8;
+}
+
+.winner-cancel {
+  border-radius: 10px;
 }
 
 @keyframes dialog-appear {
@@ -134,5 +251,19 @@
 @media (max-width: 480px) {
   .dialog {
     padding: 20px;
+  }
+
+  .winner-header {
+    margin: -20px -20px 20px;
+    padding: 24px 20px 18px;
+  }
+
+  .winner-choice {
+    padding-inline: 8px;
+  }
+
+  .winner-avatar {
+    width: 60px;
+    height: 60px;
   }
 }

@@ -67,8 +67,8 @@ io.on("connection", (socket) => {
     io.to(roomCode).emit("round:started");
   });
 
-  socket.on("server:round-members-updated", (roomCode) => {
-    io.to(roomCode).emit("round:members-updated");
+  socket.on("server:round-ruler-updated", (roomCode) => {
+    io.to(roomCode).emit("round:ruler-updated");
   });
 
   socket.on("round:player-word-updated", (roomCode, playerId: number) => {

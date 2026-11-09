@@ -9,21 +9,22 @@ import OneIcon from "@/public/one.svg";
 import TwoIcon from "@/public/two.svg";
 import { formatDuration } from "@/utils/formatDuration";
 interface IProps {
+  currentRound: Round | undefined;
   roundMembers: RoundMember[];
   roomMembers: RoomMember[];
-  roomCode: string;
   userId: number;
   ownerId: number;
+  roundNumber: number;
 }
 
 const CurrentRoundCard = ({
+  currentRound,
   roundMembers,
   roomMembers,
-  roomCode,
   userId,
   ownerId,
+  roundNumber,
 }: IProps) => {
-  const [currentRound, setCurrentRound] = useState<Round>();
   const [ruler, setRuler] = useState<{ name: string; id: number } | null>();
   const [player1, setPlayer1] = useState<{ name: string; id: number } | null>();
   const [player2, setPlayer2] = useState<{ name: string; id: number } | null>();
@@ -54,49 +55,36 @@ const CurrentRoundCard = ({
     );
   }, [roomMembers, roundMembers]);
 
-  useEffect(() => {
-    const getCurrentRound = async () => {
-      const result: ApiResponse = await GetData(
-        `/api/rooms/${roomCode}/rounds`,
-      );
-
-      if (result && result.data) {
-        const currentRoundFetched: Round = result.data;
-        setCurrentRound(currentRoundFetched);
-      }
-    };
-    getCurrentRound();
-  }, [roomCode]);
-
-  const ownerName = roomMembers.find((item) => item.userId === ownerId)?.user.name;
-  const ROUND_PARTICIPANTS_CONFIG  = [
+  const ownerName = roomMembers.find((item) => item.userId === ownerId)?.user
+    .name;
+  const ROUND_PARTICIPANTS_CONFIG = [
     {
       title: "مالك الغرفة",
       isCurrentUser: ownerId === userId,
       Icon: OwnerIcon,
       name: ownerName,
-      fallback: "لم يتم العثور على مالك الغرفة"
+      fallback: "لم يتم العثور على مالك الغرفة",
     },
     {
       title: "حكم الجولة",
       isCurrentUser: ruler?.id === userId,
       Icon: ShieldIcon,
       name: ruler && ruler.name,
-      fallback: "لم يتم العثور على حكم الجولة"
+      fallback: "لم يتم العثور على حكم الجولة",
     },
     {
       title: "اللاعب الأول",
       isCurrentUser: player1?.id === userId,
       Icon: OneIcon,
       name: player1 && player1.name,
-      fallback: "لم يتم تحديد اللاعب الأول"
+      fallback: "لم يتم تحديد اللاعب الأول",
     },
     {
       title: "اللاعب الثاني",
       isCurrentUser: player2?.id === userId,
       Icon: TwoIcon,
       name: player2 && player2.name,
-      fallback: "لم يتم تحديد اللاعب الثاني"
+      fallback: "لم يتم تحديد اللاعب الثاني",
     },
   ];
   return (
@@ -106,7 +94,7 @@ const CurrentRoundCard = ({
         <div className={styles["current-round-settings-field"]}>
           <div className={styles["current-round-setting"]}>
             <p>رقم الجولة</p>
-            <b>{currentRound?.roundNumber || 0}</b>
+            <b>{roundNumber || 0}</b>
           </div>
           <div className={styles["current-round-setting"]}>
             <p>المدة</p>
@@ -120,20 +108,16 @@ const CurrentRoundCard = ({
             </div>
           </div>
         </div>
-        {ROUND_PARTICIPANTS_CONFIG .map((item, index) => (
+        {ROUND_PARTICIPANTS_CONFIG.map((item, index) => (
           <div
-          key={index}
+            key={index}
             className={`${styles["current-round-setting"]} ${item.isCurrentUser && styles["is-me"]}`}
           >
             <div>
               <item.Icon className={styles["member-icon"]} />
               <p>{item.title}</p>
             </div>
-            {item.name ? (
-              <b>{item.name}</b>
-            ) : (
-              <p>{item.fallback}</p>
-            )}
+            {item.name ? <b>{item.name}</b> : <p>{item.fallback}</p>}
           </div>
         ))}
       </div>

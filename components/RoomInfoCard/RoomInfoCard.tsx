@@ -6,9 +6,11 @@ import UsersIcon from "@/public/users.svg";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import RoomJoinCode from "../RoomJoinCode/RoomJoinCode";
+import { RoundStatus } from "@/app/generated/prisma/enums";
 interface IProps {
   roomName: string;
-  currentRound: number;
+  currentRoundNumber: number;
+  currentRoundStatus: RoundStatus;
   playerCount: number;
   roomCode: string;
 }
@@ -22,6 +24,19 @@ const getPlayerLabel = (count: number) => {
 const RoomInfoCard = (props: IProps) => {
   const [roomUrl, setRoomUrl] = useState("");
   const [showRoomJoinCode, setShowRoomJoinCode] = useState(false);
+
+  const getRoundStatus = (): string => {
+    switch (props.currentRoundStatus) {
+      case RoundStatus.WAITING:
+        return "بانتظار بدء الجولة";
+
+      case RoundStatus.PLAYING:
+        return "الجولة جارية";
+
+      default:
+        return "انتهت الجولة";
+    }
+  };
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(props.roomCode);
@@ -44,8 +59,13 @@ const RoomInfoCard = (props: IProps) => {
         <h3 className={styles["room-name"]}>{props.roomName}</h3>
         <div className={styles["room-stats"]}>
           <div className={styles["room-current-round"]}>
-            الجولة {props.currentRound}
+            الجولة {props.currentRoundNumber}
           </div>
+          {props.currentRoundNumber !== 0 && (
+            <div className={styles["room-current-round-status"]}>
+              {getRoundStatus()}
+            </div>
+          )}
           <div className={styles["room-player-count"]}>
             <UsersIcon className={styles["users-icon"]} />
             {props.playerCount}
