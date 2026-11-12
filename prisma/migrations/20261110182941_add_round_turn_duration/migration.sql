@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Rounds` ADD COLUMN `turnDuration` INTEGER NOT NULL DEFAULT 20;

@@ -33,6 +33,7 @@ export type Round = {
   roomId: number;
   roundNumber: number;
   roundDuration: number;
+  turnDuration?: number;
   startedAt: Date;
   mode: RoundMode;
   status: RoundStatus;

@@ -390,6 +390,7 @@ export const startRound = async (
   roundId: number,
   roundDuration: number,
   roundPlayersViewers: RoundMemberInput[],
+  turnDuration?: number,
 ) => {
   try {
     let playerCount = 0;
@@ -472,6 +473,7 @@ export const startRound = async (
         data: {
           status: RoundStatus.PLAYING,
           roundDuration,
+          ...(turnDuration !== undefined && {turnDuration})
         },
       });
 

@@ -125,6 +125,7 @@ model Rounds {
   roomId Int
   roundNumber Int
   roundDuration Int
+  turnDuration Int @default(20)
   startedAt DateTime @default(now())
   mode RoundMode @default(SINGLE_QUESTION)
   status RoundStatus @default(WAITING)

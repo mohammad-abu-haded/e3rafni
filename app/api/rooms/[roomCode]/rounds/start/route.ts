@@ -26,6 +26,7 @@ const POST = async (request: NextRequest, { params }: IProps) => {
       viewers: number[];
       player1Word: string;
       player2Word: string;
+      turnDuration?: number;
     };
 
     const {
@@ -35,11 +36,19 @@ const POST = async (request: NextRequest, { params }: IProps) => {
       viewers,
       player1Word,
       player2Word,
+      turnDuration,
     } = body;
     let errorMessage = "";
-
+    
     if (!Number.isInteger(roundDuration) || roundDuration <= 0) {
       errorMessage = "مدة الجولة غير صالحة أو لم تحددها";
+    } else if (
+      turnDuration !== undefined &&
+      (!Number.isInteger(turnDuration) || turnDuration <= 0)
+    ) {
+      errorMessage = "مدة دور اللاعب غير صالحة أو لم تحددها";
+    } else if (turnDuration !== undefined && roundDuration / turnDuration < 2) {
+      errorMessage = "مدة الجولة يجب أن تسمح بدورين على الأقل";
     } else if (!player1) {
       errorMessage = "يرجى اختيار اللاعب الأول";
     } else if (!player2) {
@@ -104,6 +113,7 @@ const POST = async (request: NextRequest, { params }: IProps) => {
       currentRound.id,
       roundDuration,
       roundPlayersViewers,
+      turnDuration,
     );
 
     if (!round) {

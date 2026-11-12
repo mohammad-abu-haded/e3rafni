@@ -1,0 +1,32 @@
+.round-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+}
+
+.round-timer {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.turn-players {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 520px) {
+  .round-progress {
+    padding: 16px;
+    gap: 16px;
+    border-radius: 20px;
+  }
+
+  .round-timer {
+    padding-bottom: 16px;
+  }
+}

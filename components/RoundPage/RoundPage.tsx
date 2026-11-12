@@ -10,6 +10,7 @@ import {
   RoomMember,
   Round,
   RoundMember,
+  User,
   VisiblePlayerWord,
 } from "@/types";
 import { GetData, PatchData, PostData } from "@/services/api.service";
@@ -21,17 +22,16 @@ import {
 } from "@/services/room-api.service";
 import Image from "next/image";
 import ConfirmCardDialog from "../ConfirmCardDialog/ConfirmCardDialog";
-import RoundTimer from "../RoundTimer/RoundTimer";
 import SearchIcon from "@/public/search.svg";
-import BackIcon from "@/public/back.svg";
 import GoogleAIIcon from "@/public/GoogleAIIcon.svg";
 import EditIcon from "@/public/edit.svg";
 import ActionButton from "../ActionButton/ActionButton";
 import { API_ERROR_RESPONSE } from "@/constant/api.constants";
 import { profilePlaceholderBase64 } from "@/constant/profilePlaceholder";
-import EndRoundDialog from "../EndRoundDialog/EndRoundDialog";
 import { redirect } from "next/navigation";
-
+import { getCurrentTurnPlayer } from "@/utils/round";
+import RoundHeader from "../RoundHeader/RoundHeader";
+import RoundProgress from "../RoundProgress/RoundProgress";
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
   withCredentials: true,
 });
@@ -274,42 +274,79 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
     };
   }, [roomCode]);
 
+  const [currentTurnPlayer, setCurrentTurnPlayer] = useState<Pick<
+    User,
+    "id" | "name"
+  > | null>(null);
+
+  useEffect(() => {
+    const updateCurrentTurn = () => {
+      const player1Id = roundMembers.find(
+        (member) => member.type === RoundMemberType.PLAYER,
+      )?.userId;
+
+      const player2Id = roundMembers.find(
+        (member) =>
+          member.type === RoundMemberType.PLAYER && member.userId !== player1Id,
+      )?.userId;
+
+      const player1 = roomMembers.find((member) => member.userId === player1Id)
+        ?.user.name;
+
+      const player2 = roomMembers.find((member) => member.userId === player2Id)
+        ?.user.name;
+
+      if (!player1Id || !player2Id) {
+        setCurrentTurnPlayer(null);
+        return;
+      }
+
+      if (round) {
+        const player = getCurrentTurnPlayer(round, [
+          { id: player1Id, name: player1 || "Player 1" },
+          { id: player2Id, name: player2 || "Player 2" },
+        ]);
+
+        setCurrentTurnPlayer(player);
+      }
+    };
+
+    updateCurrentTurn();
+
+    const interval = setInterval(updateCurrentTurn, 250);
+
+    return () => clearInterval(interval);
+  }, [
+    round?.id,
+    round?.status,
+    round?.startedAt,
+    round?.roundDuration,
+    round?.turnDuration,
+    roomMembers,
+    roundMembers,
+  ]);
+
   if (!round) {
     return <div className={styles["round-loading"]}>جاري تحميل الجولة...</div>;
   }
 
   return (
     <div className={styles["round-page"]}>
-      <section className={styles["round-header"]}>
-        <button onClick={() => redirect(`/rooms/${roomCode}`)} className="btn btn-primary">
-          <BackIcon className="icon" />
-          الرجوع إلى الغرفة
-        </button>
-        <div>
-          <h2>الجولة {round.roundNumber}</h2>
-          <RoundTimer
-            startedAt={round.startedAt}
-            duration={round.roundDuration}
-          />
-        </div>
+      <RoundHeader
+        roomCode={roomCode}
+        roundNumber={round.roundNumber}
+        userId={userId}
+        roundRule={roundRule}
+        roundMembers={roundMembers}
+        roomMembers={roomMembers}
+      />
 
-        <div className={styles["round-status"]}>
-          {roundRule === "PLAYER"
-            ? "أنت لاعب"
-            : roundRule === "RULER"
-              ? "أنت الحكم"
-              : roundRule === "VIEWER"
-                ? "أنت مشاهد"
-                : "غير مصنف"}
-        </div>
-
-        <EndRoundDialog
-          userId={userId}
-          roundMembers={roundMembers}
-          roomMembers={roomMembers}
-          roomCode={roomCode}
-        />
-      </section>
+      <RoundProgress
+        round={round}
+        roundMembers={roundMembers}
+        roomMembers={roomMembers}
+        currentTurnPlayer={currentTurnPlayer}
+      />
 
       <section className={styles["round-words-section"]}>
         <div className={styles["section-header"]}>
@@ -366,7 +403,7 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
                             title="البحث عن الصور"
                           >
                             <SearchIcon className={styles["search-icon"]} />
-                            <span>صور Google</span>
+                            <span>البحث عن صور</span>
                           </button>
 
                           <button
@@ -383,7 +420,7 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
                             title="البحث باستخدام الذكاء الاصطناعي"
                           >
                             <GoogleAIIcon className={styles["search-icon"]} />
-                            <span>AI Mode</span>
+                            <span>اسأل الذكاء الاصطناعي</span>
                           </button>
                         </div>
                       </>

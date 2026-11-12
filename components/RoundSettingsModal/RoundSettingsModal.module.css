@@ -89,6 +89,12 @@
   font-weight: 600;
 }
 
+.duration-hint {
+  margin: 0;
+  color: var(--secondary-font-color);
+  font-size: 13px;
+}
+
 .duration-input-container {
   width: 100%;
   display: flex;

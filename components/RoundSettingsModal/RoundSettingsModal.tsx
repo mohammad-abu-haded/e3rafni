@@ -26,6 +26,7 @@ interface IProps {
 
 const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
   const [roundDuration, setRoundDuration] = useState<number | string>("");
+  const [turnDuration, setTurnDuration] = useState<number | undefined>();
   const [player1, setPlayer1] = useState<number>();
   const [player2, setPlayer2] = useState<number>();
   const [viewers, setViewers] = useState<number[]>([]);
@@ -36,24 +37,57 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
   const [roomMemberFiltered, setRoomMemberFiltered] =
     useState<RoomMember[]>(roomMembers);
 
-  const [durationUnit, setDurationUnit] = useState<
+  const [roundDurationUnit, setRoundDurationUnit] = useState<
     "seconds" | "minutes" | "hours"
   >("minutes");
+
+  const [turnDurationUnit, setTurnDurationUnit] = useState<
+    "seconds" | "minutes" | "hours"
+  >("seconds");
 
   const [memberFilter, setMemberFilter] = useState<
     "all" | "players" | "viewers"
   >("all");
 
   const handleSubmit = async () => {
-    const duration = Number(roundDuration);
-    let roundDurationInSeconds = duration;
-    if (durationUnit === "minutes") {
-      roundDurationInSeconds = duration * 60;
-    } else if (durationUnit === "hours") {
-      roundDurationInSeconds = duration * 60 * 60;
+    let roundDurationInSeconds = Number(roundDuration);
+    if (roundDurationUnit === "minutes") {
+      roundDurationInSeconds = roundDurationInSeconds * 60;
+    } else if (roundDurationUnit === "hours") {
+      roundDurationInSeconds = roundDurationInSeconds * 60 * 60;
     }
-    if (!Number.isInteger(duration) || duration <= 0) {
+
+    let turnDurationInSeconds: number | undefined;
+
+    if (turnDuration !== undefined) {
+      turnDurationInSeconds = Number(turnDuration);
+
+      if (turnDurationUnit === "minutes") {
+        turnDurationInSeconds *= 60;
+      } else if (turnDurationUnit === "hours") {
+        turnDurationInSeconds *= 3600;
+      }
+    }
+
+    if (
+      !Number.isInteger(roundDurationInSeconds) ||
+      roundDurationInSeconds <= 0
+    ) {
       toast.error("مدة الجولة غير صالحة أو لم تحددها");
+      return;
+    }
+    if (
+      turnDurationInSeconds !== undefined &&
+      (!Number.isInteger(turnDurationInSeconds) || turnDurationInSeconds <= 0)
+    ) {
+      toast.error("مدة دور اللاعب غير صالحة أو لم تحددها");
+      return;
+    }
+    if (
+      turnDurationInSeconds !== undefined &&
+      roundDurationInSeconds / turnDurationInSeconds < 2
+    ) {
+      toast.error("مدة الجولة يجب أن تسمح بدورين على الأقل");
       return;
     }
     if (!player1) {
@@ -96,6 +130,9 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
     const result: ApiResponse =
       (await PostData(`/api/rooms/${roomCode}/rounds/start`, {
         roundDuration: roundDurationInSeconds,
+        ...(turnDurationInSeconds !== undefined && {
+          turnDuration: turnDurationInSeconds,
+        }),
         player1,
         player2,
         viewers,
@@ -226,9 +263,9 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
 
                 <select
                   form=""
-                  value={durationUnit}
+                  value={roundDurationUnit}
                   onChange={(e) =>
-                    setDurationUnit(
+                    setRoundDurationUnit(
                       e.target.value as "seconds" | "minutes" | "hours",
                     )
                   }
@@ -238,6 +275,47 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
                   <option value="hours">ساعات</option>
                 </select>
               </div>
+            </div>
+
+            <div className={styles["duration-container"]}>
+              <label htmlFor="turn-duration">مدة دور اللاعب (اختياري)</label>
+
+              <div className={styles["duration-input-container"]}>
+                <input
+                  id="turn-duration"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={turnDuration ?? ""}
+                  placeholder="مثال: 20"
+                  onChange={(e) =>
+                    setTurnDuration(
+                      e.target.value === ""
+                        ? undefined
+                        : Number(e.target.value),
+                    )
+                  }
+                />
+
+                <select
+                  aria-label="وحدة مدة دور اللاعب"
+                  form=""
+                  value={turnDurationUnit}
+                  onChange={(e) =>
+                    setTurnDurationUnit(
+                      e.target.value as "seconds" | "minutes" | "hours",
+                    )
+                  }
+                >
+                  <option value="seconds">ثواني</option>
+                  <option value="minutes">دقائق</option>
+                  <option value="hours">ساعات</option>
+                </select>
+              </div>
+
+              <p className={styles["duration-hint"]}>
+                اتركه فارغًا لاستخدام المدة الافتراضية: 20 ثانية.
+              </p>
             </div>
 
             <div className={styles["player-settings"]}>
@@ -332,7 +410,7 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
                 className={styles["viewer-action"]}
                 onClick={handleSelectAllViewers}
               >
-               اختيار الباقين كمشاهدين
+                اختيار الباقين كمشاهدين
               </button>
 
               <button
@@ -340,7 +418,7 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
                 className={styles["viewer-action"]}
                 onClick={() => setViewers([])}
               >
-               إلغاء تحديد جميع المشاهدين
+                إلغاء تحديد جميع المشاهدين
               </button>
             </div>
           </div>

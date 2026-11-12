@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -112,24 +111,17 @@ const RoundTimer = ({ startedAt, duration }: IProps) => {
         <div
           className={styles["timer-progress"]}
           style={{ width: `${progress}%` }}
-        >
-          {!isFinished && (
-            <span className={styles["timer-progress-glow"]} />
-          )}
-        </div>
+        />
       </div>
 
       <div className={styles["timer-footer"]}>
-        <span>
-          {isFinished ? "الجولة انتهت" : "الوقت المنقضي"}
-        </span>
+        <span>{isFinished ? "الجولة انتهت" : "الوقت المنقضي"}</span>
 
         <span dir="ltr">
           {Math.floor(elapsedTime / 60000)}:
           {formatTime(Math.floor((elapsedTime % 60000) / 1000))}
           {" / "}
-          {Math.floor(duration / 60)}:
-          {formatTime(duration % 60)}
+          {Math.floor(duration / 60)}:{formatTime(duration % 60)}
         </span>
       </div>
     </div>
