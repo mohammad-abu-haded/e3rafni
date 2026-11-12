@@ -1,8 +1,10 @@
 .room-info-card {
   width: 100%;
+  min-width: 0;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+  gap: 24px;
   padding: 28px 25px;
   border-radius: 16px;
   border: 1px solid var(--border-color);
@@ -14,18 +16,21 @@
 .room-details {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   row-gap: 12px;
 }
 
 .room-name {
   font-size: 30px;
   font-weight: bolder;
+  overflow-wrap: anywhere;
 }
 
 .room-stats {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  column-gap: 16px;
+  gap: 8px 16px;
 }
 
 .room-current-round {
@@ -63,6 +68,7 @@
 .room-code-container {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
   row-gap: 8px;
   align-items: flex-start;
   justify-content: center;
@@ -76,14 +82,15 @@
 .room-code {
   display: flex;
   align-items: center;
-  column-gap: 16px;
-  padding: 13px 18px;
+  justify-content: space-between;
+  column-gap: clamp(8px, 2vw, 16px);
+  padding: 12px clamp(12px, 2vw, 18px);
   background-color: var(--page-background-color);
   border-radius: 12px;
   border: 1px solid var(--border-color);
-  font-size: 24px;
+  font-size: clamp(18px, 2.4vw, 24px);
   font-weight: 600;
-  letter-spacing: 5px;
+  letter-spacing: clamp(2px, 0.5vw, 5px);
 }
 
 .users-icon {
@@ -111,4 +118,52 @@
 
 .qr-icon {
   color: var(--primary-color);
+}
+
+@media (max-width: 680px) {
+  .room-info-card {
+    flex-direction: column;
+    gap: 20px;
+    padding: 22px 20px;
+  }
+
+  .room-name {
+    font-size: 26px;
+  }
+
+  .room-code-container {
+    width: 100%;
+  }
+
+  .room-code {
+    width: fit-content;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .room-info-card {
+    padding: 18px 16px;
+  }
+
+  .room-name {
+    font-size: 23px;
+  }
+
+  .room-current-round,
+  .room-current-round-status {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .room-code {
+    column-gap: 10px;
+    padding: 10px 12px;
+    font-size: 18px;
+  }
+
+  .room-code-icon {
+    width: 18px;
+    height: 18px;
+  }
 }

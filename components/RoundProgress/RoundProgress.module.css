@@ -14,11 +14,6 @@
   border-bottom: 1px solid var(--border);
 }
 
-.turn-players {
-  width: 100%;
-  min-width: 0;
-}
-
 @media (max-width: 520px) {
   .round-progress {
     padding: 16px;

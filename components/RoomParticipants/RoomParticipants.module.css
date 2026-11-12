@@ -36,7 +36,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 32px;
+  gap: 12px;
+  padding: 20px clamp(16px, 3vw, 32px);
   width: 100%;
   border-top: 1px solid #D4D6DA;
 }
@@ -52,22 +53,32 @@
 
 .participant-info {
   display: flex;
-  column-gap: 24px;
+  column-gap: clamp(12px, 2vw, 24px);
   align-items: center;
-  justify-content: center;
+  min-width: 0;
 }
 
 .participant-profile {
   display: flex;
-  column-gap: 16px;
+  column-gap: 12px;
   align-items: center;
-  justify-content: center;
+  min-width: 0;
 }
 
 .participant-profile > div {
   display: flex;
   align-items: center;
   column-gap: 8px;
+  min-width: 0;
+}
+
+.participant-profile h3 {
+  overflow-wrap: anywhere;
+}
+
+.participant-wins {
+  flex-shrink: 0;
+  text-align: end;
 }
 
 .medal-icon {
@@ -89,6 +100,53 @@
 }
 
 .user-profile {
+  flex-shrink: 0;
   object-fit: cover;
   border-radius: 50%;
+}
+
+@media (max-width: 640px) {
+  .room-participants-label {
+    padding: 18px 20px;
+  }
+
+  .room-participant {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 16px 20px;
+  }
+
+  .participant-info {
+    width: 100%;
+  }
+
+  .participant-profile > div {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .participant-wins {
+    padding-inline-start: 52px;
+    text-align: start;
+  }
+}
+
+@media (max-width: 420px) {
+  .room-participants-label {
+    padding: 16px;
+  }
+
+  .room-participant {
+    padding: 14px 16px;
+  }
+
+  .user-profile {
+    width: 40px;
+    height: 40px;
+  }
+
+  .participant-wins {
+    padding-inline-start: 48px;
+    font-size: 13px;
+  }
 }

@@ -20,14 +20,9 @@ import {
   fetchRoundMembers,
   fetchVisiblePlayerWords,
 } from "@/services/room-api.service";
-import Image from "next/image";
 import ConfirmCardDialog from "../ConfirmCardDialog/ConfirmCardDialog";
-import SearchIcon from "@/public/search.svg";
-import GoogleAIIcon from "@/public/GoogleAIIcon.svg";
-import EditIcon from "@/public/edit.svg";
 import ActionButton from "../ActionButton/ActionButton";
 import { API_ERROR_RESPONSE } from "@/constant/api.constants";
-import { profilePlaceholderBase64 } from "@/constant/profilePlaceholder";
 import { redirect } from "next/navigation";
 import { getCurrentTurnPlayer } from "@/utils/round";
 import RoundHeader from "../RoundHeader/RoundHeader";
@@ -345,110 +340,14 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
         round={round}
         roundMembers={roundMembers}
         roomMembers={roomMembers}
+        playerWords={playerWords}
+        roundRule={roundRule}
         currentTurnPlayer={currentTurnPlayer}
+        onEditPlayerWord={(playerId, word) => {
+          setEditingPlayerId(playerId);
+          setEditedWord(word);
+        }}
       />
-
-      <section className={styles["round-words-section"]}>
-        <div className={styles["section-header"]}>
-          <h3>كلمات اللاعبين</h3>
-        </div>
-
-        <div className={styles["round-words"]}>
-          {roundMembers
-            .filter((member) => member.type === RoundMemberType.PLAYER)
-            .map((member) => {
-              const player = roomMembers.find(
-                (roomMember) => roomMember.userId === member.userId,
-              );
-
-              const playerWord = playerWords.find(
-                (item) => item.playerId === member.userId,
-              )?.word;
-
-              return (
-                <div key={member.userId} className={styles["player-word-card"]}>
-                  <div className={styles["player-word-header"]}>
-                    <div className={styles["player-avatar"]}>
-                      <Image
-                        className={styles["user-image"]}
-                        src={player?.user.picture || profilePlaceholderBase64}
-                        alt="profile-image"
-                        width={48}
-                        height={48}
-                      />
-                    </div>
-
-                    <h4>{player?.user.name ?? `اللاعب ${member.userId}`}</h4>
-                  </div>
-
-                  <div className={styles["player-word-container"]}>
-                    {playerWord ? (
-                      <>
-                        <span className={styles["player-word-text"]}>
-                          {playerWord}
-                        </span>
-
-                        <div className={styles["word-search-actions"]}>
-                          <button
-                            type="button"
-                            className={`${styles["word-search-button"]} ${styles["word-search-images"]}`}
-                            onClick={() => {
-                              const url = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
-                                playerWord,
-                              )}`;
-
-                              window.open(url, "_blank", "noopener,noreferrer");
-                            }}
-                            aria-label={`البحث عن ${playerWord} في صور Google`}
-                            title="البحث عن الصور"
-                          >
-                            <SearchIcon className={styles["search-icon"]} />
-                            <span>البحث عن صور</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            className={`${styles["word-search-button"]} ${styles["word-search-ai"]}`}
-                            onClick={() => {
-                              const url = `https://www.google.com/search?udm=50&q=${encodeURIComponent(
-                                playerWord,
-                              )}`;
-
-                              window.open(url, "_blank", "noopener,noreferrer");
-                            }}
-                            aria-label={`استكشاف ${playerWord} باستخدام Google AI Mode`}
-                            title="البحث باستخدام الذكاء الاصطناعي"
-                          >
-                            <GoogleAIIcon className={styles["search-icon"]} />
-                            <span>اسأل الذكاء الاصطناعي</span>
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <span className={styles["player-word-hidden"]}>
-                        الكلمة مخفية
-                      </span>
-                    )}
-                  </div>
-                  {roundRule === RoundMemberType.RULER && (
-                    <button
-                      type="button"
-                      className={styles["edit-player-word-button"]}
-                      onClick={() => {
-                        setEditingPlayerId(member.userId);
-                        setEditedWord(playerWord ?? "");
-                      }}
-                      disabled={!playerWord}
-                    >
-                      <EditIcon />
-                      <span>تعديل الكلمة</span>
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-        </div>
-      </section>
 
       <section className={styles["round-cards-section"]}>
         <div className={styles["section-header"]}>
