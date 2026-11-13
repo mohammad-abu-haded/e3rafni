@@ -4,6 +4,7 @@ enum RateLimitAction {
   LOGIN = "LOGIN",
   OTP_SEND = "OTP_SEND",
   OTP_VERIFY = "OTP_VERIFY",
+  ROOM_JOIN = "ROOM_JOIN",
 }
 
 enum IdentifierType {
@@ -48,6 +49,16 @@ const RATE_LIMITS = {
     [IdentifierType.EMAIL]: {
       maxAttempts: 3,
       windowSeconds: 60 * 2,
+    },
+  },
+  [RateLimitAction.ROOM_JOIN]: {
+    [IdentifierType.IP]: {
+      maxAttempts: 10,
+      windowSeconds: 60,
+    },
+    [IdentifierType.EMAIL]: {
+      maxAttempts: 5,
+      windowSeconds: 60,
     },
   },
 } satisfies Record<

@@ -256,7 +256,7 @@ const CreateRoomForm = () => {
     setCards([]);
     setCardIndex(-1);
     setIsUpdateCard(false);
-    setLastRoomSettings(createRoomBody);    
+    setLastRoomSettings(createRoomBody);
     result.data && redirect(`/rooms/${result.data.code.toLocaleLowerCase()}`);
   };
 
@@ -408,7 +408,7 @@ const CreateRoomForm = () => {
                 </p>
               </div>
 
-              <div className={styles["room-code"]}>XXXXXX</div>
+              <div className={styles["room-code"]}>XXXXXXXX</div>
             </div>
           </div>
           <div className={styles["room-section-container"]}>

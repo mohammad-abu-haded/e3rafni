@@ -13,6 +13,10 @@ import { PostData } from "@/services/api.service";
 import { API_ERROR_RESPONSE } from "@/constant/api.constants";
 import { io } from "socket.io-client";
 import { redirect } from "next/navigation";
+import {
+  getRoundLabel,
+  getWinLabel,
+} from "../RoomParticipants/RoomParticipants";
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
   withCredentials: true,
 });
@@ -20,11 +24,18 @@ const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
 interface IProps {
   userId: number;
   roomCode: string;
+  playedRoundsCount: number;
   roomMembers: RoomMember[];
   onClose: () => void;
 }
 
-const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
+const RoundSetup = ({
+  userId,
+  roomCode,
+  playedRoundsCount,
+  roomMembers,
+  onClose,
+}: IProps) => {
   const [roundDuration, setRoundDuration] = useState<number | string>("");
   const [turnDuration, setTurnDuration] = useState<number | undefined>();
   const [player1, setPlayer1] = useState<number>();
@@ -452,8 +463,26 @@ const RoundSetup = ({ userId, roomCode, roomMembers, onClose }: IProps) => {
                   <div className={styles["member-info"]}>
                     <h4>{item.user.name}</h4>
 
-                    <p>لعب 10 جولات من 12 جولة</p>
-                    <p>فاز 8 من 10</p>
+                    <p>
+                      لعب &nbsp;
+                      {item.roundsPlayed}
+                      &nbsp;
+                      {getRoundLabel(item.roundsPlayed)}
+                      &nbsp; من &nbsp;
+                      {playedRoundsCount}
+                      &nbsp;
+                      {getRoundLabel(playedRoundsCount)}
+                    </p>
+                    <p>
+                      انتصر &nbsp;
+                      {item.wins}
+                      &nbsp;
+                      {getWinLabel(item.wins)}
+                      &nbsp; من &nbsp;
+                      {item.roundsPlayed}
+                      &nbsp;
+                      {getRoundLabel(item.roundsPlayed)}
+                    </p>
                   </div>
 
                   <div className={styles["member-actions"]}>

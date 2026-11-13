@@ -2,13 +2,10 @@ import prisma from "@/lib/prisma";
 import { Card, CardUsed, Room } from "@/types";
 
 import { customAlphabet } from "nanoid";
-import {
-  getRoundPlayers,
-  isRoundRuler,
-} from "./round.service";
+import { getRoundPlayers, isRoundRuler } from "./round.service";
 import { RoomMemberStatus, RoomStatus } from "@/app/generated/prisma/enums";
 
-const generateRoomCode = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 6);
+const generateRoomCode = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 8);
 
 const createUniqueRoomCode = async () => {
   while (true) {
@@ -155,7 +152,14 @@ export const getRoomByCode = async (
       return null;
     }
 
-    return room;
+    const playedRoundsCount = await prisma.rounds.count({
+      where: {
+        roomId: room.id,
+        status: "FINISHED",
+      },
+    });
+
+    return { ...room, playedRounds: playedRoundsCount };
   } catch (error) {
     return null;
   }
@@ -202,7 +206,7 @@ export const getRoomMemberCount = async (roomId: number) => {
   return await prisma.roomMembers.count({
     where: {
       roomId,
-      status: RoomMemberStatus.ACTIVE
+      status: RoomMemberStatus.ACTIVE,
     },
   });
 };
@@ -213,7 +217,7 @@ export const joinRoom = async (userId: number, code: string) => {
     const room = await prisma.rooms.findUnique({
       where: {
         code,
-        status: RoomStatus.ACTIVE
+        status: RoomStatus.ACTIVE,
       },
     });
     if (
@@ -231,7 +235,7 @@ export const joinRoom = async (userId: number, code: string) => {
           roomId_userId: { roomId: room.id, userId },
         },
         data: {
-          status: RoomMemberStatus.ACTIVE
+          status: RoomMemberStatus.ACTIVE,
         },
       });
       return roomMember;
@@ -403,6 +407,9 @@ export const getPlayerRoundsPlayed = async (
         userId: playerId,
         roomId: room.id,
         type: "PLAYER",
+        round: {
+          status: "FINISHED",
+        },
       },
     });
 
@@ -427,6 +434,9 @@ export const getPlayerRoundsRuled = async (
         userId: playerId,
         roomId: room.id,
         type: "RULER",
+        round: {
+          status: "FINISHED",
+        },
       },
     });
 

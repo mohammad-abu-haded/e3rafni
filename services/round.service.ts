@@ -473,7 +473,8 @@ export const startRound = async (
         data: {
           status: RoundStatus.PLAYING,
           roundDuration,
-          ...(turnDuration !== undefined && {turnDuration})
+          ...(turnDuration !== undefined && { turnDuration }),
+          startedAt: new Date(),
         },
       });
 

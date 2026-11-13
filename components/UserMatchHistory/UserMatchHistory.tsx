@@ -186,7 +186,7 @@ const MatchHistory = () => {
               </div>
             </div>
             <div className={styles["filter-group"]}>
-              <label htmlFor="opponent-filter">الشخص</label>
+              <label htmlFor="opponent-filter">الخصم</label>
               <select
                 id="opponent-filter"
                 value={selectedOpponent}

@@ -1,4 +1,10 @@
-import { PlayerResult, Role, RoundMemberType, RoundMode, RoundStatus } from "@/app/generated/prisma/enums";
+import {
+  PlayerResult,
+  Role,
+  RoundMemberType,
+  RoundMode,
+  RoundStatus,
+} from "@/app/generated/prisma/enums";
 
 export type User = {
   id: number;
@@ -20,6 +26,7 @@ export type Room = {
   id: number;
   name: string;
   currentRound: number;
+  playedRounds?: number;
   createdAt: Date;
   ownerId: number;
   code: string;
@@ -105,8 +112,8 @@ export type VisiblePlayerWord = {
 };
 
 export type PlayerRoundResultInput = {
-  playerId: number,
-  result: PlayerResult
+  playerId: number;
+  result: PlayerResult;
 };
 
 export type UserMatchHistory = {

@@ -14,6 +14,7 @@ import { profilePlaceholderBase64 } from "@/constant/profilePlaceholder";
 import { PostData } from "@/services/api.service";
 import { API_ERROR_RESPONSE } from "@/constant/api.constants";
 import { io } from "socket.io-client";
+import { getRoundLabel } from "../RoomParticipants/RoomParticipants";
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
   withCredentials: true,
@@ -22,10 +23,16 @@ const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
 interface IProps {
   roomCode: string;
   roomMembers: RoomMember[];
+  playedRoundsCount: number;
   onClose: () => void;
 }
 
-const RulerSelector = ({ roomCode, roomMembers, onClose }: IProps) => {
+const RulerSelector = ({
+  roomCode,
+  roomMembers,
+  playedRoundsCount,
+  onClose,
+}: IProps) => {
   const [rulerId, setRulerId] = useState<number>();
   const [nameSearched, setNameSearched] = useState<string>("");
   const [roomMemberFiltered, setRoomMemberFiltered] =
@@ -44,7 +51,6 @@ const RulerSelector = ({ roomCode, roomMembers, onClose }: IProps) => {
       toast.error(result.message);
       return;
     }
-
 
     toast.success(result.message);
     socket.emit("server:round-ruler-updated", roomCode);
@@ -123,8 +129,26 @@ const RulerSelector = ({ roomCode, roomMembers, onClose }: IProps) => {
                 <div className={styles["member-info"]}>
                   <h4>{item.user.name}</h4>
                   <div className={styles["member-history"]}>
-                    <p>لعب 3 من 5 جولات</p>
-                    <p>حكم 3 من 5 جولات</p>
+                    <p>
+                      لعب &nbsp;
+                      {item.roundsPlayed}
+                      &nbsp;
+                      {getRoundLabel(item.roundsPlayed)}
+                      &nbsp; من &nbsp;
+                      {playedRoundsCount}
+                      &nbsp;
+                      {getRoundLabel(playedRoundsCount)}
+                    </p>
+                    <p>
+                      حكم &nbsp;
+                      {item.roundsRuled}
+                      &nbsp;
+                      {getRoundLabel(item.roundsRuled)}
+                      &nbsp; من &nbsp;
+                      {playedRoundsCount}
+                      &nbsp;
+                      {getRoundLabel(playedRoundsCount)}
+                    </p>
                   </div>
                 </div>
               </div>

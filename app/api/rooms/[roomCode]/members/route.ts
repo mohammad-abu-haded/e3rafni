@@ -44,7 +44,7 @@ const GET = async (request: NextRequest, { params }: IProps) => {
         return {
           ...member,
           roundsPlayed: roundsPlayed ?? 0,
-          roundRuled: roundsRuled ?? 0,
+          roundsRuled: roundsRuled ?? 0,
         };
       }),
     );

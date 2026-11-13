@@ -102,13 +102,11 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
       `/api/rooms/${roomCode}/cards/usage`,
     );
 
-    if (!result?.success || !result.data) {
-      redirect(`/rooms/${roomCode}`);
+    if (result?.success && result.data) {
+      const roomCard = result.data;
+      roomCardsRef.current = roomCard;
+      setRoomCards(roomCard);
     }
-
-    const roomCard = result.data;
-    roomCardsRef.current = roomCard;
-    setRoomCards(roomCard);
   };
 
   const getRound = async () => {

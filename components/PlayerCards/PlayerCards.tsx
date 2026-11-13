@@ -119,7 +119,7 @@ const PlayerCards = ({
           <Fragment key={player.id}>
             {index === 1 && (
               <span className={styles["versus"]} aria-hidden="true">
-                VS
+                ضد
               </span>
             )}
 

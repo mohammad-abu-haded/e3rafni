@@ -48,7 +48,7 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
       return;
     }
 
-    setRoundMembers(result.roundMembers ?? []);    
+    setRoundMembers(result.roundMembers ?? []);
   };
 
   const getMembers = async () => {
@@ -161,7 +161,7 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
         <RoomInfoCard
           roomName={room.name}
           currentRoundNumber={room.currentRound}
-          currentRoundStatus={currentRound?.status || "FINISHED" }
+          currentRoundStatus={currentRound?.status || "FINISHED"}
           playerCount={roomMembers.length}
           roomCode={roomCode}
         />
@@ -180,6 +180,7 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
             currentRound={currentRound}
             roomCode={roomCode}
             roomName={room.name}
+            playedRoundsCount={room.playedRounds || 0}
             roomMembers={roomMembers}
             roundMembers={roundMembers}
             isRoomOwner={room.ownerId === userId}

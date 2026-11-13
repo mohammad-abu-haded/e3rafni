@@ -33,6 +33,7 @@ interface IProps {
   hasRuler: boolean;
   isRuler: boolean;
   userId: number;
+  playedRoundsCount: number;
 }
 
 const RoomActions = (props: IProps) => {
@@ -160,6 +161,7 @@ const RoomActions = (props: IProps) => {
         <RulerSelector
           roomCode={props.roomCode}
           roomMembers={props.roomMembers}
+          playedRoundsCount={props.playedRoundsCount}
           onClose={() => setShowRoundRulerSelector(false)}
         />
       )}
@@ -167,6 +169,7 @@ const RoomActions = (props: IProps) => {
         <RoundSetup
           userId={props.userId}
           roomCode={props.roomCode}
+          playedRoundsCount={props.playedRoundsCount}
           roomMembers={props.roomMembers}
           onClose={() => setShowRoundSetup(false)}
         />
