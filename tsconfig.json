@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "components/ActionButton/ActionButton.tsx"  ],
+, "components/ActionButton/ActionButton.tsx", "components/CustomPagination"  ],
   "exclude": ["node_modules"]
 }

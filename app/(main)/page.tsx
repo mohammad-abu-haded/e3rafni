@@ -1,8 +1,7 @@
-import styles from "./page.module.css";
+import { redirect } from "next/navigation";
 
-export default async function Home() {
-  return (
-    <div>
-    </div>
-  );
-}
+const Home = () => {
+  redirect("/rooms");
+};
+
+export default Home;

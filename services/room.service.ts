@@ -4,6 +4,7 @@ import { Card, CardUsed, Room } from "@/types";
 import { customAlphabet } from "nanoid";
 import { getRoundPlayers, isRoundRuler } from "./round.service";
 import { RoomMemberStatus, RoomStatus } from "@/app/generated/prisma/enums";
+import { DEFAULT_PAGE_SIZE } from "@/constant/pagination";
 
 const generateRoomCode = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 8);
 
@@ -223,7 +224,7 @@ export const joinRoom = async (userId: number, code: string) => {
     if (
       !room ||
       !((await getRoomMemberCount(room.id)) < room.capacity) ||
-      !room.isActive
+      room.status !== RoomStatus.ACTIVE
     ) {
       return null;
     }
@@ -517,5 +518,88 @@ export const recordPlayerCardUsage = async (
     return cardUpdated;
   } catch (error) {
     return null;
+  }
+};
+
+export const getUserRooms = async (
+  userId: number,
+  page: number = 1,
+  limit: number = DEFAULT_PAGE_SIZE,
+): Promise<{ userRooms: Room[]; total: number }> => {
+  try {
+    const where = {
+      status: RoomStatus.ACTIVE,
+      roomMembers: {
+        some: {
+          userId,
+          status: RoomMemberStatus.ACTIVE,
+        },
+      },
+    };
+    const [userRooms, total] = await Promise.all([
+      prisma.rooms.findMany({
+        where,
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: limit,
+        skip: (page - 1) * limit,
+      }),
+      prisma.rooms.count({ where }),
+    ]);
+
+    return { userRooms, total };
+  } catch (error) {
+    return { userRooms: [], total: 0 };
+  }
+};
+
+export const getPublicRooms = async (
+  userId: number,
+  page: number = 1,
+  limit: number = DEFAULT_PAGE_SIZE,
+): Promise<{ publicRooms: Room[]; total: number }> => {
+  try {
+    const where = {
+      status: RoomStatus.ACTIVE,
+      isPrivate: false,
+      roomMembers: {
+        none: {
+          userId,
+          status: RoomMemberStatus.ACTIVE,
+        },
+      },
+    };
+
+    const rooms = await prisma.rooms.findMany({
+      where,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        _count: {
+          select: {
+            roomMembers: {
+              where: {
+                status: RoomMemberStatus.ACTIVE,
+              },
+            },
+          },
+        },
+      },
+    });    
+
+    const availableRooms = rooms.filter(
+      (room) => room._count.roomMembers < room.capacity,
+    );
+
+    const total = availableRooms.length;
+
+    const publicRooms = availableRooms.slice((page - 1) * limit, page * limit);
+
+    return { publicRooms, total };
+  } catch (error) {
+    console.error(error);
+    return { publicRooms: [], total: 0 };
   }
 };

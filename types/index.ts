@@ -32,7 +32,6 @@ export type Room = {
   code: string;
   isPrivate: boolean;
   capacity: number;
-  isActive: boolean;
 };
 
 export type Round = {
@@ -134,3 +133,11 @@ export type UserMatchHistory = {
     };
   };
 };
+
+export interface PaginatedRoomsResponse {
+  rooms: Room[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}

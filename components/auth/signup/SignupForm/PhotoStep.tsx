@@ -60,10 +60,19 @@ const PhotoStep = () => {
           <ProfileImageUploader fileList={fileList} setFileList={setFileList} />
         </div>
 
-        <ActionButton
-          title="حفظ ومتابعة"
-          className={`btn btn-primary ${styles["submit-button"]}`}
-        />
+        <div className={styles["photo-actions"]}>
+          <ActionButton
+            title="حفظ ومتابعة"
+            className={`btn btn-primary ${styles["submit-button"]}`}
+          />
+          <button
+            type="button"
+            className={`btn btn-muted ${styles["skip-button"]}`}
+            onClick={() => router.replace("/")}
+          >
+            تخطي
+          </button>
+        </div>
       </form>
     </div>
   );
