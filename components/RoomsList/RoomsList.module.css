@@ -290,6 +290,11 @@
   margin-top: 20px;
 }
 
+.icon {
+  width: 24px;
+  height: 24px;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

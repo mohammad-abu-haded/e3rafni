@@ -6,7 +6,7 @@ import { PostData } from "@/services/api.service";
 import { ApiResponse } from "@/types";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import RoomKeyIcon from "@/public/room-key.svg";
+import RoomKeyIcon from "@/public/room-join.svg";
 import styles from "./JoinRoom.module.css";
 
 const JoinRoom = () => {

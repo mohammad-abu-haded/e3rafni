@@ -2,10 +2,11 @@
 import Link from "next/link";
 import styles from "./Header.module.css";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MenuIcon from "@/public/menu.svg";
 
 const Navigation = () => {
+  const navigationRef = useRef<HTMLDivElement>(null);
   const path = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigationItems = [
@@ -14,12 +15,27 @@ const Navigation = () => {
     { name: "سجل المباريات", href: "/matches/history" },
   ];
 
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        navigationRef.current &&
+        !navigationRef.current.contains(event.target as Node)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
   return (
-    <div className={styles["navigation-container"]}>
+    <div ref={navigationRef} className={styles["navigation-container"]}>
       <button
-        className={`${styles["menu-button"]} ${
-          isMenuOpen ? styles["menu-button-open"] : ""
-        }`}
+        className={styles["menu-button"]}
         type="button"
         aria-label={isMenuOpen ? "إغلاق القائمة" : "فتح القائمة"}
         aria-expanded={isMenuOpen}

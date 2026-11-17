@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import CustomPagination from "../CustomPagination/CustomPagination";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import LoginIcon from "@/public/join.svg";
+import DoorOpenIcon from "@/public/room-join.svg";
 
 interface IProps {
   type: "my" | "public";
@@ -176,7 +178,7 @@ const RoomsList = ({ type }: IProps) => {
                     href={`/rooms/${room.code.toLowerCase()}`}
                   >
                     دخول الغرفة
-                    <span aria-hidden="true">←</span>
+                    <LoginIcon className={styles["icon"]}/>
                   </Link>
                 ) : (
                   <button
@@ -184,11 +186,11 @@ const RoomsList = ({ type }: IProps) => {
                     disabled={Boolean(joiningRoomCode)}
                     onClick={() => handleJoinRoom(room.code)}
                     type="button"
-                  >
+                    >
                     {joiningRoomCode === room.code
                       ? "جارٍ الانضمام..."
                       : "انضم للغرفة"}
-                    <span aria-hidden="true">←</span>
+                      <DoorOpenIcon className={styles["icon"]}/>
                   </button>
                 )}
               </div>
