@@ -32,6 +32,12 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.room-loading {
+  padding: 64px 24px;
+  color: var(--secondary-font-color);
+  text-align: center;
+}
+
 @media (max-width: 1100px) {
   .room-page {
     grid-template-columns: minmax(0, 1fr);

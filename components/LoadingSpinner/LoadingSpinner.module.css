@@ -1,0 +1,14 @@
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  color: var(--secondary-font-color);
+  text-align: center;
+}
+
+.loading-spinner > span {
+  line-height: 1.6;
+}

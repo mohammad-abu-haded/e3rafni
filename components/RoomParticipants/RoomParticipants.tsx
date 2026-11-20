@@ -7,6 +7,7 @@ import Medal3Icon from "@/public/medal-3.svg";
 import Image from "next/image";
 import { profilePlaceholderBase64 } from "@/constant/profilePlaceholder";
 import { RoomMember } from "@/types";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 interface IProps {
   roomMembers: RoomMember[];
@@ -42,7 +43,12 @@ const MedalIcon = [
 
 const RoomParticipants = ({ roomMembers, userId, ownerId }: IProps) => {
   if (!roomMembers || roomMembers.length === 0) {
-    return <div>جاري تحميل الأعضاء...</div>;
+    return (
+      <LoadingSpinner
+        title="جاري تحميل الأعضاء..."
+        className={styles["room-participants-loading"]}
+      />
+    );
   }
   return (
     <div className={styles["room-participants-container"]}>

@@ -15,6 +15,7 @@ import {
   fetchRoomMembers,
   fetchRoundMembers,
 } from "@/services/room-api.service";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 interface IProps {
   roomCode: string;
@@ -152,7 +153,12 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
   }
 
   if (!room) {
-    return <div>جاري تحميل الغرفة...</div>;
+    return (
+      <LoadingSpinner
+        title="جاري تحميل الغرفة..."
+        className={styles["room-loading"]}
+      />
+    );
   }
 
   return (

@@ -27,6 +27,7 @@ import { redirect } from "next/navigation";
 import { getCurrentTurnPlayer } from "@/utils/round";
 import RoundHeader from "../RoundHeader/RoundHeader";
 import RoundProgress from "../RoundProgress/RoundProgress";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
   withCredentials: true,
 });
@@ -320,7 +321,12 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
   ]);
 
   if (!round) {
-    return <div className={styles["round-loading"]}>جاري تحميل الجولة...</div>;
+    return (
+      <LoadingSpinner
+        title="جاري تحميل الجولة..."
+        className={styles["round-loading"]}
+      />
+    );
   }
 
   return (

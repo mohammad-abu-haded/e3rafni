@@ -189,6 +189,16 @@ const CreateRoomForm = () => {
   };
 
   const handleSubmit = async () => {
+    if (cardTitle || cardDescription || typeof cardMaxPerPlayer === "number") {
+      const message = isUpdateCard
+        ? "لديك تعديلات غير محفوظة على الكارت الحالي.\nإذا تابعت إنشاء الغرفة، سيتم تجاهل هذه التعديلات وسيبقى الكارت كما كان قبل التعديل.\nهل تريد المتابعة؟"
+        : "لقد بدأت بإنشاء كارت جديد ولكنك لم تحفظه بعد.\nإذا تابعت إنشاء الغرفة، سيتم تجاهل الكارت ولن تتم إضافته.\nهل تريد المتابعة؟";
+
+      const confirmed = window.confirm(message);
+
+      if (!confirmed) return;
+    }
+
     if (
       !name ||
       typeof isPrivate !== "boolean" ||
@@ -305,6 +315,12 @@ const CreateRoomForm = () => {
           setIsPrivate(lastRoomSettings.isPrivate);
           setCapacity(lastRoomSettings.capacity);
           setCards(lastRoomSettings.cards);
+          setCardIndex(-1);
+          setIsUpdateCard(false);
+          setCardTitle("");
+          setCardColor("#7c3aed");
+          setCardDescription("");
+          setCardMaxPerPlayer("");
         }
       }
     };
@@ -423,36 +439,6 @@ const CreateRoomForm = () => {
                     <p>خصص المظهر البصري لبطاقات الأسئلة داخل غرفتك.</p>
                   </div>
                 </div>
-
-                <div className={styles["room-card-update-actions"]}>
-                  {isUpdateCard && (
-                    <button
-                      type="button"
-                      className={`btn ${styles["room-card-delete"]}`}
-                      onClick={() => deleteCard()}
-                    >
-                      <DeleteIcon className="icon" />
-                      حذف
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className={`btn btn-primary ${isUpdateCard && styles["room-card-update-btn"]}`}
-                    onClick={() => (isUpdateCard ? updateCard() : addCard())}
-                  >
-                    {!isUpdateCard ? (
-                      <>
-                        <PlusIcon className="icon" />
-                        حفظ البطاقة
-                      </>
-                    ) : (
-                      <>
-                        <EditIcon className="icon" />
-                        حفظ التعديل
-                      </>
-                    )}
-                  </button>
-                </div>
               </div>
               <div className={styles["room-field"]}>
                 <div className={styles["room-cards"]}>
@@ -517,6 +503,35 @@ const CreateRoomForm = () => {
                     }
                   />
                 </div>
+              </div>
+              <div className={styles["room-card-update-actions"]}>
+                {isUpdateCard && (
+                  <button
+                    type="button"
+                    className={`btn ${styles["room-card-delete"]}`}
+                    onClick={() => deleteCard()}
+                  >
+                    <DeleteIcon className="icon" />
+                    حذف
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={`btn btn-primary ${isUpdateCard && styles["room-card-update-btn"]}`}
+                  onClick={() => (isUpdateCard ? updateCard() : addCard())}
+                >
+                  {!isUpdateCard ? (
+                    <>
+                      <PlusIcon className="icon" />
+                      حفظ البطاقة
+                    </>
+                  ) : (
+                    <>
+                      <EditIcon className="icon" />
+                      حفظ التعديل
+                    </>
+                  )}
+                </button>
               </div>
             </div>
             <div className={styles["card-live-container"]}>

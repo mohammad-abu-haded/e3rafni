@@ -164,7 +164,6 @@
 .room-card-update-actions {
   display: flex;
   align-items: center;
-  justify-content: center;
   column-gap: 16px;
 }
 

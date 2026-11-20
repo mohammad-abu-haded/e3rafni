@@ -8,7 +8,7 @@ import DrawIcon from "@/public/handshake.svg";
 import WinIcon from "@/public/win.svg";
 import LossIcon from "@/public/circleX.svg";
 import SearchIcon from "@/public/search.svg";
-
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 type ResultFilter = "ALL" | "WIN" | "LOSS" | "DRAW";
 
 const MatchHistory = () => {
@@ -123,207 +123,212 @@ const MatchHistory = () => {
   ).length;
 
   return (
-    <section className={styles["match-history"]}>
-      <header className={styles.hero}>
-        <div className={styles["hero-copy"]}>
-          <span className={styles["hero-kicker"]}>ملفك التنافسي</span>
-          <h2 className={styles["section-title"]}>كل مباراة تحكي قصة</h2>
-          <p className={styles["section-description"]}>
-            راجع مواجهاتك، تابع تقدمك، واكتشف سجلّك مع الأصدقاء
-          </p>
-        </div>
-        {!isLoading && !hasError && (
-          <div className={styles["hero-total"]}>
-            <strong>{userMatchHistory.length}</strong>
-            <span>إجمالي المواجهات</span>
+      <section className={styles["match-history"]}>
+        <header className={styles.hero}>
+          <div className={styles["hero-copy"]}>
+            <span className={styles["hero-kicker"]}>ملفك التنافسي</span>
+            <h2 className={styles["section-title"]}>كل مباراة تحكي قصة</h2>
+            <p className={styles["section-description"]}>
+              راجع مواجهاتك، تابع تقدمك، واكتشف سجلّك مع الأصدقاء
+            </p>
+          </div>
+          {!isLoading && !hasError && (
+            <div className={styles["hero-total"]}>
+              <strong>{userMatchHistory.length}</strong>
+              <span>إجمالي المواجهات</span>
+            </div>
+          )}
+        </header>
+        {!isLoading && !hasError && userMatchHistory.length > 0 && (
+          <div className={styles["stat-grid"]}>
+            <div className={`${styles["stat-card"]} ${styles["stat-win"]}`}>
+              <span className={styles["stat-label"]}>انتصارات</span>
+              <strong>{wins}</strong>
+              <span className={styles["stat-note"]}>مباريات فزت بها</span>
+            </div>
+            <div className={`${styles["stat-card"]} ${styles["stat-draw"]}`}>
+              <span className={styles["stat-label"]}>تعادلات</span>
+              <strong>{draws}</strong>
+              <span className={styles["stat-note"]}>مواجهات متكافئة</span>
+            </div>
+            <div className={`${styles["stat-card"]} ${styles["stat-loss"]}`}>
+              <span className={styles["stat-label"]}>خسائر</span>
+              <strong>{losses}</strong>
+              <span className={styles["stat-note"]}>فرص لمواجهة جديدة</span>
+            </div>
           </div>
         )}
-      </header>
-      {!isLoading && !hasError && userMatchHistory.length > 0 && (
-        <div className={styles["stat-grid"]}>
-          <div className={`${styles["stat-card"]} ${styles["stat-win"]}`}>
-            <span className={styles["stat-label"]}>انتصارات</span>
-            <strong>{wins}</strong>
-            <span className={styles["stat-note"]}>مباريات فزت بها</span>
-          </div>
-          <div className={`${styles["stat-card"]} ${styles["stat-draw"]}`}>
-            <span className={styles["stat-label"]}>تعادلات</span>
-            <strong>{draws}</strong>
-            <span className={styles["stat-note"]}>مواجهات متكافئة</span>
-          </div>
-          <div className={`${styles["stat-card"]} ${styles["stat-loss"]}`}>
-            <span className={styles["stat-label"]}>خسائر</span>
-            <strong>{losses}</strong>
-            <span className={styles["stat-note"]}>فرص لمواجهة جديدة</span>
-          </div>
-        </div>
-      )}
-      {!isLoading && !hasError && userMatchHistory.length > 0 && (
-        <>
-          <div className={styles["list-heading"]}>
-            <div>
-              <h3>المواجهات الأخيرة</h3>
-              <span>{filteredMatches.length} مباراة معروضة</span>
-            </div>
-            <span className={styles["list-heading-mark"]}>سجلّك</span>
-          </div>
-          <div className={styles.filters}>
-            <div className={styles["search-filter"]}>
-              <label htmlFor="opponent-search">بحث باسم الخصم</label>
-              <div className={styles["search-control"]}>
-                <SearchIcon
-                  className={styles["search-icon"]}
-                  aria-hidden="true"
-                />
-                <input
-                  id="opponent-search"
-                  type="search"
-                  value={opponentSearch}
-                  onChange={(e) => setOpponentSearch(e.target.value)}
-                  placeholder="اكتب اسم الخصم..."
-                  autoComplete="off"
-                />
+        {!isLoading && !hasError && userMatchHistory.length > 0 && (
+          <>
+            <div className={styles["list-heading"]}>
+              <div>
+                <h3>المواجهات الأخيرة</h3>
+                <span>{filteredMatches.length} مباراة معروضة</span>
               </div>
+              <span className={styles["list-heading-mark"]}>سجلّك</span>
             </div>
-            <div className={styles["filter-group"]}>
-              <label htmlFor="opponent-filter">الخصم</label>
-              <select
-                id="opponent-filter"
-                value={selectedOpponent}
-                onChange={(e) => setSelectedOpponent(e.target.value)}
-              >
-                <option value="ALL">جميع الأشخاص</option>
-                {opponents.map((opponent) => (
-                  <option key={opponent} value={opponent}>
-                    {opponent}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles["filter-group"]}>
-              <label htmlFor="room-filter">الغرفة</label>
-              <select
-                id="room-filter"
-                value={selectedRoom}
-                onChange={(e) => setSelectedRoom(e.target.value)}
-              >
-                <option value="ALL">جميع الغرف</option>
-                {rooms.map((room) => (
-                  <option key={room} value={room}>
-                    {room}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles["filter-group"]}>
-              <label htmlFor="result-filter">النتيجة</label>
-              <select
-                id="result-filter"
-                value={selectedResult}
-                onChange={(e) =>
-                  setSelectedResult(e.target.value as ResultFilter)
-                }
-              >
-                <option value="ALL">جميع النتائج</option>
-                <option value="WIN">فوز</option>
-                <option value="LOSS">خسارة</option>
-                <option value="DRAW">تعادل</option>
-              </select>
-            </div>
-            {hasActiveFilters && (
-              <button
-                type="button"
-                className={styles["reset-filters"]}
-                onClick={resetFilters}
-              >
-                إعادة ضبط التصفية
-              </button>
-            )}
-          </div>
-        </>
-      )}
-
-      {isLoading ? (
-        <div className={styles.message}>جاري تحميل سجل المباريات...</div>
-      ) : hasError ? (
-        <div className={styles.message} role="alert">
-          حدث خطأ أثناء تحميل سجل المباريات.
-        </div>
-      ) : userMatchHistory.length === 0 ? (
-        <div className={styles["empty-state"]}>
-          <div className={styles["empty-icon"]} aria-hidden="true">
-            —
-          </div>
-          <h3>لا توجد مباريات حتى الآن</h3>
-          <p>عندما تخوض مباريات جديدة ستظهر نتائجها هنا.</p>
-        </div>
-      ) : filteredMatches.length === 0 ? (
-        <div className={styles["empty-state"]}>
-          <div className={styles["empty-icon"]} aria-hidden="true">
-            ⌕
-          </div>
-          <h3>لا توجد نتائج مطابقة</h3>
-          <p>جرّب تغيير خيارات التصفية.</p>
-          <button
-            type="button"
-            className={styles["reset-filters"]}
-            onClick={resetFilters}
-          >
-            إعادة ضبط التصفية
-          </button>
-        </div>
-      ) : (
-        <div className={styles["match-list"]}>
-          {filteredMatches.map((match, index) => {
-            const resultInfo = getResultInfo(match.result);
-            const ResultIcon = resultInfo.Icon;
-            return (
-              <article
-                className={styles["match-card"]}
-                key={`${match.createdAt}-${index}`}
-              >
-                <div className={styles["match-main"]}>
-                  <div
-                    className={`${styles["match-result-icon"]} ${styles[resultInfo.className]}`}
-                    aria-label={resultInfo.label}
-                  >
-                    <ResultIcon
-                      className={styles["result-svg"]}
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div className={styles["match-info"]}>
-                    <h3 className={styles["room-name"]}>
-                      {match.roundMember.round.room.name}
-                    </h3>
-                    <p className={styles["opponent-name"]}>
-                      ضد{" "}
-                      <strong>{match.roundMember.roomMember.user.name}</strong>
-                    </p>
-                  </div>
+            <div className={styles.filters}>
+              <div className={styles["search-filter"]}>
+                <label htmlFor="opponent-search">بحث باسم الخصم</label>
+                <div className={styles["search-control"]}>
+                  <SearchIcon
+                    className={styles["search-icon"]}
+                    aria-hidden="true"
+                  />
+                  <input
+                    id="opponent-search"
+                    type="search"
+                    value={opponentSearch}
+                    onChange={(e) => setOpponentSearch(e.target.value)}
+                    placeholder="اكتب اسم الخصم..."
+                    autoComplete="off"
+                  />
                 </div>
-                <div className={styles["match-details"]}>
-                  <span className={styles["round-number"]}>
-                    الجولة {match.roundMember.round.roundNumber}
-                  </span>
-                  <span
-                    className={`${styles["result-badge"]} ${styles[resultInfo.className]}`}
-                  >
-                    {resultInfo.label}
-                  </span>
-                </div>
-                <time
-                  className={styles["match-date"]}
-                  dateTime={new Date(match.createdAt).toISOString()}
+              </div>
+              <div className={styles["filter-group"]}>
+                <label htmlFor="opponent-filter">الخصم</label>
+                <select
+                  id="opponent-filter"
+                  value={selectedOpponent}
+                  onChange={(e) => setSelectedOpponent(e.target.value)}
                 >
-                  {formatDate(match.createdAt)}
-                </time>
-              </article>
-            );
-          })}
-        </div>
-      )}
-    </section>
+                  <option value="ALL">جميع الأشخاص</option>
+                  {opponents.map((opponent) => (
+                    <option key={opponent} value={opponent}>
+                      {opponent}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className={styles["filter-group"]}>
+                <label htmlFor="room-filter">الغرفة</label>
+                <select
+                  id="room-filter"
+                  value={selectedRoom}
+                  onChange={(e) => setSelectedRoom(e.target.value)}
+                >
+                  <option value="ALL">جميع الغرف</option>
+                  {rooms.map((room) => (
+                    <option key={room} value={room}>
+                      {room}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className={styles["filter-group"]}>
+                <label htmlFor="result-filter">النتيجة</label>
+                <select
+                  id="result-filter"
+                  value={selectedResult}
+                  onChange={(e) =>
+                    setSelectedResult(e.target.value as ResultFilter)
+                  }
+                >
+                  <option value="ALL">جميع النتائج</option>
+                  <option value="WIN">فوز</option>
+                  <option value="LOSS">خسارة</option>
+                  <option value="DRAW">تعادل</option>
+                </select>
+              </div>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  className={styles["reset-filters"]}
+                  onClick={resetFilters}
+                >
+                  إعادة ضبط التصفية
+                </button>
+              )}
+            </div>
+          </>
+        )}
+
+        {isLoading ? (
+          <LoadingSpinner
+            title="جاري تحميل سجل المباريات..."
+            className={styles.message}
+          />
+        ) : hasError ? (
+          <div className={styles.message} role="alert">
+            حدث خطأ أثناء تحميل سجل المباريات.
+          </div>
+        ) : userMatchHistory.length === 0 ? (
+          <div className={styles["empty-state"]}>
+            <div className={styles["empty-icon"]} aria-hidden="true">
+              —
+            </div>
+            <h3>لا توجد مباريات حتى الآن</h3>
+            <p>عندما تخوض مباريات جديدة ستظهر نتائجها هنا.</p>
+          </div>
+        ) : filteredMatches.length === 0 ? (
+          <div className={styles["empty-state"]}>
+            <div className={styles["empty-icon"]} aria-hidden="true">
+              ⌕
+            </div>
+            <h3>لا توجد نتائج مطابقة</h3>
+            <p>جرّب تغيير خيارات التصفية.</p>
+            <button
+              type="button"
+              className={styles["reset-filters"]}
+              onClick={resetFilters}
+            >
+              إعادة ضبط التصفية
+            </button>
+          </div>
+        ) : (
+          <div className={styles["match-list"]}>
+            {filteredMatches.map((match, index) => {
+              const resultInfo = getResultInfo(match.result);
+              const ResultIcon = resultInfo.Icon;
+              return (
+                <article
+                  className={styles["match-card"]}
+                  key={`${match.createdAt}-${index}`}
+                >
+                  <div className={styles["match-main"]}>
+                    <div
+                      className={`${styles["match-result-icon"]} ${styles[resultInfo.className]}`}
+                      aria-label={resultInfo.label}
+                    >
+                      <ResultIcon
+                        className={styles["result-svg"]}
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <div className={styles["match-info"]}>
+                      <h3 className={styles["room-name"]}>
+                        {match.roundMember.round.room.name}
+                      </h3>
+                      <p className={styles["opponent-name"]}>
+                        ضد{" "}
+                        <strong>
+                          {match.roundMember.roomMember.user.name}
+                        </strong>
+                      </p>
+                    </div>
+                  </div>
+                  <div className={styles["match-details"]}>
+                    <span className={styles["round-number"]}>
+                      الجولة {match.roundMember.round.roundNumber}
+                    </span>
+                    <span
+                      className={`${styles["result-badge"]} ${styles[resultInfo.className]}`}
+                    >
+                      {resultInfo.label}
+                    </span>
+                  </div>
+                  <time
+                    className={styles["match-date"]}
+                    dateTime={new Date(match.createdAt).toISOString()}
+                  >
+                    {formatDate(match.createdAt)}
+                  </time>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
   );
 };
 

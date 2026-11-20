@@ -11,6 +11,8 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import LoginIcon from "@/public/join.svg";
 import DoorOpenIcon from "@/public/room-join.svg";
+import { AutoSkeleton } from "@theengineeringmind/auto-skeleton/react";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 interface IProps {
   type: "my" | "public";
@@ -100,115 +102,112 @@ const RoomsList = ({ type }: IProps) => {
       : "اكتشف غرفاً جديدة وانضم إلى لاعبين آخرين.";
 
   return (
-    <section
-      className={styles["rooms-section"]}
-      aria-labelledby={`${type}-rooms-title`}
-    >
-      <header className={styles["section-header"]}>
-        <div>
-          <h2 id={`${type}-rooms-title`}>{title}</h2>
-          <p>{description}</p>
-        </div>
-        {!isLoading && !errorMessage && (
-          <span className={styles["room-count"]}>{rooms.length}</span>
-        )}
-      </header>
+    <AutoSkeleton loading={isLoading}>
+      <section
+        className={styles["rooms-section"]}
+        aria-labelledby={`${type}-rooms-title`}
+      >
+        <header className={styles["section-header"]}>
+          <div>
+            <h2 id={`${type}-rooms-title`}>{title}</h2>
+            <p>{description}</p>
+          </div>
+          {!isLoading && !errorMessage && (
+            <span className={styles["room-count"]}>{rooms.length}</span>
+          )}
+        </header>
 
-      {isLoading ? (
-        <div className={styles["status-message"]} role="status">
-          <span className={styles["spinner"]} aria-hidden="true" />
-          جارٍ تحميل الغرف...
-        </div>
-      ) : errorMessage ? (
-        <div className={styles["status-message"]} role="alert">
-          <p>{errorMessage}</p>
-          <button
-            className={styles["retry-button"]}
-            onClick={() => setRetryCount((count) => count + 1)}
-            type="button"
-          >
-            إعادة المحاولة
-          </button>
-        </div>
-      ) : rooms.length === 0 ? (
-        <div className={styles["status-message"]}>
-          {type === "my"
-            ? "لم تنضم إلى أي غرفة بعد. أدخل رمز غرفة للبدء."
-            : "لا توجد غرف عامة متاحة حالياً."}
-        </div>
-      ) : (
-        <div className={styles["rooms-grid"]}>
-          {rooms.map((room) => (
-            <article className={styles["room-item"]} key={room.id}>
-              <div className={styles["room-item-header"]}>
-                <h3>{room.name}</h3>
-                <span
-                  className={`${styles["visibility-badge"]} ${
-                    room.isPrivate ? styles["private-badge"] : ""
-                  }`}
-                >
-                  {room.isPrivate ? "خاصة" : "عامة"}
-                </span>
-              </div>
-
-              <p className={styles["room-code"]} dir="ltr">
-                {room.code}
-              </p>
-
-              <div className={styles["room-meta"]}>
-                <span>
-                  {room.currentRound > 0
-                    ? `الجولة ${room.currentRound}`
-                    : "لم تبدأ بعد"}
-                </span>
-                <span>السعة: {room.capacity} لاعبين</span>
-              </div>
-
-              <div className={styles["room-item-footer"]}>
-                <time dateTime={new Date(room.createdAt).toISOString()}>
-                  {new Date(room.createdAt).toLocaleDateString("ar", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </time>
-                {type === "my" ? (
-                  <Link
-                    className={styles["room-action"]}
-                    href={`/rooms/${room.code.toLowerCase()}`}
+        {isLoading && errorMessage ? (
+          <div className={styles["status-message"]} role="alert">
+            <p>{errorMessage}</p>
+            <button
+              className={styles["retry-button"]}
+              onClick={() => setRetryCount((count) => count + 1)}
+              type="button"
+            >
+              إعادة المحاولة
+            </button>
+          </div>
+        ) : rooms.length === 0 ? (
+          <div className={styles["status-message"]}>
+            {type === "my"
+              ? "لم تنضم إلى أي غرفة بعد. أدخل رمز غرفة للبدء."
+              : "لا توجد غرف عامة متاحة حالياً."}
+          </div>
+        ) : (
+          <div className={styles["rooms-grid"]}>
+            {rooms.map((room) => (
+              <article className={styles["room-item"]} key={room.id}>
+                <div className={styles["room-item-header"]}>
+                  <h3>{room.name}</h3>
+                  <span
+                    className={`${styles["visibility-badge"]} ${
+                      room.isPrivate ? styles["private-badge"] : ""
+                    }`}
                   >
-                    دخول الغرفة
-                    <LoginIcon className={styles["icon"]}/>
-                  </Link>
-                ) : (
-                  <button
-                    className={styles["room-action"]}
-                    disabled={Boolean(joiningRoomCode)}
-                    onClick={() => handleJoinRoom(room.code)}
-                    type="button"
-                    >
-                    {joiningRoomCode === room.code
-                      ? "جارٍ الانضمام..."
-                      : "انضم للغرفة"}
-                      <DoorOpenIcon className={styles["icon"]}/>
-                  </button>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
+                    {room.isPrivate ? "خاصة" : "عامة"}
+                  </span>
+                </div>
 
-      {!isLoading && !errorMessage && totalPages > 1 && (
-        <div className={styles["pagination"]}>
-          <CustomPagination
-            currentPage={page}
-            totalPages={totalPages}
-            onChange={setPage}
-          />
-        </div>
-      )}
-    </section>
+                <p className={styles["room-code"]} dir="ltr">
+                  {room.code}
+                </p>
+
+                <div className={styles["room-meta"]}>
+                  <span>
+                    {room.currentRound > 0
+                      ? `الجولة ${room.currentRound}`
+                      : "لم تبدأ بعد"}
+                  </span>
+                  <span>السعة: {room.capacity} لاعبين</span>
+                </div>
+
+                <div className={styles["room-item-footer"]}>
+                  <time dateTime={new Date(room.createdAt).toISOString()}>
+                    {new Date(room.createdAt).toLocaleDateString("ar", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </time>
+                  {type === "my" ? (
+                    <Link
+                      className={styles["room-action"]}
+                      href={`/rooms/${room.code.toLowerCase()}`}
+                    >
+                      دخول الغرفة
+                      <LoginIcon className={styles["icon"]} />
+                    </Link>
+                  ) : (
+                    <button
+                      className={styles["room-action"]}
+                      disabled={Boolean(joiningRoomCode)}
+                      onClick={() => handleJoinRoom(room.code)}
+                      type="button"
+                    >
+                      {joiningRoomCode === room.code
+                        ? "جارٍ الانضمام..."
+                        : "انضم للغرفة"}
+                      <DoorOpenIcon className={styles["icon"]} />
+                    </button>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+
+        {!isLoading && !errorMessage && totalPages > 1 && (
+          <div className={styles["pagination"]}>
+            <CustomPagination
+              currentPage={page}
+              totalPages={totalPages}
+              onChange={setPage}
+            />
+          </div>
+        )}
+      </section>
+    </AutoSkeleton>
   );
 };
 
