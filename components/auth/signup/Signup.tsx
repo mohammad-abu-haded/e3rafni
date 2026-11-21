@@ -76,9 +76,11 @@ const Signup = () => {
           </div>
         )}
 
-        <p className={styles["login-prompt"]}>
-          لديك حساب بالفعل؟ <Link href="/login">سجّل الدخول</Link>
-        </p>
+        {step !== 3 && (
+          <p className={styles["login-prompt"]}>
+            لديك حساب بالفعل؟ <Link href="/login">سجّل الدخول</Link>
+          </p>
+        )}
       </section>
     </main>
   );

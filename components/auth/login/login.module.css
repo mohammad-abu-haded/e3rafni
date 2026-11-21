@@ -223,6 +223,24 @@
   text-decoration: underline;
 }
 
+.forgot-password {
+  display: block;
+  width: fit-content;
+  margin-top: 13px;
+  color: var(--primary-color);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    color 0.2s,
+    opacity 0.2s;
+}
+
+.forgot-password:hover {
+  color: #6d28d9;
+  text-decoration: underline;
+}
+
 @keyframes card-in {
   from {
     opacity: 0;

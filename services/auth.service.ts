@@ -82,5 +82,26 @@ const getUserByGoogleId = async (googleId: string): Promise<User | null> => {
   });
 };
 
+const updatePassword = async (userId: number, newPassword: string) => {
+  try {
+    return await prisma.users.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        password: hashValue(newPassword),
+      },
+    });
+  } catch (error) {
+    return null;
+  }
+};
 
-export { login, signup, getUserByEmail, signupWithGoogle, getUserByGoogleId };
+export {
+  login,
+  signup,
+  getUserByEmail,
+  signupWithGoogle,
+  getUserByGoogleId,
+  updatePassword,
+};

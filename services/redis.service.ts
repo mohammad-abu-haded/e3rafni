@@ -58,4 +58,29 @@ const getRedisTTL = async (key: string): Promise<number | null> => {
   }
 };
 
-export { setRedisValue, getRedisValue, deleteRedisValue, incrementRedisValue, getRedisTTL };
+const getAndDeleteRedisValue = async <T>(key: string): Promise<T | null> => {
+  const value = (await redis.eval(
+    `local value = redis.call("GET", KEYS[1])
+     if value then
+       redis.call("DEL", KEYS[1])
+     end
+     return value`,
+    1,
+    key,
+  )) as string | null;
+
+  if (!value) {
+    return null;
+  }
+
+  return JSON.parse(value) as T;
+};
+
+export {
+  setRedisValue,
+  getRedisValue,
+  deleteRedisValue,
+  incrementRedisValue,
+  getRedisTTL,
+  getAndDeleteRedisValue,
+};

@@ -218,7 +218,6 @@
   height: 50px;
   padding: 0 20px;
   border-radius: 12px;
-  margin-top: 4px;
   box-shadow: 0 7px 16px #7c3aed28;
 }
 
@@ -241,6 +240,20 @@
 
 .social-area {
   margin-top: 3px;
+}
+
+.password-requirements {
+  display: grid;
+  gap: 5px;
+  margin: 2px 0 0;
+  padding-inline-start: 18px;
+  color: var(--secondary-font-color);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.password-requirements li::marker {
+  color: var(--primary-disabled-color);
 }
 
 .google-button {
@@ -321,6 +334,7 @@
 .photo-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
   gap: 12px;
   width: 100%;
 }

@@ -5,6 +5,9 @@ enum RateLimitAction {
   OTP_SEND = "OTP_SEND",
   OTP_VERIFY = "OTP_VERIFY",
   ROOM_JOIN = "ROOM_JOIN",
+  FORGOT_PASSWORD_OTP_SEND = "FORGOT_PASSWORD_OTP_SEND",
+  FORGOT_PASSWORD_OTP_VERIFY = "FORGOT_PASSWORD_OTP_VERIFY",
+  PASSWORD_RESET = "PASSWORD_RESET",
 }
 
 enum IdentifierType {
@@ -59,6 +62,39 @@ const RATE_LIMITS = {
     [IdentifierType.EMAIL]: {
       maxAttempts: 5,
       windowSeconds: 60,
+    },
+  },
+
+  [RateLimitAction.FORGOT_PASSWORD_OTP_SEND]: {
+    [IdentifierType.IP]: {
+      maxAttempts: 10,
+      windowSeconds: 60 * 10,
+    },
+    [IdentifierType.EMAIL]: {
+      maxAttempts: 3,
+      windowSeconds: 60 * 10,
+    },
+  },
+
+  [RateLimitAction.FORGOT_PASSWORD_OTP_VERIFY]: {
+    [IdentifierType.IP]: {
+      maxAttempts: 20,
+      windowSeconds: 60 * 5,
+    },
+    [IdentifierType.EMAIL]: {
+      maxAttempts: 3,
+      windowSeconds: 60 * 2,
+    },
+  },
+
+  [RateLimitAction.PASSWORD_RESET]: {
+    [IdentifierType.IP]: {
+      maxAttempts: 10,
+      windowSeconds: 60 * 10,
+    },
+    [IdentifierType.EMAIL]: {
+      maxAttempts: 5,
+      windowSeconds: 60 * 30,
     },
   },
 } satisfies Record<

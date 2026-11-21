@@ -19,6 +19,9 @@ const Login = () => (
 
       <LoginForm />
 
+      <Link href="/forgot-password" className={styles["forgot-password"]}>
+        نسيت كلمة السر؟
+      </Link>
       <p className={styles["switch-prompt"]}>
         ليس لديك حساب؟ <Link href="/signup">أنشئ حساباً جديداً</Link>
       </p>

@@ -1,4 +1,4 @@
-import { otpEmailTemplate } from "@/templates/otp-email-ar";
+import { otpEmailTemplate, otpEmailSubject } from "@/templates/otp-email-ar";
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
@@ -9,12 +9,20 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendOtpEmail = async (email: string, otp: string) => {
+const sendOtpEmail = async (
+  email: string,
+  otp: string,
+  purpose = "لإتمام عملية التسجيل",
+) => {
   await transporter.sendMail({
     from: `"E3rafni" <${process.env.EMAIL_USER}>`,
     to: email,
-    subject: "Email Verification",
-    html: otpEmailTemplate(otp),
+    subject: otpEmailSubject(),
+    html: otpEmailTemplate({
+      otp,
+      purpose,
+      expiresInMinutes: 5,
+    }),
   });
 };
 

@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { ApiResponse } from "@/types";
 import { PostData } from "@/services/api.service";
 import { API_ERROR_RESPONSE } from "@/constant/api.constants";
+import { validatePassword } from "@/utils/password";
 
 interface IProps {
   onNext: () => void;
@@ -38,6 +39,15 @@ const InformationStep = ({ onNext, email, setEmail }: IProps) => {
 
     if (!passwordInput) {
       toast.error("كلمة المرور مطلوبة");
+      return;
+    }
+
+    const isPasswordValid = validatePassword(password);
+
+    if (!isPasswordValid) {
+      toast.error(
+        "كلمة المرور يجب أن تحتوي على 8 أحرف على الأقل، وحرف كبير وحرف صغير ورقم ورمز خاص",
+      );
       return;
     }
 
@@ -146,6 +156,15 @@ const InformationStep = ({ onNext, email, setEmail }: IProps) => {
                   required
                 />
               </div>
+            </div>
+            <div className={styles["field"]}>
+              <ul className={styles["password-requirements"]}>
+                <li>8 أحرف على الأقل</li>
+                <li>حرف إنجليزي كبير (A-Z)</li>
+                <li>حرف إنجليزي صغير (a-z)</li>
+                <li>رقم واحد على الأقل (0-9)</li>
+                <li>رمز خاص واحد على الأقل (!@#$...)</li>
+              </ul>
             </div>
           </div>
 
