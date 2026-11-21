@@ -18,7 +18,7 @@ const Header = async () => {
         <h2>اعرفني</h2>
         <Navigation />
       </div>
-      <UserProfile name={name} />
+      <UserProfile />
     </div>
   );
 };

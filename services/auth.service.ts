@@ -32,7 +32,7 @@ const signup = async (
       data: {
         email,
         password: passwordIsHashed ? password : hashValue(password),
-        name,
+        name: name.trim(),
         googleId: null,
       },
     });

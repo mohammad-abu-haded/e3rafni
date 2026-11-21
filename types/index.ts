@@ -141,3 +141,11 @@ export interface PaginatedRoomsResponse {
   limit: number;
   totalPages: number;
 }
+
+export type ProfileUser = {
+  id: number;
+  name: string;
+  email: string;
+  createdAt: string | Date;
+  profileImage: string | null;
+};

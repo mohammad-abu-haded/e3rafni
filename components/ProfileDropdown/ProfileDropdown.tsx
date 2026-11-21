@@ -1,12 +1,19 @@
 import { ApiResponse } from "@/types";
 import styles from "./ProfileDropdown.module.css";
 import { toast } from "react-toastify";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import EditIcon from "@/public/edit.svg";
 import LogoutIcon from "@/public/logout.svg";
-const ProfileDropdown = () => {
+import { Dispatch, SetStateAction } from "react";
+
+interface IProps {
+  setIconClassName: Dispatch<SetStateAction<"bottom-arrow" | "up-arrow">>;
+}
+const ProfileDropdown = ({ setIconClassName }: IProps) => {
+  const router = useRouter();
   const editProfile = () => {
-    console.log("Edit Profile");
+    router.replace("/profile/edit");
+    setIconClassName("bottom-arrow");
   };
 
   const logout = async () => {

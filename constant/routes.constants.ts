@@ -5,4 +5,5 @@ export const PROTECTED_ROUTES = [
   "/rooms/create",
   "/rooms/[roomCode]",
   "/rooms/[roomCode]/round",
+  "/profile/edit",
 ];

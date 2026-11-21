@@ -42,6 +42,10 @@ const InformationStep = ({ onNext, email, setEmail }: IProps) => {
       return;
     }
 
+    if (nameInput.trim().length > 50) {
+      toast.error("الاسم يجب ألا يتجاوز 50 حرفاً");
+      return;
+    }
     const isPasswordValid = validatePassword(password);
 
     if (!isPasswordValid) {
@@ -53,7 +57,7 @@ const InformationStep = ({ onNext, email, setEmail }: IProps) => {
 
     const result: ApiResponse =
       (await PostData("api/auth/signup", {
-        name: nameInput,
+        name: nameInput.trim(),
         email: emailInput,
         password: passwordInput,
       })) || API_ERROR_RESPONSE;

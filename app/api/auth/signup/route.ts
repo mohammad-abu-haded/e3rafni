@@ -50,6 +50,13 @@ const POST = async (request: NextRequest) => {
       );
     }
 
+    if (name.trim().length > 50) {
+      return NextResponse.json(
+        { success: false, message: "الاسم يجب ألا يتجاوز 50 حرفاً" },
+        { status: 400 },
+      );
+    }
+
     if (!validatePassword(password)) {
       return NextResponse.json(
         {

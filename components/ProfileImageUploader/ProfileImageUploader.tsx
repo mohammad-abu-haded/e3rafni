@@ -1,10 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { PlusOutlined } from "@ant-design/icons";
 import { Image, Upload } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import type { GetProp, UploadFile, UploadProps } from "antd";
+
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+
+interface IProps {
+  fileList: UploadFile[];
+  setFileList: React.Dispatch<React.SetStateAction<UploadFile[]>>;
+}
 
 const getBase64 = (file: FileType): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -16,13 +22,10 @@ const getBase64 = (file: FileType): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-  interface IProps {
-    fileList: UploadFile<any>[],
-    setFileList: React.Dispatch<React.SetStateAction<UploadFile<any>[]>>
-  }
-const ProfileImageUploader: React.FC<IProps> = ({fileList, setFileList}) => {
+const ProfileImageUploader: React.FC<IProps> = ({ fileList, setFileList }) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
+
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj as FileType);
@@ -32,7 +35,7 @@ const ProfileImageUploader: React.FC<IProps> = ({fileList, setFileList}) => {
     setPreviewOpen(true);
   };
 
-  const handleChange: UploadProps["onChange"] = async ({ fileList }) => {
+  const handleChange: UploadProps["onChange"] = ({ fileList }) => {
     setFileList(fileList);
   };
 
