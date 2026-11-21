@@ -243,7 +243,8 @@ const RoundSetup = ({
         className={styles["round-setup-main"]}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className={styles["round-setup-header"]}>
+        <div className={styles["round-setup-content"]}>
+          <div className={styles["round-setup-header"]}>
           <div className={styles["round-setup-label"]}>
             <div className={styles["round-setup-title"]}>
               <ClockIcon className={styles["clock-icon"]} />
@@ -370,9 +371,9 @@ const RoundSetup = ({
               onChange={(e) => setNameSearched(e.currentTarget.value)}
             />
           </div>
-        </div>
+          </div>
 
-        <div className={styles["room-members-container"]}>
+          <div className={styles["room-members-container"]}>
           <div className={styles["room-members-header"]}>
             <div className={styles["room-members-label"]}>
               <UsersIcon className={styles["room-members-icon"]} />
@@ -519,6 +520,7 @@ const RoundSetup = ({
                 </div>
               );
             })}
+          </div>
           </div>
         </div>
 

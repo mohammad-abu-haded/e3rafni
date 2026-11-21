@@ -183,7 +183,19 @@
   align-items: center;
   justify-content: flex-start;
   column-gap: 16px;
+  box-sizing: border-box;
   width: 100%;
+  flex: 0 0 auto;
+  padding-top: 12px;
+  background-color: #fff;
+  border-radius: 0 0 16px 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.actions > button {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .member-info {
@@ -295,5 +307,6 @@
   .ruler-selector,
   .actions > button {
     width: 100%;
+    max-width: 100%;
   }
 }

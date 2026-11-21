@@ -75,3 +75,37 @@
 .create-room-from {
   width: 52.5%;
 }
+
+@media (max-width: 1200px) {
+  .create-room-from {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .create-room-page {
+    row-gap: 32px;
+    padding: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-room-page {
+    padding: 16px;
+  }
+
+  .header {
+    min-height: 280px;
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .header-content > h2 {
+    font-size: 26px;
+  }
+
+  .header-content > p {
+    max-width: 100%;
+    font-size: 16px;
+  }
+}
