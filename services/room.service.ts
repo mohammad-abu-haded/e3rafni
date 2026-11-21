@@ -57,6 +57,7 @@ export const isRoomOwnerByCode = async (
 export const isRoomMember = async (
   roomId: number,
   userId: number,
+  includeInactive = false,
 ): Promise<boolean> => {
   try {
     const roomMember = await prisma.roomMembers.findUnique({
@@ -65,6 +66,7 @@ export const isRoomMember = async (
           roomId,
           userId,
         },
+        ...(!includeInactive && { status: RoomMemberStatus.ACTIVE }),
       },
     });
 
@@ -229,7 +231,7 @@ export const joinRoom = async (userId: number, code: string) => {
       return null;
     }
 
-    const existingMember = await isRoomMember(room.id, userId);
+    const existingMember = await isRoomMember(room.id, userId, true);
     if (existingMember) {
       const roomMember = await prisma.roomMembers.update({
         where: {
@@ -587,7 +589,7 @@ export const getPublicRooms = async (
           },
         },
       },
-    });    
+    });
 
     const availableRooms = rooms.filter(
       (room) => room._count.roomMembers < room.capacity,

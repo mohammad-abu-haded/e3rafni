@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
   socket.on("join-room", (roomCode) => {
     socket.join(roomCode);
 
-    io.to(roomCode).emit("room:members-updated", {
+    socket.to(roomCode).emit("room:members-updated", {
       message: `${socket.id} joined the room`,
     });
   });

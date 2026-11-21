@@ -20,7 +20,7 @@ export const generateMetadata = async ({
   const userId = (await verifyToken(token))!.id;
   const room = await getRoomByCode(roomCode, userId);
   if (!room) {
-    notFound();
+    return {};
   }
   const roomName = room.name;
   return {

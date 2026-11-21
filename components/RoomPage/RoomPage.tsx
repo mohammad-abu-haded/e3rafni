@@ -4,7 +4,7 @@ import RoomInfoCard from "../RoomInfoCard/RoomInfoCard";
 import RoomParticipants from "../RoomParticipants/RoomParticipants";
 import styles from "./RoomPage.module.css";
 import { useEffect, useRef, useState } from "react";
-import { GetData } from "@/services/api.service";
+import { GetData, PostData } from "@/services/api.service";
 import { redirect, useRouter } from "next/navigation";
 import RoomActions from "../RoomActions/RoomActions";
 import { io } from "socket.io-client";
@@ -16,6 +16,7 @@ import {
   fetchRoundMembers,
 } from "@/services/room-api.service";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
+import { API_ERROR_RESPONSE } from "@/constant/api.constants";
 
 interface IProps {
   roomCode: string;
@@ -29,7 +30,46 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
   const [roomMembers, setRoomMembers] = useState<RoomMember[]>([]);
   const [roundMembers, setRoundMembers] = useState<RoundMember[]>([]);
   const [hasError, setHasError] = useState(false);
+  const initializationRef = useRef<Promise<boolean> | null>(null);
+  const getRoom = async () => {
+    const result: ApiResponse = await GetData(`/api/rooms/${roomCode}`);
 
+    if (!result?.success || !result.data) {
+      return false;
+    }
+
+    setRoom(result.data);
+    return true;
+  };
+
+  const initializeRoom = async (): Promise<boolean> => {
+    let isMember = await getRoom();
+
+    if (!isMember) {
+      const result: ApiResponse<{ roomCode: string }> =
+        (await PostData(`/api/rooms/${roomCode}/join`)) ?? API_ERROR_RESPONSE;
+
+      if (!result.success) {
+        toast.error(result.message || "تعذر الانضمام إلى الغرفة.");
+        setHasError(true);
+        return false;
+      }
+
+      toast.success(result.message);
+
+      router.refresh();
+
+      isMember = await getRoom();
+
+      if (!isMember) {
+        setHasError(true);
+        return false;
+      }
+    }
+
+    await getRoomData();
+    return true;
+  };
   const getRoomMembers = async () => {
     const result = await fetchRoomMembers(roomCode);
 
@@ -68,83 +108,81 @@ const RoomPage = ({ roomCode, userId }: IProps) => {
     }
   };
 
-  const getRoom = async () => {
-    const result: ApiResponse = await GetData(`/api/rooms/${roomCode}`);
-    if (!result || !result.data) {
-      setHasError(true);
-      return;
-    }
-
-    const fetchedRoom: Room = result.data;
-    setRoom(fetchedRoom);
-  };
-
   const getRoomData = async () => {
     await getMembers();
     await getRound();
   };
 
   useEffect(() => {
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
-      withCredentials: true,
-    });
+    let socket: ReturnType<typeof io> | null = null;
+    let isCancelled = false;
 
-    const handleConnect = () => {
-      socket.emit("join-room", roomCode);
+    const initialize = async () => {
+      if (!initializationRef.current) {
+        initializationRef.current = initializeRoom();
+      }
+
+      const success = await initializationRef.current;
+
+      if (!success || isCancelled) return;
+
+      socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
+        withCredentials: true,
+      });
+
+      const handleConnect = () => {
+        socket?.emit("join-room", roomCode);
+      };
+
+      const handleRulerUpdated = () => {
+        getRoom();
+        getMembers();
+        getRound();
+      };
+
+      const handleRoomMembersUpdated = () => {
+        getRoomMembers();
+      };
+
+      const handleRoomMemberLeft = () => {
+        getMembers();
+      };
+
+      const handleRoomEnded = () => {
+        toast.info("تم إنهاء الغرفة من قبل صاحبها");
+        router.push("/");
+      };
+
+      const handleRoundStarted = () => {
+        router.push(`/rooms/${roomCode.toLowerCase()}/round`);
+      };
+
+      const handleRoundEnded = () => {
+        toast.info("تم إنهاء الجولة");
+        getMembers();
+        getRound();
+        getRoom();
+      };
+
+      socket.on("connect", handleConnect);
+      socket.on("room:members-updated", handleRoomMembersUpdated);
+      socket.on("room:member-left", handleRoomMemberLeft);
+      socket.on("round:ruler-updated", handleRulerUpdated);
+      socket.on("room:ended", handleRoomEnded);
+      socket.on("round:started", handleRoundStarted);
+      socket.on("round:ended", handleRoundEnded);
+
+      if (socket.connected) {
+        handleConnect();
+      }
     };
 
-    const handleRoomMembersUpdated = () => {
-      getRoomMembers();
-    };
+    initialize();
 
-    const handleRoomMemberLeft = () => {
-      getMembers();
-    };
-
-    const handleRulerUpdated = () => {
-      getMembers();
-      getRound();
-      getRoom();
-    };
-
-    const handleRoomEnded = () => {
-      toast.info("تم إنهاء الغرفة من قبل صاحبها");
-      redirect("/");
-    };
-
-    const handleRoundStarted = () => {
-      router.push(`/rooms/${roomCode.toLocaleLowerCase()}/round`);
-    };
-
-    const handleRoundEnded = () => {
-      toast.info("تم إنهاء الجولة");
-      getMembers();
-      getRound();
-      getRoom();
-    };
-
-    socket.on("connect", handleConnect);
-    socket.on("room:members-updated", handleRoomMembersUpdated);
-    socket.on("room:member-left", handleRoomMemberLeft);
-    socket.on("round:ruler-updated", handleRulerUpdated);
-    socket.on("room:ended", handleRoomEnded);
-    socket.on("round:started", handleRoundStarted);
-    socket.on("round:ended", handleRoundEnded);
-    if (socket.connected) {
-      handleConnect();
-    }
-
-    getRoomData();
-    getRoom();
     return () => {
-      socket.off("connect", handleConnect);
-      socket.off("room:members-updated", handleRoomMembersUpdated);
-      socket.off("room:member-left", handleRoomMemberLeft);
-      socket.off("round:ruler-updated", handleRulerUpdated);
-      socket.off("room:ended", handleRoomEnded);
-      socket.off("round:started", handleRoundStarted);
-      socket.off("round:ended", handleRoundEnded);
-      socket.disconnect();
+      isCancelled = true;
+
+      socket?.disconnect();
     };
   }, [roomCode]);
 

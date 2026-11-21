@@ -5,7 +5,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 16px;
   background-color: rgba(0, 0, 0, 0.8);
+  overflow-y: auto;
 }
 
 .room-join-card {
@@ -13,7 +15,9 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 25%;
+  width: min(100%, 420px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
 }
 
 .room-qr-content {
@@ -36,6 +40,14 @@
   border-radius: 16px;
   background-color: #fff;
   padding: 16px;
+  max-width: 100%;
+}
+
+.room-qr-container > svg {
+  display: block;
+  width: 100%;
+  max-width: 256px;
+  height: auto;
 }
 
 .room-qr-info {
@@ -103,4 +115,45 @@
 
 .close-button:hover {
     transform: scale(1.05);
+}
+
+@media (max-width: 480px) {
+  .room-join-container {
+    padding: 12px;
+  }
+
+  .room-join-card {
+    max-height: calc(100dvh - 24px);
+  }
+
+  .room-qr-content {
+    padding: 20px 16px 24px;
+  }
+
+  .room-qr-container {
+    padding: 12px;
+  }
+
+  .room-qr-info > h3 {
+    font-size: clamp(20px, 5vw, 24px);
+    text-align: center;
+  }
+
+  .room-qr-info > p {
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .room-code-section > h3 {
+    font-size: clamp(24px, 8vw, 36px);
+    letter-spacing: clamp(3px, 1.2vw, 5px);
+  }
+
+  .room-join-footer {
+    padding: 24px 16px;
+  }
+
+  .close-button {
+    padding: 12px 0;
+  }
 }
