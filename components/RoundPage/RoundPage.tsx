@@ -144,6 +144,7 @@ const RoundPage = ({ roomCode, userId }: IProps) => {
 
       if (result.success) {
         toast.success(result.message);
+        getRoomCards();
         socket.emit("round:card-used", roomCode, userId, card.cardId);
       } else {
         toast.error(result.message);

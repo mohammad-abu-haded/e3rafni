@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("round:card-used", (roomCode, userId: number, cardId: string) => {
-    io.to(roomCode).emit("card:used", userId, cardId);
+    socket.to(roomCode).emit("card:used", userId, cardId);
   });
 
   socket.on("disconnect", () => {});

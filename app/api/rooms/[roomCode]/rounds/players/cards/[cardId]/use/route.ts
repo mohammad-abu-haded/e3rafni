@@ -4,10 +4,7 @@ import {
   getRoomCards,
   recordPlayerCardUsage,
 } from "@/services/room.service";
-import {
-  getCurrentRound,
-  getUserRoundRule,
-} from "@/services/round.service";
+import { getCurrentRound, getUserRoundRule } from "@/services/round.service";
 import { getAuthUser } from "@/utils/auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -39,14 +36,13 @@ const POST = async (request: NextRequest, { params }: IProps) => {
 
     const currentRound = await getCurrentRound(roomCode, user.id);
     if (!currentRound) {
-        return NextResponse.json(
-          {
-            success: false,
-            message: "الجولة غير موجودة",
-          },
-          { status: 404 },
-        );
-      
+      return NextResponse.json(
+        {
+          success: false,
+          message: "الجولة غير موجودة",
+        },
+        { status: 404 },
+      );
     }
 
     const myRoundRule = await getUserRoundRule(
@@ -84,7 +80,7 @@ const POST = async (request: NextRequest, { params }: IProps) => {
     );
 
     const targetCardUsage = playerCardUsages?.filter(
-      (item) => item.cardId === cardId,
+      (item) => item.cardId === cardId && item.userId === user.id,
     );
 
     if (targetCardUsage && targetCardUsage.length >= targetCard?.maxPerPlayer) {
@@ -97,7 +93,11 @@ const POST = async (request: NextRequest, { params }: IProps) => {
       );
     }
 
-    if (targetCardUsage?.find((item) => item.roundId === currentRound.id && item.userId === user.id)) {
+    if (
+      targetCardUsage?.find(
+        (item) => item.roundId === currentRound.id && item.userId === user.id,
+      )
+    ) {
       return NextResponse.json(
         {
           success: false,
@@ -121,7 +121,10 @@ const POST = async (request: NextRequest, { params }: IProps) => {
       );
     }
 
-    return NextResponse.json({ success: true, message: `تم استخدام الكرت ${targetCard.title}` }, { status: 200 });
+    return NextResponse.json(
+      { success: true, message: `تم استخدام الكرت ${targetCard.title}` },
+      { status: 200 },
+    );
   } catch (error) {
     return NextResponse.json(
       { success: false, message: "حدث خطأ ما" },
